@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Truong Phat — CV</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow: #E8B800;
+    --yellow-dark: #A07800;
+    --black: #0D0D0D;
+    --dark: #1A1A1A;
+    --mid: #3D3D3D;
+    --muted: #666666;
+    --light: #F0EFE8;
+    --border: #CCCCBF;
+    --white: #FFFFFF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    color: var(--black);
+    line-height: 1.5;
+  }
+
+  /* A4 PAGE */
+  .page {
+    width: 100%;
+    min-height: 297mm;
+    background: var(--white);
+    margin: 0;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* YELLOW TOP BAR */
+  .top-bar {
+    background: var(--yellow);
+    height: 7px;
+    width: 100%;
+  }
+
+  /* HEADER */
+  .header {
+    padding: 22px 28px 18px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    border-bottom: 1.5px solid var(--border);
+    position: relative;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    left: 28px;
+    bottom: -1px;
+    width: 48px;
+    height: 2px;
+    background: var(--yellow);
+  }
+  .header-left h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--black);
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+  .header-left .title {
+    font-size: 11px;
+    color: var(--yellow-dark);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 5px;
+  }
+  .header-left .subtitle {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 3px;
+    font-family: 'DM Mono', monospace;
+  }
+  .header-right {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .contact-line {
+    font-size: 9.5px;
+    color: var(--mid);
+    font-family: 'DM Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: flex-end;
+  }
+  .contact-dot {
+    width: 4px; height: 4px;
+    background: var(--yellow);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* MAIN LAYOUT */
+  .body {
+    display: table;
+    width: 100%;
+    min-height: calc(297mm - 80px);
+  }
+  .sidebar {
+    display: table-cell;
+    width: 26%;
+    vertical-align: top;
+    height: 100%;
+  }
+  .main {
+    display: table-cell;
+    width: 74%;
+    vertical-align: top;
+    height: 100%;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--light);
+    border-right: 1.5px solid var(--border);
+    padding: 18px 14px;
+  }
+  .sidebar-section {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .sidebar-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+  .sidebar-label {
+    font-size: 7.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--yellow-dark);
+    font-weight: 700;
+    margin-bottom: 9px;
+  }
+
+  /* Skill bars */
+  .skill-item { margin-bottom: 6px; }
+  .skill-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2px;
+    font-size: 9px;
+    color: var(--dark);
+  }
+  .skill-pct { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 8px; }
+  .skill-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .skill-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--yellow);
+  }
+  .skill-fill.blue { background: #2196F3; }
+  .skill-fill.green { background: #21B573; }
+  .skill-fill.purple { background: #8764B8; }
+  .skill-fill.orange { background: #E8A838; }
+
+  /* Tags */
+  .tags { display: flex; flex-wrap: wrap; gap: 3px; }
+  .tag {
+    font-size: 8px;
+    padding: 2px 5px;
+    border-radius: 2px;
+    border: 1.5px solid var(--border);
+    color: var(--mid);
+    font-family: 'DM Mono', monospace;
+    background: var(--white);
+  }
+  .tag.hi {
+    border-color: var(--yellow-dark);
+    color: var(--yellow-dark);
+    background: rgba(242,200,17,0.08);
+    font-weight: 500;
+  }
+
+  /* Cert items */
+  .cert-item {
+    margin-bottom: 6px;
+    padding-left: 8px;
+    border-left: 3px solid var(--yellow);
+  }
+  .cert-name { font-size: 9px; color: var(--dark); font-weight: 500; line-height: 1.3; }
+  .cert-issuer { font-size: 8px; color: var(--muted); margin-top: 1px; }
+
+  /* MAIN CONTENT */
+  .main {
+    padding: 18px 22px;
+  }
+
+  /* SUMMARY */
+  .summary {
+    font-size: 10px;
+    color: var(--mid);
+    line-height: 1.7;
+    padding: 10px 12px;
+    border-left: 4px solid var(--yellow);
+    background: rgba(242,200,17,0.04);
+    border-radius: 0 3px 3px 0;
+    margin-bottom: 16px;
+  }
+  .summary strong { color: var(--dark); }
+
+  /* SECTION */
+  .section { margin-bottom: 14px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .section-title {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--black);
+  }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .section-dot {
+    width: 8px; height: 8px;
+    background: var(--yellow);
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+
+  /* EXPERIENCE */
+  .exp-item {
+    margin-bottom: 11px;
+    padding-bottom: 11px;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .exp-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .exp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 3px;
+  }
+  .exp-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--black);
+  }
+  .exp-company {
+    font-size: 9.5px;
+    color: var(--yellow-dark);
+    font-weight: 600;
+    margin-top: 1px;
+  }
+  .exp-date {
+    font-size: 8.5px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    background: var(--light);
+    padding: 2px 6px;
+    border-radius: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-left: 10px;
+    border: 1.5px solid var(--border);
+  }
+  .exp-bullets {
+    list-style: none;
+    margin-top: 4px;
+  }
+  .exp-bullets li {
+    font-size: 9.5px;
+    color: var(--mid);
+    padding-left: 10px;
+    position: relative;
+    margin-bottom: 2px;
+    line-height: 1.5;
+  }
+  .exp-bullets li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--yellow-dark);
+    font-size: 7px;
+    top: 2px;
+  }
+  .exp-bullets li strong { color: var(--dark); }
+  .exp-bullets li em {
+    color: var(--yellow-dark);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  /* KPI ROW */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .kpi-card {
+    background: var(--light);
+    border: 1.5px solid var(--border);
+    border-top: 3px solid var(--yellow);
+    border-radius: 3px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .kpi-val {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1;
+  }
+  .kpi-lbl {
+    font-size: 7.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 2px;
+  }
+
+  /* EDUCATION */
+  .edu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .edu-degree { font-size: 10px; font-weight: 600; color: var(--dark); }
+  .edu-school { font-size: 9px; color: var(--muted); margin-top: 1px; }
+  .edu-date { font-size: 8.5px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .edu-award {
+    font-size: 8.5px;
+    color: var(--mid);
+    margin-top: 4px;
+    padding-left: 8px;
+    border-left: 3px solid var(--yellow);
+  }
+
+  /* AWARDS */
+  .award-item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-bottom: 5px;
+  }
+  .award-badge {
+    font-size: 9px;
+    background: rgba(242,200,17,0.12);
+    border: 1px solid var(--yellow-dark);
+    color: var(--yellow-dark);
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .award-text { font-size: 9px; color: var(--mid); line-height: 1.4; }
+  .award-text strong { color: var(--dark); }
+
+  /* FOOTER */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 8px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-left { font-size: 8px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .footer-right {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 8px;
+    color: var(--muted);
+  }
+  .pbi-badge {
+    background: var(--yellow);
+    color: var(--black);
+    font-size: 7px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  /* PRINT STYLES */
+  @media print {
+    body { background: white; }
+    .page {
+      margin: 0;
+      box-shadow: none;
+      width: 210mm;
+      min-height: 297mm;
+    }
+    @page {
+      size: A4;
+      margin: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="top-bar"></div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <h1>Truong Phat</h1>
+      <div class="title">Finance & BI Professional</div>
+      <div class="subtitle">Cost & Pricing Accounting · IFRS · Power BI · Big 4 Audit</div>
+    </div>
+    <div class="header-right">
+      <div class="contact-line"><span class="contact-dot"></span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="344046415b5a53445c5540050540745359555d581a575b59">[email&#160;protected]</a></div>
+      <div class="contact-line"><span class="contact-dot"></span>(+84) 948 772 514</div>
+      <div class="contact-line"><span class="contact-dot"></span>Ho Chi Minh City, Vietnam</div>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <!-- Core Skills -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">Core Skills</div>
+        <div class="skill-item">
+          <div class="skill-header"><span>Excel / VBA</span><span class="skill-pct">90%</span></div>
+          <div class="skill-track"><div class="skill-fill green" style="width:90%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-header"><span>Power BI <span style="font-size:7px;color:#aaa">(3.5yr)</span></span><span class="skill-pct">88%</span></div>
+          <div class="skill-track"><div class="skill-fill blue" style="width:88%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-header"><span>SAP FICO <span style="font-size:7px;color:#aaa">(4.5yr)</span></span><span class="skill-pct">85%</span></div>
+          <div class="skill-track"><div class="skill-fill orange" style="width:85%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-header"><span>IFRS / US GAAP</span><span class="skill-pct">85%</span></div>
+          <div class="skill-track"><div class="skill-fill" style="width:85%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-header"><span>SQL / Oracle DB</span><span class="skill-pct">85%</span></div>
+          <div class="skill-track"><div class="skill-fill blue" style="width:85%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-header"><span>Stakeholder Comms</span><span class="skill-pct">85%</span></div>
+          <div class="skill-track"><div class="skill-fill purple" style="width:85%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-header"><span>Cost & Pricing Acct.</span><span class="skill-pct">80%</span></div>
+          <div class="skill-track"><div class="skill-fill" style="width:80%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-header"><span>Data Analysis</span><span class="skill-pct">78%</span></div>
+          <div class="skill-track"><div class="skill-fill green" style="width:78%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-header"><span>Oracle EBS <span style="font-size:7px;color:#aaa">(1.2yr)</span></span><span class="skill-pct">70%</span></div>
+          <div class="skill-track"><div class="skill-fill orange" style="width:70%"></div></div>
+        </div>
+      </div>
+
+      <!-- Tech Stack -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">Tech Stack</div>
+        <div class="tags">
+          <span class="tag hi">Power BI</span>
+          <span class="tag hi">SAP FICO</span>
+          <span class="tag hi">Oracle EBS</span>
+          <span class="tag hi">SQL</span>
+          <span class="tag">Oracle DB</span>
+          <span class="tag">Oracle BI</span>
+          <span class="tag">Excel</span>
+          <span class="tag">VBA</span>
+          <span class="tag">Misa</span>
+          <span class="tag">Fast</span>
+          <span class="tag">Gen AI</span>
+        </div>
+      </div>
+
+      <!-- Languages -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">Languages</div>
+        <div class="skill-item">
+          <div class="skill-header"><span>Vietnamese</span><span class="skill-pct">Native</span></div>
+          <div class="skill-track"><div class="skill-fill green" style="width:100%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-header"><span>English</span><span class="skill-pct">TOEIC 945</span></div>
+          <div class="skill-track"><div class="skill-fill blue" style="width:94%"></div></div>
+        </div>
+      </div>
+
+      <!-- Standards -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">Standards</div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div style="font-size:8.5px;color:#555;padding-left:6px;border-left:2px solid var(--yellow)">VAS</div>
+          <div style="font-size:8.5px;color:#555;padding-left:6px;border-left:2px solid #2196F3">IFRS (full cycle)</div>
+          <div style="font-size:8.5px;color:#555;padding-left:6px;border-left:2px solid #2196F3">US GAAP</div>
+          <div style="font-size:8.5px;color:#555;padding-left:6px;border-left:2px solid #E8A838">EBA Reporting</div>
+          <div style="font-size:8.5px;color:#555;padding-left:6px;border-left:2px solid #21B573">Tax Compliance</div>
+          <div style="font-size:8.5px;color:#555;padding-left:6px;border-left:2px solid #8764B8">State Bank (VN)</div>
+        </div>
+      </div>
+
+      <!-- Certifications -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">Certifications</div>
+        <div class="cert-item">
+          <div class="cert-name">Power BI Data Analyst Associate</div>
+          <div class="cert-issuer">Microsoft · Jan 2026</div>
+        </div>
+        <div class="cert-item">
+          <div class="cert-name">Power BI Data Analyst Professional</div>
+          <div class="cert-issuer">Coursera / Microsoft · Jan 2026</div>
+        </div>
+        <div class="cert-item">
+          <div class="cert-name">Advanced Data Analytics</div>
+          <div class="cert-issuer">Coursera / Google · Jan 2026</div>
+        </div>
+        <div class="cert-item">
+          <div class="cert-name">Generative AI Specialization</div>
+          <div class="cert-issuer">Coursera / Google · Jan 2026</div>
+        </div>
+        <div class="cert-item">
+          <div class="cert-name">MOS Master — Word & Excel</div>
+          <div class="cert-issuer">IIG Vietnam · Oct 2014</div>
+        </div>
+      </div>
+
+      <!-- Education -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">Education</div>
+        <div class="edu-degree">B.Acc — Auditing Specialisation</div>
+        <div class="edu-school">University of Economics, HCMC (UEH)</div>
+        <div class="edu-date">2013 – 2017</div>
+        <div class="edu-award">Ministerial Research Award — 3rd Prize, Oct 2017</div>
+      </div>
+
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <!-- KPI ROW -->
+      <table style="width:100%;border-collapse:separate;border-spacing:6px;margin-bottom:10px;">
+        <tr>
+          <td style="width:50%;background:var(--light);border:1px solid var(--border);border-top:2px solid var(--yellow);border-radius:3px;padding:7px 10px;text-align:center;">
+            <div class="kpi-val">8+</div><div class="kpi-lbl">Years Exp.</div>
+          </td>
+          <td style="width:50%;background:var(--light);border:1px solid var(--border);border-top:2px solid var(--yellow);border-radius:3px;padding:7px 10px;text-align:center;">
+            <div class="kpi-val">4</div><div class="kpi-lbl">Companies</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width:50%;background:var(--light);border:1px solid var(--border);border-top:2px solid var(--yellow);border-radius:3px;padding:7px 10px;text-align:center;">
+            <div class="kpi-val">945</div><div class="kpi-lbl">TOEIC Score</div>
+          </td>
+          <td style="width:50%;background:var(--light);border:1px solid var(--border);border-top:2px solid var(--yellow);border-radius:3px;padding:7px 10px;text-align:center;">
+            <div class="kpi-val">5</div><div class="kpi-lbl">Certifications</div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- SUMMARY -->
+      <div class="summary">
+        Finance and Accounting professional with <strong>8+ years of experience</strong> across <strong>Big 4 audit (Deloitte)</strong>, IFRS reporting, cost & pricing accounting at Vinamilk, and multi-role finance management. Known for the ability to <strong>read, deep-dive, and extract meaningful insight from complex financial data</strong> — whether variance reports, loan portfolios, or cost structures — and translate findings into clear, actionable narratives for diverse stakeholders from business owners to C-suite and regulators. Combines strong <strong>interpersonal and data-collection skills</strong> to work across functions, refine raw information, and surface what matters most. Currently <strong>bridging deep finance domain expertise with data science capabilities</strong> — applying Python, statistical analysis, and ML fundamentals (Google Advanced Data Analytics) to real-world financial datasets, with an active portfolio in development connecting hands-on work experience to data-driven models and insights.
+      </div>
+
+      <!-- EXPERIENCE -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-dot"></div>
+          <div class="section-title">Professional Experience</div>
+          <div class="section-line"></div>
+        </div>
+
+        <!-- Vinamilk -->
+        <div class="exp-item">
+          <div class="exp-header">
+            <div>
+              <div class="exp-title">Pricing & Costing Specialist</div>
+              <div class="exp-company">Vinamilk · Ho Chi Minh City</div>
+            </div>
+            <div class="exp-date">Feb 2025 – Apr 2026</div>
+          </div>
+          <ul class="exp-bullets">
+            <li>Calculate and close product manufacturing costs monthly using <strong>Oracle E-Business Suite (EBS)</strong>; ensure accuracy, timeliness, and VAS compliance.</li>
+            <li>Analyse raw material consumption variances vs. standard batch norms; investigate root causes and prepare variance analysis reports for management review.</li>
+            <li>Leverage <strong>Oracle DB and Oracle BI</strong> for operational reporting, data extraction, and management dashboards alongside Oracle EBS.</li>
+            <li>Reconcile inventory ledgers (subsidiary vs. GL); prepare monthly inventory movement reports; control operating costs and manage associated contracts.</li>
+            <li>Developed a personal monthly <strong>sales channel prediction workflow</strong> — built a simple linear regression model in Excel using 5 years of historical sales data with average price as the key input variable (tested GDP and interest rate as additional variables; excluded after R-squared indicated low correlation); cross-checked results against Power BI's built-in time-series forecast as a secondary reference.</li>
+            <li>To perform cost & pricing analysis accurately, proactively engaged with multiple internal stakeholders on a monthly and ad hoc basis to gather current sales channel data — synthesised with P&L-level expense analysis and used to facilitate grounded discussions with the sales department; applied personal judgment to work with real, present information rather than relying solely on static objectives, which was the prevailing departmental practice.</li>
+            <li>Used <strong>AI tools (Microsoft Copilot)</strong> to assist with Power BI M-code and Power Query development, accelerating report-building workflows.</li>
+            <li>Liaise with external auditors, tax authorities, Department of Industry & Trade, and Statistics Office as required.</li>
+          </ul>
+        </div>
+
+        <!-- SME IT -->
+        <div class="exp-item">
+          <div class="exp-header">
+            <div>
+              <div class="exp-title">Finance Officer</div>
+              <div class="exp-company">SME IT Outsourcing Company · Ho Chi Minh City</div>
+            </div>
+            <div class="exp-date">Oct 2022 – Jan 2025</div>
+          </div>
+          <ul class="exp-bullets">
+            <li>Delivered monthly financial reports with KPI metrics; prepared annual budgets and monitored expense control.</li>
+            <li>Conducted comprehensive economic contract reviews to identify potential financial risks and opportunities.</li>
+            <li>Designed and maintained <strong>Power BI</strong> dashboards to track budget vs. actuals, expense trends, and financial performance for senior management.</li>
+            <li>Led cross-functional project for the company's business model transition.</li>
+            <li><em>Concurrently</em> served as Finance & Accounting advisor for a private limited company (10-person team) — progressing from revenue control, invoicing, and expense verification to full cash flow management, expense control oversight, and periodic tax review; built Power BI reports (~15% of engagement) covering cash flow projections, timeline tracking, and revenue dashboards for the business owner.</li>
+          </ul>
+        </div>
+
+        <!-- Home Credit -->
+        <div class="exp-item">
+          <div class="exp-header">
+            <div>
+              <div class="exp-title">Finance Executive — IFRS Reporting</div>
+              <div class="exp-company">Home Credit Vietnam Co. Ltd · Ho Chi Minh City</div>
+            </div>
+            <div class="exp-date">Nov 2021 – Oct 2022</div>
+          </div>
+          <ul class="exp-bullets">
+            <li>Owned daily, monthly, quarterly, and year-end IFRS financial reporting for European parent consolidation; utilised <strong>SAP FICO</strong> for IFRS financial accounting and IFRS 16 lease liability calculations.</li>
+            <li>Consulted and supported the implementation of IFRS into daily business operations, guiding cross-functional teams on accounting treatments and compliance requirements.</li>
+            <li>Worked extensively with a <strong>30M-row enterprise Oracle data warehouse</strong> (fed daily from European parent) — authored and extended production-grade Oracle SQL covering multi-step ETL pipelines (<code>INSERT</code>, <code>MERGE</code>, staged commits), CTEs, window functions (<code>ROW_NUMBER OVER PARTITION</code>), and <code>PIVOT/UNPIVOT</code> for multi-month trend reshaping; contributed ~30% new logic covering <strong>IFRS 9 stage reclassification</strong> (Stage 1/2/3 based on DPD thresholds and deterioration flags) and <strong>Covid-flag portfolio adjustments</strong>.</li>
+            <li>Built <strong>month-on-month provision variance analysis</strong> across 8 product segments (CD, TW, CLX, REL, RM etc.) using full outer join CTEs to classify movements as Recovery, Additional Write-Off, or New Write-Down — directly supporting P&L reporting for Vietnamese C-suite and European parent company.</li>
+            <li>Produced aggregated datasets and sub-tables for Finance team operational use; delivered outputs via Excel-based reporting to C-suite and regulators.</li>
+            <li>Reported performance against <strong>EBA guidelines</strong> and Vietnamese State Bank requirements on ad hoc basis.</li>
+            <li>Led finance workstreams for new subsidiary setup, first corporate bond issuance, and new credit product launch.</li>
+          </ul>
+        </div>
+
+        <!-- Deloitte -->
+        <div class="exp-item">
+          <div class="exp-header">
+            <div>
+              <div class="exp-title">Senior Auditor</div>
+              <div class="exp-company">Deloitte Vietnam Co. Ltd · Ho Chi Minh City</div>
+            </div>
+            <div class="exp-date">May 2017 – Nov 2020</div>
+          </div>
+          <ul class="exp-bullets">
+            <li>Led audit and due diligence engagements across diverse industries; performed in-depth financial analysis and documentation supporting client goal-setting, investment decisions, and risk assessment.</li>
+            <li>Managed audit engagement teams of 3–6 members; conducted fieldwork across <strong>SAP FICO</strong>, Oracle DB, Misa, and Fast ERP systems.</li>
+            <li>Dedicated ~40% of the final 1.5 years to <strong>IFRS and US GAAP client engagements</strong> — reviewing financial statements, advising on standard alignment, and supporting reporting teams across multinational clients.</li>
+            <li>Built <strong>Power BI</strong> dashboards to visualise audit findings, client financial trends, and engagement KPIs for senior management review.</li>
+            <li>🏆 <strong>Green Dot Award for Special Contribution</strong> (Dec 2018) — firm-wide recognition for exceptional performance.</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- AWARDS -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-dot"></div>
+          <div class="section-title">Awards</div>
+          <div class="section-line"></div>
+        </div>
+        <div class="award-item">
+          <span class="award-badge">Deloitte</span>
+          <div class="award-text"><strong>Green Dot Award for Special Contribution</strong> — Dec 2018. Firm-wide recognition for upholding Deloitte Vietnam's Standard of Excellence.</div>
+        </div>
+        <div class="award-item">
+          <span class="award-badge">Ministry</span>
+          <div class="award-text"><strong>Ministerial-Level Student Research Award — 3rd Prize</strong> — Oct 2017. Issued by Vietnam Ministry of Education & Training / UEH for research on financial reporting quality, sustainability disclosure, and inv
