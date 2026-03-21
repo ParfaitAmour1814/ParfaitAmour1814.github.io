@@ -472,6 +472,44 @@
   .contact-item a { color: var(--mid); text-decoration: none; }
   .contact-item a:hover { color: var(--yellow-dark); }
 
+  /* MUSIC PLAYER */
+  .music-player {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .music-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--yellow);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    transition: all 0.2s;
+  }
+  .music-btn:hover { background: var(--yellow-dark); transform: scale(1.05); }
+  .music-label {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .youtube-frame { display: none; }
+
   /* FOOTER */
   footer {
     background: var(--black);
@@ -500,6 +538,49 @@
 </style>
 </head>
 <body>
+
+<!-- MUSIC PLAYER -->
+<div class="music-player">
+  <div class="music-label" id="music-label">♪ All By Myself — Dominic Miller</div>
+  <button class="music-btn" id="music-btn" onclick="toggleMusic()" title="Play music">▶</button>
+</div>
+<div id="yt-frame" style="display:none"></div>
+
+<script>
+  var tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
+  var player;
+  var playing = false;
+  window.onYouTubeIframeAPIReady = function() {
+    player = new YT.Player('yt-frame', {
+      height: '0', width: '0',
+      videoId: 'ERXUMh1S2ws',
+      playerVars: { autoplay: 0, start: 1078, end: 1268 },
+      events: { onStateChange: onPlayerStateChange }
+    });
+  };
+  function onPlayerStateChange(e) {
+    if (e.data === 0) {
+      document.getElementById('music-btn').innerHTML = '▶';
+      document.getElementById('music-label').innerHTML = '♪ All By Myself — Dominic Miller';
+      playing = false;
+    }
+  }
+  function toggleMusic() {
+    if (!player) return;
+    if (playing) {
+      player.pauseVideo();
+      document.getElementById('music-btn').innerHTML = '▶';
+      document.getElementById('music-label').innerHTML = '♪ All By Myself — Dominic Miller';
+    } else {
+      player.playVideo();
+      document.getElementById('music-btn').innerHTML = '⏸';
+      document.getElementById('music-label').innerHTML = '▶ Now playing...';
+    }
+    playing = !playing;
+  }
+</script>
 
 <!-- NAV -->
 <nav>
