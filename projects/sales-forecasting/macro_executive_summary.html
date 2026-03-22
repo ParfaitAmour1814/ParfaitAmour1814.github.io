@@ -24,6 +24,8 @@
     --orange-light: #FEF0E6;
     --green: #27AE60;
     --green-light: #E9F7EF;
+    --blue: #2980B9;
+    --blue-light: #EBF5FB;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -34,18 +36,69 @@
     color: var(--dark);
     background: var(--lighter);
     line-height: 1.6;
-    padding: 40px;
-    max-width: 900px;
-    margin: 0 auto;
   }
 
-  /* HEADER */
+  /* ── PAGE LAYOUT ─────────────────────────────────────────────────── */
+  .page {
+    width: 100%;
+    min-height: 100vh;
+    padding: 40px;
+    max-width: 960px;
+    margin: 0 auto;
+    display: none;
+  }
+  .page.active { display: block; }
+
+  /* ── NAV TABS ────────────────────────────────────────────────────── */
+  .tab-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    padding: 0;
+  }
+  .tab-btn {
+    padding: 14px 32px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .tab-btn:hover { color: var(--black); }
+  .tab-btn.active {
+    color: var(--black);
+    border-bottom-color: var(--yellow);
+  }
+  .tab-label {
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    color: var(--yellow-dark);
+    display: block;
+    margin-bottom: 1px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .page-content { padding-top: 64px; }
+
+  /* ── HEADER ──────────────────────────────────────────────────────── */
   .header {
     background: var(--black);
     color: var(--white);
-    padding: 32px 36px;
+    padding: 28px 36px;
     border-radius: 8px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
     position: relative;
     overflow: hidden;
   }
@@ -57,337 +110,597 @@
     background: var(--yellow);
   }
   .header-tag {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--yellow);
-    margin-bottom: 10px;
-    font-family: 'DM Mono', monospace;
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--yellow);
+    margin-bottom: 8px; font-family: 'DM Mono', monospace;
   }
   .header h1 {
     font-family: 'DM Serif Display', serif;
-    font-size: 28px;
-    font-weight: 400;
-    line-height: 1.2;
-    margin-bottom: 10px;
+    font-size: 26px; font-weight: 400; line-height: 1.2; margin-bottom: 8px;
   }
-  .header p {
-    font-size: 12px;
-    color: #999;
-    font-family: 'DM Mono', monospace;
-  }
+  .header p { font-size: 11px; color: #999; font-family: 'DM Mono', monospace; }
 
-  /* SECTION */
+  /* ── SECTION ─────────────────────────────────────────────────────── */
   .section {
     background: var(--white);
     border: 1.5px solid var(--border);
     border-radius: 6px;
-    padding: 24px 28px;
-    margin-bottom: 20px;
+    padding: 22px 26px;
+    margin-bottom: 18px;
   }
   .section-title {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--yellow-dark);
-    margin-bottom: 16px;
-    padding-bottom: 10px;
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--yellow-dark);
+    margin-bottom: 14px; padding-bottom: 10px;
     border-bottom: 1px solid var(--border);
     font-family: 'DM Mono', monospace;
   }
 
-  /* CONCLUSION BOX */
+  /* ── CONCLUSION ──────────────────────────────────────────────────── */
   .conclusion {
-    background: var(--black);
-    color: var(--white);
-    border-radius: 6px;
-    padding: 24px 28px;
-    margin-bottom: 20px;
-    border-left: 4px solid var(--yellow);
+    background: var(--black); color: var(--white);
+    border-radius: 6px; padding: 22px 26px;
+    margin-bottom: 18px; border-left: 4px solid var(--yellow);
   }
   .conclusion h3 {
     font-family: 'DM Serif Display', serif;
-    font-size: 18px;
-    margin-bottom: 12px;
-    color: var(--yellow);
+    font-size: 17px; margin-bottom: 10px; color: var(--yellow);
   }
-  .conclusion p {
-    font-size: 12px;
-    color: #ccc;
-    line-height: 1.8;
-  }
+  .conclusion p { font-size: 12px; color: #ccc; line-height: 1.8; }
   .conclusion strong { color: var(--white); }
 
-  /* VARIABLE CARDS */
-  .var-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    margin-bottom: 20px;
-  }
+  /* ── VAR CARDS ───────────────────────────────────────────────────── */
+  .var-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 18px; }
   .var-card {
-    border-radius: 6px;
-    padding: 18px;
+    border-radius: 6px; padding: 16px;
     border: 1.5px solid var(--border);
-    position: relative;
-    overflow: hidden;
+    position: relative; overflow: hidden;
   }
   .var-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
   }
   .var-card.exclude::before { background: var(--red); }
   .var-card.weak::before { background: var(--orange); }
-  .var-card.combined::before { background: var(--yellow); }
-
-  .var-name {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--black);
-    margin-bottom: 14px;
-  }
-  .stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-    font-size: 11px;
-  }
+  .var-name { font-size: 11px; font-weight: 700; color: var(--black); margin-bottom: 12px; }
+  .stat-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 11px; }
   .stat-label { color: var(--muted); }
-  .stat-val { font-weight: 600; color: var(--dark); font-family: 'DM Mono', monospace; }
+  .stat-val { font-weight: 600; font-family: 'DM Mono', monospace; color: var(--dark); }
   .stat-val.bad { color: var(--red); }
   .stat-val.ok { color: var(--orange); }
-
   .verdict-badge {
-    display: inline-block;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    padding: 3px 8px;
-    border-radius: 3px;
-    margin-top: 10px;
+    display: inline-block; font-size: 9px; font-weight: 700;
+    letter-spacing: 0.8px; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 3px; margin-top: 10px;
   }
   .badge-exclude { background: var(--red-light); color: var(--red); border: 1px solid #f5c6c2; }
   .badge-weak { background: var(--orange-light); color: var(--orange); border: 1px solid #f9d5b3; }
 
-  /* MULTIPLE REGRESSION TABLE */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-  }
+  /* ── TABLE ───────────────────────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
   th {
-    background: var(--light);
-    padding: 10px 12px;
-    text-align: left;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--muted);
+    background: var(--light); padding: 9px 12px; text-align: left;
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--muted);
     border-bottom: 2px solid var(--border);
   }
-  td {
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border);
-    color: var(--mid);
-  }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--mid); }
   tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--lighter); }
   .highlight { font-weight: 600; color: var(--black); }
-  .p-sig { color: var(--orange); font-weight: 600; }
-  .p-insig { color: var(--muted); }
+  .sig-yes { color: var(--green); font-weight: 600; }
+  .sig-no { color: var(--muted); }
+  .r2-high { color: var(--orange); font-weight: 600; }
 
-  /* METHODOLOGY */
-  .method-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+  /* ── ROADMAP ─────────────────────────────────────────────────────── */
+  .roadmap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .roadmap-item {
+    border: 1.5px solid var(--border);
+    border-radius: 6px; padding: 14px;
   }
+  .roadmap-item.done { border-color: var(--green); }
+  .roadmap-item.planned { border-color: var(--yellow); }
+  .roadmap-item.future { opacity: 0.75; }
+  .roadmap-badge {
+    display: inline-block; font-size: 9px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 3px; margin-bottom: 7px;
+    font-family: 'DM Mono', monospace;
+  }
+  .badge-done { background: var(--green-light); color: var(--green); border: 1px solid #a9dfbf; }
+  .badge-planned { background: var(--yellow-light); color: var(--yellow-dark); border: 1px solid var(--yellow); }
+  .badge-future { background: var(--light); color: var(--muted); border: 1px solid var(--border); }
+  .roadmap-title { font-size: 12px; font-weight: 700; color: var(--black); margin-bottom: 5px; }
+  .roadmap-desc { font-size: 11px; color: var(--mid); line-height: 1.6; }
+
+  /* ── METHOD GRID ─────────────────────────────────────────────────── */
+  .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .method-item {
-    background: var(--lighter);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 14px;
+    background: var(--lighter); border: 1px solid var(--border);
+    border-radius: 4px; padding: 13px;
   }
   .method-label {
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--yellow-dark);
-    margin-bottom: 6px;
-    font-family: 'DM Mono', monospace;
+    font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--yellow-dark);
+    margin-bottom: 5px; font-family: 'DM Mono', monospace;
   }
-  .method-val {
-    font-size: 12px;
-    color: var(--mid);
-    line-height: 1.6;
+  .method-val { font-size: 12px; color: var(--mid); line-height: 1.6; }
+
+  /* ── PRODUCT GROUP PAGE ──────────────────────────────────────────── */
+  .insight-box {
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--yellow);
+    border-radius: 0 4px 4px 0;
+    padding: 14px 16px;
+    font-size: 12px; color: var(--mid); line-height: 1.8;
+    margin-bottom: 18px;
+  }
+  .insight-box strong { color: var(--black); }
+
+  .sensitivity-legend {
+    display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--mid);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%; flex-shrink: 0;
   }
 
-  /* FOOTER */
-  .footer {
-    text-align: center;
-    font-size: 10px;
-    color: var(--muted);
+  .pg-section-title {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted);
+    margin: 18px 0 10px; padding-bottom: 6px;
+    border-bottom: 1px dashed var(--border);
     font-family: 'DM Mono', monospace;
-    margin-top: 28px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
+  }
+
+  code {
+    font-family: 'DM Mono', monospace;
+    background: var(--light); padding: 1px 5px;
+    border-radius: 3px; font-size: 11px;
+  }
+
+  /* ── FOOTER ──────────────────────────────────────────────────────── */
+  .footer {
+    text-align: center; font-size: 10px; color: var(--muted);
+    font-family: 'DM Mono', monospace; margin-top: 24px;
+    padding-top: 14px; border-top: 1px solid var(--border);
   }
   .footer span { color: var(--yellow-dark); }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="header-tag">Research Output · Sales Forecasting Model</div>
-  <h1>Macro Variable Regression<br><em>Executive Summary</em></h1>
-  <p>Author: Truong Phat &nbsp;|&nbsp; Method: OLS Linear Regression (scipy.stats) &nbsp;|&nbsp; Period: Jan 2020 – Dec 2025 &nbsp;|&nbsp; n = 72 months</p>
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showPage('page1', this)">
+    <span class="tab-label">Page 1</span>
+    Overall Findings
+  </button>
+  <button class="tab-btn" onclick="showPage('page2', this)">
+    <span class="tab-label">Page 2</span>
+    Product Group Deep Dive
+  </button>
 </div>
 
-<!-- CONCLUSION -->
-<div class="conclusion">
-  <h3>Conclusion: All macro variables excluded from final model</h3>
-  <p>
-    Three macro variables — <strong>CPI YoY%</strong>, <strong>Interest Rate%</strong>, and <strong>GDP Growth%</strong> — were tested individually and in combination against monthly FMCG sales volume (2020–2025).
-    None achieved sufficient explanatory power to justify inclusion. The combined multiple regression explained only <strong>16.1% of variance (Adj. R² = 12.4%)</strong>,
-    with high multicollinearity risk between variables. This confirms that <strong>average selling price, seasonality, and trend</strong> are stronger predictors of FMCG sales volume
-    than macroeconomic indicators — consistent with the inelastic demand characteristics of dairy and consumer staples.
-  </p>
-</div>
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE 1 — OVERALL FINDINGS
+══════════════════════════════════════════════════════════════════════ -->
+<div class="page active" id="page1">
+<div class="page-content">
 
-<!-- SIMPLE REGRESSION RESULTS -->
-<div class="section">
-  <div class="section-title">Simple Regression Results — One Variable at a Time</div>
-  <div class="var-grid">
-
-    <div class="var-card exclude">
-      <div class="var-name">CPI YoY %</div>
-      <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val bad">0.0170 (1.7%)</span></div>
-      <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val bad">0.2745</span></div>
-      <div class="stat-row"><span class="stat-label">F-stat</span><span class="stat-val">1.2131</span></div>
-      <div class="stat-row"><span class="stat-label">Coefficient</span><span class="stat-val">-8.0M VND/1%</span></div>
-      <div class="stat-row"><span class="stat-label">95% CI</span><span class="stat-val">[-22.6M, +6.5M]</span></div>
-      <div class="stat-row"><span class="stat-label">MAE</span><span class="stat-val">53.3M VND</span></div>
-      <div class="stat-row"><span class="stat-label">Significant?</span><span class="stat-val bad">No (p > 0.05)</span></div>
-      <span class="verdict-badge badge-exclude">❌ Exclude</span>
-    </div>
-
-    <div class="var-card weak">
-      <div class="var-name">Interest Rate %</div>
-      <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val ok">0.0523 (5.2%)</span></div>
-      <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val ok">0.0532</span></div>
-      <div class="stat-row"><span class="stat-label">F-stat</span><span class="stat-val">3.8665</span></div>
-      <div class="stat-row"><span class="stat-label">Coefficient</span><span class="stat-val">-26.6M VND/1%</span></div>
-      <div class="stat-row"><span class="stat-label">95% CI</span><span class="stat-val">[-53.7M, +0.4M]</span></div>
-      <div class="stat-row"><span class="stat-label">MAE</span><span class="stat-val">53.0M VND</span></div>
-      <div class="stat-row"><span class="stat-label">Significant?</span><span class="stat-val ok">Borderline (p=0.053)</span></div>
-      <span class="verdict-badge badge-weak">⚠️ Exclude</span>
-    </div>
-
-    <div class="var-card weak">
-      <div class="var-name">GDP Growth % (Quarterly)</div>
-      <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val ok">0.0888 (8.9%)</span></div>
-      <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val ok">0.0110</span></div>
-      <div class="stat-row"><span class="stat-label">F-stat</span><span class="stat-val">6.8230</span></div>
-      <div class="stat-row"><span class="stat-label">Coefficient</span><span class="stat-val">-5.8M VND/1%</span></div>
-      <div class="stat-row"><span class="stat-label">95% CI</span><span class="stat-val">[-10.2M, -1.4M]</span></div>
-      <div class="stat-row"><span class="stat-label">MAE</span><span class="stat-val">49.9M VND</span></div>
-      <div class="stat-row"><span class="stat-label">Significant?</span><span class="stat-val ok">Marginally (p=0.011)</span></div>
-      <span class="verdict-badge badge-weak">⚠️ Exclude</span>
-    </div>
-
+  <div class="header">
+    <div class="header-tag">Research Output · Sales Forecasting Model</div>
+    <h1>Macro Variable Regression<br><em>Overall Findings</em></h1>
+    <p>Author: Truong Phat &nbsp;|&nbsp; Method: OLS (scipy.stats) &nbsp;|&nbsp; Period: Jan 2020 – Dec 2025 &nbsp;|&nbsp; n = 72 months</p>
   </div>
-</div>
 
-<!-- MULTIPLE REGRESSION -->
-<div class="section">
-  <div class="section-title">Multiple Regression — All 3 Variables Combined</div>
-  <table>
-    <thead>
-      <tr>
-        <th>Metric</th>
-        <th>Value</th>
-        <th>Interpretation</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="highlight">R²</td>
-        <td class="highlight">0.1606 (16.1%)</td>
-        <td>Combined variables explain 16.1% of sales variance</td>
-      </tr>
-      <tr>
-        <td class="highlight">Adjusted R²</td>
-        <td class="highlight">0.1235 (12.4%)</td>
-        <td>Penalised for adding variables — closer to true fit</td>
-      </tr>
-      <tr>
-        <td>F-statistic</td>
-        <td>4.3362</td>
-        <td>Model is statistically significant as a whole (p=0.0074)</td>
-      </tr>
-      <tr>
-        <td>MAE</td>
-        <td>48.6M VND</td>
-        <td>Average monthly prediction error</td>
-      </tr>
-      <tr>
-        <td>CPI coefficient</td>
-        <td class="p-sig">+10.8M VND/1%</td>
-        <td>Sign reversal vs simple regression — multicollinearity signal</td>
-      </tr>
-      <tr>
-        <td>Interest Rate coeff.</td>
-        <td>-42.7M VND/1%</td>
-        <td>Strongest negative driver in combined model</td>
-      </tr>
-      <tr>
-        <td>GDP Growth coeff.</td>
-        <td>-6.5M VND/1%</td>
-        <td>Similar to simple regression — relatively stable</td>
-      </tr>
-      <tr>
-        <td class="highlight">Decision</td>
-        <td class="highlight" colspan="2">EXCLUDE ALL — 16.1% combined R² insufficient; multicollinearity between CPI and Interest Rate noted (CPI sign reversal)</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+  <!-- Conclusion -->
+  <div class="conclusion">
+    <h3>Conclusion: All macro variables excluded from primary model</h3>
+    <p>
+      CPI YoY%, Interest Rate%, and GDP Growth% were tested individually and in combination against total
+      monthly FMCG sales volume (2020–2025). None achieved sufficient explanatory power to justify inclusion.
+      The combined model explained only <strong>16.1% of variance (Adj. R²=12.4%)</strong>, with multicollinearity
+      between CPI and Interest Rate noted (CPI sign reversal in multiple regression).
+      <strong>Average selling price, seasonality, and trend</strong> remain the dominant predictors —
+      consistent with the inelastic demand characteristics of dairy and consumer staples.
+      A product-group level deep dive (Page 2) reveals important nuance in macro sensitivity across categories.
+    </p>
+  </div>
 
-<!-- METHODOLOGY -->
-<div class="section">
-  <div class="section-title">Methodology</div>
-  <div class="method-grid">
-    <div class="method-item">
-      <div class="method-label">Model</div>
-      <div class="method-val">Ordinary Least Squares (OLS) Linear Regression via <code>scipy.stats.linregress</code> (simple) and <code>sklearn.linear_model.LinearRegression</code> (multiple)</div>
+  <!-- Simple Regression -->
+  <div class="section">
+    <div class="section-title">Simple Regression — One Variable at a Time</div>
+    <div class="var-grid">
+      <div class="var-card exclude">
+        <div class="var-name">CPI YoY %</div>
+        <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val bad">0.0170 (1.7%)</span></div>
+        <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val bad">0.2745</span></div>
+        <div class="stat-row"><span class="stat-label">F-stat</span><span class="stat-val">1.2131</span></div>
+        <div class="stat-row"><span class="stat-label">95% CI</span><span class="stat-val">[-22.6M, +6.5M]</span></div>
+        <div class="stat-row"><span class="stat-label">MAE</span><span class="stat-val">53.3M VND</span></div>
+        <div class="stat-row"><span class="stat-label">Significant?</span><span class="stat-val bad">No (p=0.27)</span></div>
+        <span class="verdict-badge badge-exclude">❌ Exclude</span>
+      </div>
+      <div class="var-card weak">
+        <div class="var-name">Interest Rate %</div>
+        <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val ok">0.0523 (5.2%)</span></div>
+        <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val ok">0.0532</span></div>
+        <div class="stat-row"><span class="stat-label">F-stat</span><span class="stat-val">3.8665</span></div>
+        <div class="stat-row"><span class="stat-label">95% CI</span><span class="stat-val">[-53.7M, +0.4M]</span></div>
+        <div class="stat-row"><span class="stat-label">MAE</span><span class="stat-val">53.0M VND</span></div>
+        <div class="stat-row"><span class="stat-label">Significant?</span><span class="stat-val ok">Borderline (p=0.053)</span></div>
+        <span class="verdict-badge badge-weak">⚠️ Exclude</span>
+      </div>
+      <div class="var-card weak">
+        <div class="var-name">GDP Growth % (Quarterly)</div>
+        <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val ok">0.0888 (8.9%)</span></div>
+        <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val ok">0.0110</span></div>
+        <div class="stat-row"><span class="stat-label">F-stat</span><span class="stat-val">6.8230</span></div>
+        <div class="stat-row"><span class="stat-label">95% CI</span><span class="stat-val">[-10.2M, -1.4M]</span></div>
+        <div class="stat-row"><span class="stat-label">MAE</span><span class="stat-val">49.9M VND</span></div>
+        <div class="stat-row"><span class="stat-label">Significant?</span><span class="stat-val ok">Marginally (p=0.011)</span></div>
+        <span class="verdict-badge badge-weak">⚠️ Exclude</span>
+      </div>
     </div>
-    <div class="method-item">
-      <div class="method-label">Data</div>
-      <div class="method-val">72 monthly observations (Jan 2020 – Dec 2025). Sales: Vinamilk transaction data aggregated to monthly total. Macro: GSO Vietnam (CPI), State Bank of Vietnam (interest rate), World Bank/GSO (GDP quarterly → monthly interpolation)</div>
-    </div>
-    <div class="method-item">
-      <div class="method-label">Evaluation Metrics</div>
-      <div class="method-val">R² (variance explained), Adjusted R² (multiple regression), p-value (coefficient significance), F-statistic (model significance), 95% Confidence Interval (coefficient range), MAE (prediction error)</div>
-    </div>
-    <div class="method-item">
-      <div class="method-label">Exclusion Criteria</div>
-      <div class="method-val">Variable excluded if: R² &lt; 0.15 individually, OR p-value &gt; 0.05 (not statistically significant), OR combined Adj. R² does not meaningfully improve over single-variable models</div>
+
+    <!-- Multiple regression -->
+    <table>
+      <thead>
+        <tr><th>Model</th><th>R²</th><th>Adj. R²</th><th>F-stat (p)</th><th>MAE</th><th>Decision</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="highlight">All 3 Combined</td>
+          <td class="highlight">16.1%</td>
+          <td>12.4%</td>
+          <td>4.34 (p=0.007)</td>
+          <td>48.6M VND</td>
+          <td class="sig-no">EXCLUDE — multicollinearity, CPI sign reversal</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Model Roadmap -->
+  <div class="section">
+    <div class="section-title">Model Roadmap</div>
+    <div class="roadmap-grid">
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
+        <div class="roadmap-title">Base Regression Model</div>
+        <div class="roadmap-desc">Linear regression on total monthly sales using avg price, trend, seasonality, lag features. Overall R²=0.933, MAPE=1.7% across 5 channels.</div>
+      </div>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
+        <div class="roadmap-title">Macro Variable Testing</div>
+        <div class="roadmap-desc">Tested CPI, interest rate, GDP at total and product group level with full statistical evidence. All excluded from primary model.</div>
+      </div>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
+        <div class="roadmap-title">Product Group Deep Dive</div>
+        <div class="roadmap-desc">Sales aggregated by NHÓM (92.1% item match rate). Macro regression per group reveals Powdered Milk as most macro-sensitive (R²=18.4%). See Page 2.</div>
+      </div>
+      <div class="roadmap-item planned">
+        <span class="roadmap-badge badge-planned">🔄 Planned</span>
+        <div class="roadmap-title">Average Selling Price Variable</div>
+        <div class="roadmap-desc">Add revenue value data to calculate true avg selling price per product group per month — replacing the proxy price currently used.</div>
+      </div>
+      <div class="roadmap-item planned">
+        <span class="roadmap-badge badge-planned">🔄 Planned</span>
+        <div class="roadmap-title">Marketing Spend Variable</div>
+        <div class="roadmap-desc">Add monthly A&P expenditure as a feature. Test whether marketing spend explains additional variance — especially for premium groups (02XXXX, 07PROU).</div>
+      </div>
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Future</span>
+        <div class="roadmap-title">Full Model Refit + Comparison</div>
+        <div class="roadmap-desc">Once price and A&P data available: refit full multiple regression, compare Adj. R² and AIC vs current model, select final feature set.</div>
+      </div>
     </div>
   </div>
+
+  <!-- Methodology -->
+  <div class="section">
+    <div class="section-title">Methodology</div>
+    <div class="method-grid">
+      <div class="method-item">
+        <div class="method-label">Model</div>
+        <div class="method-val">OLS via <code>scipy.stats.linregress</code> (simple) and <code>sklearn.linear_model.LinearRegression</code> (multiple regression)</div>
+      </div>
+      <div class="method-item">
+        <div class="method-label">Data</div>
+        <div class="method-val">72 months (Jan 2020–Dec 2025). Sales: transaction data joined to item master. Macro: GSO Vietnam (CPI), State Bank of Vietnam (rate), World Bank/GSO (GDP quarterly → monthly)</div>
+      </div>
+      <div class="method-item">
+        <div class="method-label">Evaluation Metrics</div>
+        <div class="method-val">R², Adjusted R², p-value, F-statistic, 95% Confidence Interval, MAE — at both total and product group level</div>
+      </div>
+      <div class="method-item">
+        <div class="method-label">Exclusion Criteria</div>
+        <div class="method-val">Excluded if: R² &lt; 0.15 individually, OR p-value &gt; 0.05, OR combined Adj. R² does not meaningfully improve the primary model</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Truong Phat</span> · Sales Channel Forecasting Model · OLS Regression Analysis · March 2026
+  </div>
+
+</div>
 </div>
 
-<!-- FOOTER -->
-<div class="footer">
-  <span>Truong Phat</span> · Sales Channel Forecasting Model · Python OLS Regression Analysis · 2025
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE 2 — PRODUCT GROUP DEEP DIVE
+══════════════════════════════════════════════════════════════════════ -->
+<div class="page" id="page2">
+<div class="page-content">
+
+  <div class="header">
+    <div class="header-tag">Deep Dive Analysis · Product Group Level</div>
+    <h1>Macro Sensitivity<br><em>by Product Group</em></h1>
+    <p>Author: Truong Phat &nbsp;|&nbsp; Item master join: 92.1% match rate &nbsp;|&nbsp; Groups: 18 &nbsp;|&nbsp; n = 72 months each</p>
+  </div>
+
+  <!-- Key Insight -->
+  <div class="insight-box">
+    <strong>Why this matters:</strong> Total-level analysis masks important product-level behaviour.
+    Disaggregating by NHÓM (product group from Oracle ERP item master) reveals that macro sensitivity
+    correlates directly with product premiumness and purchase involvement.
+    <strong>Powdered Milk (02XXXX)</strong> — often used for infant formula, a high-involvement category —
+    shows significant sensitivity to all 3 macro variables (best R²=18.4%).
+    Meanwhile <strong>Condensed Milk (01XXXX)</strong>, a low-cost daily staple, is virtually immune (R²&lt;1%).
+    <strong>GDP Growth</strong> is the most consistent macro driver, significant in 8 of 18 groups — suggesting
+    that consumer confidence and income levels matter more than price inflation or borrowing costs for FMCG dairy.
+  </div>
+
+  <!-- Legend -->
+  <div class="sensitivity-legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> Macro sensitive (≥1 variable p&lt;0.05)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Highly sensitive (all 3 significant)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--border)"></div> Not sensitive (all p&gt;0.05)</div>
+  </div>
+
+  <!-- Core Dairy -->
+  <div class="pg-section-title">Core Dairy — Staple Products (Low Macro Sensitivity Expected)</div>
+  <div class="section" style="padding:0;overflow:hidden;margin-bottom:18px;">
+    <table>
+      <thead>
+        <tr>
+          <th>Product Group</th>
+          <th>CPI R² (p)</th>
+          <th>Interest Rate R² (p)</th>
+          <th>GDP R² (p)</th>
+          <th>Best R²</th>
+          <th>Verdict</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>01XXXX</strong> — Condensed Milk</td>
+          <td class="sig-no">0.000 (0.935)</td>
+          <td class="sig-no">0.013 (0.337)</td>
+          <td class="sig-no">0.000 (0.956)</td>
+          <td>1.3%</td>
+          <td class="sig-no">❌ Fully inelastic — daily staple</td>
+        </tr>
+        <tr>
+          <td><strong>03XXXX</strong> — Cream Products</td>
+          <td class="sig-no">0.020 (0.240)</td>
+          <td class="sig-no">0.000 (0.870)</td>
+          <td class="sig-no">0.044 (0.078)</td>
+          <td>4.4%</td>
+          <td class="sig-no">❌ No sensitivity</td>
+        </tr>
+        <tr>
+          <td><strong>07XXXX</strong> — Other Dairy</td>
+          <td class="sig-no">0.052 (0.054)</td>
+          <td class="sig-no">0.005 (0.538)</td>
+          <td class="sig-no">0.035 (0.116)</td>
+          <td>5.2%</td>
+          <td class="sig-no">❌ No sensitivity</td>
+        </tr>
+        <tr>
+          <td><strong>09XXXX</strong> — Cheese</td>
+          <td class="sig-no">0.001 (0.813)</td>
+          <td class="sig-no">0.042 (0.083)</td>
+          <td class="sig-no">0.004 (0.590)</td>
+          <td>4.2%</td>
+          <td class="sig-no">❌ No sensitivity</td>
+        </tr>
+        <tr>
+          <td><strong>12XXXX</strong> — Other SKUs</td>
+          <td class="sig-no">0.000 (0.918)</td>
+          <td class="sig-no">0.020 (0.235)</td>
+          <td class="sig-no">0.024 (0.193)</td>
+          <td>2.4%</td>
+          <td class="sig-no">❌ No sensitivity</td>
+        </tr>
+        <tr>
+          <td><strong>15BN03</strong></td>
+          <td class="sig-no">0.006 (0.533)</td>
+          <td class="sig-no">0.026 (0.174)</td>
+          <td class="sig-no">0.007 (0.482)</td>
+          <td>2.6%</td>
+          <td class="sig-no">❌ No sensitivity</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Premium / Discretionary -->
+  <div class="pg-section-title">Premium & Discretionary — Higher Macro Sensitivity</div>
+  <div class="section" style="padding:0;overflow:hidden;margin-bottom:18px;">
+    <table>
+      <thead>
+        <tr>
+          <th>Product Group</th>
+          <th>CPI R² (p)</th>
+          <th>Interest Rate R² (p)</th>
+          <th>GDP R² (p)</th>
+          <th>Best R²</th>
+          <th>Verdict</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background:var(--orange-light)">
+          <td><strong>02XXXX</strong> — Powdered Milk</td>
+          <td class="sig-yes">0.100 (0.007) ✅</td>
+          <td class="sig-yes">0.110 (0.004) ✅</td>
+          <td class="sig-yes">0.184 (0.000) ✅</td>
+          <td class="r2-high">18.4%</td>
+          <td class="sig-yes">✅ All 3 significant — most sensitive</td>
+        </tr>
+        <tr style="background:var(--yellow-light)">
+          <td><strong>04XXXX</strong> — UHT Liquid Milk</td>
+          <td class="sig-no">0.049 (0.060)</td>
+          <td class="sig-no">0.038 (0.100)</td>
+          <td class="sig-yes">0.122 (0.003) ✅</td>
+          <td class="r2-high">12.2%</td>
+          <td class="sig-yes">⚠️ GDP only — volume driver</td>
+        </tr>
+        <tr style="background:var(--yellow-light)">
+          <td><strong>05XXXX</strong> — Flavored Milk</td>
+          <td class="sig-yes">0.072 (0.023) ✅</td>
+          <td class="sig-no">0.001 (0.786)</td>
+          <td class="sig-yes">0.164 (0.000) ✅</td>
+          <td class="r2-high">16.4%</td>
+          <td class="sig-yes">⚠️ CPI + GDP — discretionary beverage</td>
+        </tr>
+        <tr style="background:var(--yellow-light)">
+          <td><strong>06XXXX</strong> — Yogurt</td>
+          <td class="sig-no">0.053 (0.051)</td>
+          <td class="sig-no">0.050 (0.058)</td>
+          <td class="sig-yes">0.087 (0.012) ✅</td>
+          <td>8.7%</td>
+          <td class="sig-yes">⚠️ GDP only</td>
+        </tr>
+        <tr style="background:var(--yellow-light)">
+          <td><strong>07PROU</strong> — Probiotic Range</td>
+          <td class="sig-yes">0.073 (0.021) ✅</td>
+          <td class="sig-no">0.008 (0.448)</td>
+          <td class="sig-yes">0.070 (0.025) ✅</td>
+          <td>7.3%</td>
+          <td class="sig-yes">⚠️ CPI + GDP — premium health segment</td>
+        </tr>
+        <tr style="background:var(--yellow-light)">
+          <td><strong>08XXXX</strong> — Beverages</td>
+          <td class="sig-yes">0.095 (0.008) ✅</td>
+          <td class="sig-yes">0.066 (0.029) ✅</td>
+          <td class="sig-no">0.034 (0.123)</td>
+          <td class="r2-high">9.5%</td>
+          <td class="sig-yes">⚠️ CPI + Rate — price sensitive</td>
+        </tr>
+        <tr style="background:var(--orange-light)">
+          <td><strong>16XXXX</strong></td>
+          <td class="sig-yes">0.139 (0.001) ✅</td>
+          <td class="sig-yes">0.076 (0.019) ✅</td>
+          <td class="sig-yes">0.089 (0.011) ✅</td>
+          <td class="r2-high">13.9%</td>
+          <td class="sig-yes">✅ All 3 significant</td>
+        </tr>
+        <tr style="background:var(--yellow-light)">
+          <td><strong>10XXXX</strong></td>
+          <td class="sig-no">0.006 (0.523)</td>
+          <td class="sig-no">0.013 (0.343)</td>
+          <td class="sig-yes">0.148 (0.001) ✅</td>
+          <td class="r2-high">14.8%</td>
+          <td class="sig-yes">⚠️ GDP only</td>
+        </tr>
+        <tr style="background:var(--yellow-light)">
+          <td><strong>14XXXX</strong></td>
+          <td class="sig-no">0.034 (0.122)</td>
+          <td class="sig-yes">0.068 (0.027) ✅</td>
+          <td class="sig-yes">0.069 (0.026) ✅</td>
+          <td>6.9%</td>
+          <td class="sig-yes">⚠️ Rate + GDP</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Small / Niche -->
+  <div class="pg-section-title">Small / Niche Groups (Low Volume, Limited Inference)</div>
+  <div class="section" style="padding:0;overflow:hidden;margin-bottom:18px;">
+    <table>
+      <thead>
+        <tr>
+          <th>Product Group</th>
+          <th>n (months)</th>
+          <th>Best R²</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>07SCUS</strong></td>
+          <td>13</td>
+          <td class="sig-no">22.4% (p=0.103)</td>
+          <td class="sig-no">Too few months — not significant</td>
+        </tr>
+        <tr>
+          <td><strong>15GC30</strong></td>
+          <td>18</td>
+          <td class="sig-no">8.3% (p=0.245)</td>
+          <td class="sig-no">Limited data — inconclusive</td>
+        </tr>
+        <tr>
+          <td><strong>15XXXX</strong></td>
+          <td>72</td>
+          <td class="sig-no">1.4%</td>
+          <td class="sig-no">Negligible volume</td>
+        </tr>
+        <tr>
+          <td><strong>18XXXX</strong></td>
+          <td>13</td>
+          <td class="r2-high">37.1% (p=0.027) ✅</td>
+          <td class="sig-yes">GDP significant but only 13 months — interpret with caution</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Summary insight -->
+  <div class="section">
+    <div class="section-title">Strategic Implication</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div style="background:var(--lighter);border:1px solid var(--border);border-radius:4px;padding:14px;">
+        <div class="method-label">Most Macro-Sensitive Groups</div>
+        <div class="method-val">
+          <strong>02XXXX Powdered Milk</strong> — all 3 variables significant (GDP R²=18.4%). High-involvement purchase, infant formula segment. Consumer income and price levels directly drive brand/volume switching.<br><br>
+          <strong>05XXXX Flavored Milk</strong> — CPI + GDP (R²=16.4%). Discretionary beverage, first to be cut in tighter economic conditions.
+        </div>
+      </div>
+      <div style="background:var(--lighter);border:1px solid var(--border);border-radius:4px;padding:14px;">
+        <div class="method-label">Most Inelastic Groups</div>
+        <div class="method-val">
+          <strong>01XXXX Condensed Milk</strong> — near-zero macro sensitivity (R²&lt;1%). Low-cost daily staple consumed regardless of economic conditions. Price point and brand loyalty dominate.<br><br>
+          <strong>07XXXX Other Dairy</strong> — similarly inelastic. Core household consumption category with predictable demand regardless of GDP or rate environment.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Truong Phat</span> · Sales Channel Forecasting Model · Product Group Deep Dive · March 2026
+  </div>
+
 </div>
+</div>
+
+<script>
+  function showPage(pageId, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+</script>
 
 </body>
 </html>
