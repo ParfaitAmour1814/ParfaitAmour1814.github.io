@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Macro Variable Regression — Executive Summary</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow: #E8B800;
+    --yellow-light: #FDF3CC;
+    --yellow-dark: #A07800;
+    --black: #0D0D0D;
+    --dark: #1A1A1A;
+    --mid: #3D3D3D;
+    --muted: #666666;
+    --light: #F0EFE8;
+    --lighter: #F8F7F2;
+    --white: #FFFFFF;
+    --border: #CCCCBF;
+    --red: #C0392B;
+    --red-light: #FDECEA;
+    --orange: #E67E22;
+    --orange-light: #FEF0E6;
+    --green: #27AE60;
+    --green-light: #E9F7EF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--dark);
+    background: var(--lighter);
+    line-height: 1.6;
+    padding: 40px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--black);
+    color: var(--white);
+    padding: 32px 36px;
+    border-radius: 8px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--yellow);
+  }
+  .header-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--yellow);
+    margin-bottom: 10px;
+    font-family: 'DM Mono', monospace;
+  }
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .header p {
+    font-size: 12px;
+    color: #999;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* SECTION */
+  .section {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--yellow-dark);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* CONCLUSION BOX */
+  .conclusion {
+    background: var(--black);
+    color: var(--white);
+    border-radius: 6px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--yellow);
+  }
+  .conclusion h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: var(--yellow);
+  }
+  .conclusion p {
+    font-size: 12px;
+    color: #ccc;
+    line-height: 1.8;
+  }
+  .conclusion strong { color: var(--white); }
+
+  /* VARIABLE CARDS */
+  .var-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .var-card {
+    border-radius: 6px;
+    padding: 18px;
+    border: 1.5px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .var-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .var-card.exclude::before { background: var(--red); }
+  .var-card.weak::before { background: var(--orange); }
+  .var-card.combined::before { background: var(--yellow); }
+
+  .var-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 14px;
+  }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 11px;
+  }
+  .stat-label { color: var(--muted); }
+  .stat-val { font-weight: 600; color: var(--dark); font-family: 'DM Mono', monospace; }
+  .stat-val.bad { color: var(--red); }
+  .stat-val.ok { color: var(--orange); }
+
+  .verdict-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-top: 10px;
+  }
+  .badge-exclude { background: var(--red-light); color: var(--red); border: 1px solid #f5c6c2; }
+  .badge-weak { background: var(--orange-light); color: var(--orange); border: 1px solid #f9d5b3; }
+
+  /* MULTIPLE REGRESSION TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  th {
+    background: var(--light);
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+  }
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--mid);
+  }
+  tr:last-child td { border-bottom: none; }
+  .highlight { font-weight: 600; color: var(--black); }
+  .p-sig { color: var(--orange); font-weight: 600; }
+  .p-insig { color: var(--muted); }
+
+  /* METHODOLOGY */
+  .method-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .method-item {
+    background: var(--lighter);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px;
+  }
+  .method-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--yellow-dark);
+    margin-bottom: 6px;
+    font-family: 'DM Mono', monospace;
+  }
+  .method-val {
+    font-size: 12px;
+    color: var(--mid);
+    line-height: 1.6;
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    font-size: 10px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .footer span { color: var(--yellow-dark); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-tag">Research Output · Sales Forecasting Model</div>
+  <h1>Macro Variable Regression<br><em>Executive Summary</em></h1>
+  <p>Author: Truong Phat &nbsp;|&nbsp; Method: OLS Linear Regression (scipy.stats) &nbsp;|&nbsp; Period: Jan 2020 – Dec 2025 &nbsp;|&nbsp; n = 72 months</p>
+</div>
+
+<!-- CONCLUSION -->
+<div class="conclusion">
+  <h3>Conclusion: All macro variables excluded from final model</h3>
+  <p>
+    Three macro variables — <strong>CPI YoY%</strong>, <strong>Interest Rate%</strong>, and <strong>GDP Growth%</strong> — were tested individually and in combination against monthly FMCG sales volume (2020–2025).
+    None achieved sufficient explanatory power to justify inclusion. The combined multiple regression explained only <strong>16.1% of variance (Adj. R² = 12.4%)</strong>,
+    with high multicollinearity risk between variables. This confirms that <strong>average selling price, seasonality, and trend</strong> are stronger predictors of FMCG sales volume
+    than macroeconomic indicators — consistent with the inelastic demand characteristics of dairy and consumer staples.
+  </p>
+</div>
+
+<!-- SIMPLE REGRESSION RESULTS -->
+<div class="section">
+  <div class="section-title">Simple Regression Results — One Variable at a Time</div>
+  <div class="var-grid">
+
+    <div class="var-card exclude">
+      <div class="var-name">CPI YoY %</div>
+      <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val bad">0.0170 (1.7%)</span></div>
+      <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val bad">0.2745</span></div>
+      <div class="stat-row"><span class="stat-label">F-stat</span><span class="stat-val">1.2131</span></div>
+      <div class="stat-row"><span class="stat-label">Coefficient</span><span class="stat-val">-8.0M VND/1%</span></div>
+      <div class="stat-row"><span class="stat-label">95% CI</span><span class="stat-val">[-22.6M, +6.5M]</span></div>
+      <div class="stat-row"><span class="stat-label">MAE</span><span class="stat-val">53.3M VND</span></div>
+      <div class="stat-row"><span class="stat-label">Significant?</span><span class="stat-val bad">No (p > 0.05)</span></div>
+      <span class="verdict-badge badge-exclude">❌ Exclude</span>
+    </div>
+
+    <div class="var-card weak">
+      <div class="var-name">Interest Rate %</div>
+      <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val ok">0.0523 (5.2%)</span></div>
+      <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val ok">0.0532</span></div>
+      <div class="stat-row"><span class="stat-label">F-stat</span><span class="stat-val">3.8665</span></div>
+      <div class="stat-row"><span class="stat-label">Coefficient</span><span class="stat-val">-26.6M VND/1%</span></div>
+      <div class="stat-row"><span class="stat-label">95% CI</span><span class="stat-val">[-53.7M, +0.4M]</span></div>
+      <div class="stat-row"><span class="stat-label">MAE</span><span class="stat-val">53.0M VND</span></div>
+      <div class="stat-row"><span class="stat-label">Significant?</span><span class="stat-val ok">Borderline (p=0.053)</span></div>
+      <span class="verdict-badge badge-weak">⚠️ Exclude</span>
+    </div>
+
+    <div class="var-card weak">
+      <div class="var-name">GDP Growth % (Quarterly)</div>
+      <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val ok">0.0888 (8.9%)</span></div>
+      <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val ok">0.0110</span></div>
+      <div class="stat-row"><span class="stat-label">F-stat</span><span class="stat-val">6.8230</span></div>
+      <div class="stat-row"><span class="stat-label">Coefficient</span><span class="stat-val">-5.8M VND/1%</span></div>
+      <div class="stat-row"><span class="stat-label">95% CI</span><span class="stat-val">[-10.2M, -1.4M]</span></div>
+      <div class="stat-row"><span class="stat-label">MAE</span><span class="stat-val">49.9M VND</span></div>
+      <div class="stat-row"><span class="stat-label">Significant?</span><span class="stat-val ok">Marginally (p=0.011)</span></div>
+      <span class="verdict-badge badge-weak">⚠️ Exclude</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- MULTIPLE REGRESSION -->
+<div class="section">
+  <div class="section-title">Multiple Regression — All 3 Variables Combined</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>Value</th>
+        <th>Interpretation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="highlight">R²</td>
+        <td class="highlight">0.1606 (16.1%)</td>
+        <td>Combined variables explain 16.1% of sales variance</td>
+      </tr>
+      <tr>
+        <td class="highlight">Adjusted R²</td>
+        <td class="highlight">0.1235 (12.4%)</td>
+        <td>Penalised for adding variables — closer to true fit</td>
+      </tr>
+      <tr>
+        <td>F-statistic</td>
+        <td>4.3362</td>
+        <td>Model is statistically significant as a whole (p=0.0074)</td>
+      </tr>
+      <tr>
+        <td>MAE</td>
+        <td>48.6M VND</td>
+        <td>Average monthly prediction error</td>
+      </tr>
+      <tr>
+        <td>CPI coefficient</td>
+        <td class="p-sig">+10.8M VND/1%</td>
+        <td>Sign reversal vs simple regression — multicollinearity signal</td>
+      </tr>
+      <tr>
+        <td>Interest Rate coeff.</td>
+        <td>-42.7M VND/1%</td>
+        <td>Strongest negative driver in combined model</td>
+      </tr>
+      <tr>
+        <td>GDP Growth coeff.</td>
+        <td>-6.5M VND/1%</td>
+        <td>Similar to simple regression — relatively stable</td>
+      </tr>
+      <tr>
+        <td class="highlight">Decision</td>
+        <td class="highlight" colspan="2">EXCLUDE ALL — 16.1% combined R² insufficient; multicollinearity between CPI and Interest Rate noted (CPI sign reversal)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- METHODOLOGY -->
+<div class="section">
+  <div class="section-title">Methodology</div>
+  <div class="method-grid">
+    <div class="method-item">
+      <div class="method-label">Model</div>
+      <div class="method-val">Ordinary Least Squares (OLS) Linear Regression via <code>scipy.stats.linregress</code> (simple) and <code>sklearn.linear_model.LinearRegression</code> (multiple)</div>
+    </div>
+    <div class="method-item">
+      <div class="method-label">Data</div>
+      <div class="method-val">72 monthly observations (Jan 2020 – Dec 2025). Sales: Vinamilk transaction data aggregated to monthly total. Macro: GSO Vietnam (CPI), State Bank of Vietnam (interest rate), World Bank/GSO (GDP quarterly → monthly interpolation)</div>
+    </div>
+    <div class="method-item">
+      <div class="method-label">Evaluation Metrics</div>
+      <div class="method-val">R² (variance explained), Adjusted R² (multiple regression), p-value (coefficient significance), F-statistic (model significance), 95% Confidence Interval (coefficient range), MAE (prediction error)</div>
+    </div>
+    <div class="method-item">
+      <div class="method-label">Exclusion Criteria</div>
+      <div class="method-val">Variable excluded if: R² &lt; 0.15 individually, OR p-value &gt; 0.05 (not statistically significant), OR combined Adj. R² does not meaningfully improve over single-variable models</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <span>Truong Phat</span> · Sales Channel Forecasting Model · Python OLS Regression Analysis · 2025
+</div>
+
+</body>
+</html>

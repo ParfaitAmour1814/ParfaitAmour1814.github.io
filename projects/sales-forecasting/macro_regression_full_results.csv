@@ -1,0 +1,5 @@
+﻿Variable,R2,R2_Pct,Coefficient,CI_Lower,CI_Upper,p_value,Significant,F_Statistic,MAE_M_VND,Verdict
+CPI YoY %,0.017,1.7%,-8038559.0,-22594712.0,6517595.0,0.2745,No,1.2131,53.3,EXCLUDE — very weak explanatory power
+Interest Rate %,0.0523,5.2%,-26645886.0,-53672579.0,380807.0,0.0532,No,3.8665,53.0,EXCLUDE — weak explanatory power
+GDP Growth % (Quarterly),0.0888,8.9%,-5804311.0,-10236156.0,-1372465.0,0.011,Yes,6.823,49.9,EXCLUDE — weak explanatory power
+ALL 3 COMBINED (Multiple Regression),0.1606,16.1%,Multiple,-,-,0.0074,Yes,4.3362,48.6,EXCLUDE — combined R²=16.1% too low
