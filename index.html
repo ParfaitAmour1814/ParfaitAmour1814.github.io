@@ -363,6 +363,14 @@
     gap: 4px;
   }
   .project-link:hover { color: var(--black); }
+  .project-link.secondary {
+    background: transparent;
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+    margin-left: 8px;
+  }
+  .project-link.secondary:hover { color: var(--black); border-color: var(--black); }
+  .project-links { display: flex; gap: 0; margin-top: 14px; }
 
   /* SKILLS */
   .skills-grid {
@@ -714,15 +722,19 @@
     <div class="project-card">
       <div class="project-status status-live">Live</div>
       <div class="project-title">Sales Channel Forecasting Model</div>
-      <div class="project-desc">Linear regression vs time-series forecast comparison for monthly FMCG sales prediction across 5 channels — avg price as key input, R² = 0.93, MAPE = 1.7%. GDP and interest rate tested and excluded after low R² correlation.</div>
+      <div class="project-desc">Linear regression vs time-series forecast comparison for monthly FMCG sales prediction across 5 channels — avg price as key input, R²=0.93, MAPE=1.7%. Macro variables (CPI, GDP, interest rate) tested and excluded after low R². Marketing spend (Account 641) tested across 72 months — R²=17.0%, p=0.0003, strongest external variable found. Product group deep dive reveals Powdered Milk (02XXXX) as most macro-sensitive group (R²=18.4%). Q1 2026 out-of-sample validation: Jan MAPE=6.1%, Feb MAPE=15.0%.</div>
       <div class="project-tags">
         <span class="project-tag">Python</span>
         <span class="project-tag">Regression</span>
         <span class="project-tag">Power BI</span>
         <span class="project-tag">Excel</span>
         <span class="project-tag">sklearn</span>
+        <span class="project-tag">scipy</span>
       </div>
-      <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/sales-forecasting" class="project-link" target="_blank">View on GitHub →</a>
+      <div class="project-links">
+        <a href="https://ParfaitAmour1814.github.io/projects/sales-forecasting/macro_executive_summary.html" class="project-link" target="_blank">Live Summary →</a>
+        <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/sales-forecasting" class="project-link secondary" target="_blank">GitHub</a>
+      </div>
     </div>
 
     <!-- Project 3 -->
@@ -737,7 +749,9 @@
         <span class="project-tag">DAX</span>
         <span class="project-tag">VAS</span>
       </div>
-      <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/cost-variance-dashboard" class="project-link" target="_blank">View on GitHub →</a>
+      <div class="project-links">
+        <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/cost-variance-dashboard" class="project-link" target="_blank">View on GitHub →</a>
+      </div>
     </div>
 
     <!-- Project 4 -->
@@ -785,7 +799,10 @@
       <div style="margin-top:12px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:10px;">
         Google Advanced Data Analytics Certificate · Course 7 Capstone
       </div>
-      <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/salifort-motors" class="project-link" target="_blank">View on GitHub →</a>
+      <div class="project-links">
+        <a href="https://ParfaitAmour1814.github.io/projects/salifort-motors/" class="project-link" target="_blank">Live Page →</a>
+        <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/salifort-motors" class="project-link secondary" target="_blank">GitHub</a>
+      </div>
     </div>
 
     <!-- TikTok -->
@@ -806,7 +823,10 @@
       <div style="margin-top:12px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:10px;">
         Google Advanced Data Analytics Certificate · Courses 3–6
       </div>
-      <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/tiktok-claims" class="project-link" target="_blank">View on GitHub →</a>
+      <div class="project-links">
+        <a href="https://ParfaitAmour1814.github.io/projects/tiktok-claims/" class="project-link" target="_blank">Live Page →</a>
+        <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/tiktok-claims" class="project-link secondary" target="_blank">GitHub</a>
+      </div>
     </div>
 
   </div>
