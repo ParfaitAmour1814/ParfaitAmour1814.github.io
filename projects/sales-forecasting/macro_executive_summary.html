@@ -307,8 +307,10 @@
       monthly FMCG sales volume (2020–2025). None achieved sufficient explanatory power to justify inclusion.
       The combined model explained only <strong>16.1% of variance (Adj. R²=12.4%)</strong>, with multicollinearity
       between CPI and Interest Rate noted (CPI sign reversal in multiple regression).
-      <strong>Average selling price, seasonality, and trend</strong> remain the dominant predictors —
-      consistent with the inelastic demand characteristics of dairy and consumer staples.
+      By contrast, <strong>Account 641 Marketing Spend</strong> tested across the same 72 months returned
+      <strong>R²=17.0%, p=0.0003</strong> — the strongest external variable found so far and statistically significant.
+      This confirms that <strong>internal business levers (marketing spend, price, seasonality)</strong> explain FMCG sales
+      better than macro indicators. Marketing spend will be evaluated for inclusion in the next model iteration alongside average selling price.
       A product-group level deep dive (Page 2) reveals important nuance in macro sensitivity across categories.
     </p>
   </div>
@@ -386,6 +388,11 @@
         <div class="roadmap-title">Product Group Deep Dive</div>
         <div class="roadmap-desc">Sales aggregated by NHÓM (92.1% item match rate). Macro regression per group reveals Powdered Milk as most macro-sensitive (R²=18.4%). See Page 2.</div>
       </div>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
+        <div class="roadmap-title">Marketing Spend Variable (641)</div>
+        <div class="roadmap-desc">Tested Account 641 monthly marketing spend across 72 months (2020–2025). R²=17.0%, p=0.0003 — strongest and most statistically significant external variable found. Positive relationship confirmed: higher spend → higher sales volume.</div>
+      </div>
       <div class="roadmap-item planned">
         <span class="roadmap-badge badge-planned">🔄 Planned</span>
         <div class="roadmap-title">Average Selling Price Variable</div>
@@ -395,6 +402,11 @@
         <span class="roadmap-badge badge-planned">🔄 Planned</span>
         <div class="roadmap-title">Marketing Spend Variable</div>
         <div class="roadmap-desc">Add monthly A&P expenditure as a feature. Test whether marketing spend explains additional variance — especially for premium groups (02XXXX, 07PROU).</div>
+      </div>
+      <div class="roadmap-item planned">
+        <span class="roadmap-badge badge-planned">🔄 Planned</span>
+        <div class="roadmap-title">Q1 2026 Out-of-Sample Validation</div>
+        <div class="roadmap-desc">Validate model predictions against actual Q1 2026 sales data (Jan–Mar 2026) — true out-of-sample test to confirm model generalises beyond the 2020–2025 training period.</div>
       </div>
       <div class="roadmap-item future">
         <span class="roadmap-badge badge-future">📋 Future</span>
