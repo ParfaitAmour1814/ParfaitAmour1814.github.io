@@ -184,11 +184,13 @@ footer a:hover{color:var(--yellow-dark);}
     <div class="insight">
       <h3>Factory A — RM/SM Insight</h3>
       <p>
-        Semi-finished base milk products show near-perfect raw material control — variance &lt;0.0001%.
-        The outlier is the specialty yogurt topping range at <strong>+11.2% over-usage</strong>, driven entirely
-        by a cereal topping ingredient with inconsistent yield across 57 batches. Fresh aloe vera drives
-        variance in both directions across two yogurt variants — suggesting formula instability
-        or supplier yield variation for this ingredient.
+        Only 8 finished products have significant RM/SM data — all in the cultured dairy range.
+        Best controlled products are yogurt variants with a single ingredient formula.
+        The worst product is a specialty <strong>Greek yogurt topping at +11.2% over-usage</strong>,
+        driven entirely by a cereal topping ingredient across 57 batches.
+        <strong>Fresh aloe vera</strong> is the common driver across 3 of the 8 products —
+        appearing in both over and under directions, indicating high yield inconsistency
+        for this ingredient at this factory.
       </p>
     </div>
     <div class="bw-grid">
@@ -207,11 +209,12 @@ footer a:hover{color:var(--yellow-dark);}
     <div class="insight">
       <h3>Factory B — RM/SM Insight</h3>
       <p>
-        Export powder blend products are perfectly controlled despite having 19–22 unique RM/SM ingredients
-        per batch — a sign of mature formula execution. The worst product shows
-        <strong>+5.6% over-usage</strong> driven entirely by Wholemilk Powder — likely over-blending
-        to hit protein targets. A high-value fatty acid ingredient (ARA) drives under-usage on an export
-        product at -175M VND — where under-dosing has direct quality implications.
+        Infant formula products dominate — best controlled products achieve &lt;0.11% variance
+        with 5–13 unique RM/SM ingredients per batch. All 3 worst products are
+        <strong>export infant formula variants</strong> with consistent under-usage (-1.1% to -1.3%).
+        <strong>Colostrum Powder</strong> drives the worst product (-239.5M), while
+        <strong>ARA fatty acid</strong> at high unit cost drives under-usage on two export products —
+        where under-dosing carries direct quality and regulatory implications.
       </p>
     </div>
     <div class="bw-grid">
@@ -230,11 +233,12 @@ footer a:hover{color:var(--yellow-dark);}
     <div class="insight">
       <h3>Factory C — RM/SM Insight</h3>
       <p>
-        Fresh milk and cream products are best controlled — single-ingredient formulas with tight
-        weight-based dosing. The largest single RM/SM variance in the entire dataset is here:
-        <strong>+2,980M VND (+9.3%)</strong> on an aloe vera yogurt product, driven almost entirely
-        by fresh aloe vera yield inconsistency. The same ingredient causes variance at Factory A too —
-        indicating a <strong>company-wide formula or supplier issue</strong> rather than a factory-specific problem.
+        Best controlled products are multi-ingredient cultured dairy variants (coconut jelly, mixed fruit,
+        black glutinous rice) — all under 0.30% variance. The largest single RM/SM variance in the
+        entire dataset is here: <strong>+2,980M VND (+9.3%)</strong> on an aloe vera yogurt product,
+        driven almost entirely by fresh aloe vera yield. The same ingredient causes variance at
+        Factory A too — indicating a <strong>company-wide formula or supplier issue</strong>
+        rather than a factory-specific problem.
       </p>
     </div>
     <div class="bw-grid">
@@ -253,12 +257,13 @@ footer a:hover{color:var(--yellow-dark);}
     <div class="insight">
       <h3>Factory D — RM/SM Insight</h3>
       <p>
-        The largest factory by batch volume with the best overall raw material control. Semi-finished base
-        milk products show <strong>0.00000% variance</strong> across 10–17 unique RM/SM ingredients per batch.
-        The worst product is a soy-based semi-finished product at <strong>-8.3% under-usage</strong> —
-        soybean yield in wet extraction is harder to standardise. A probiotic culture ingredient
-        drives under-usage across two yogurt BTP products — likely measurement precision at
-        the gram scale for this high-value culture.
+        Best controlled finished products show &lt;0.12% variance — aloe vera and collagen variants
+        with tight single-ingredient dosing across 39–72 batches. Variance is much tighter
+        than Factories A and C for the same aloe vera products.
+        The worst product is <strong>Black Sugar Pearl yogurt at +1.12%</strong> —
+        driven entirely by the black sugar pearl semi-finished ingredient.
+        Fresh aloe vera still appears in 2 of the 3 worst products,
+        but the absolute impact is far smaller here than at Factory C.
       </p>
     </div>
     <div class="bw-grid">
@@ -331,33 +336,33 @@ footer a:hover{color:var(--yellow-dark);}
 const FACTORIES = {
   "A": {
     "best": [
-      {"code":"9904SH","name":"Semi-Finished Base Milk Product","plan_b":51.25,"diff_m":0.0,"var_pct":0.0,"batches":47,"ing_count":3,"direction":"under","driver":"","driver_m":0},
-      {"code":"9904CC","name":"Semi-Finished Chocolate Dairy Product","plan_b":10.75,"diff_m":0.0,"var_pct":0.0,"batches":26,"ing_count":13,"direction":"under","driver":"","driver_m":0},
-      {"code":"9904NC","name":"Semi-Finished Base Milk Product (Unsweetened)","plan_b":26.39,"diff_m":0.0,"var_pct":0.0,"batches":38,"ing_count":5,"direction":"under","driver":"","driver_m":0}
+      {"code":"07FC10","name":"Cultured Dairy — Greek Topping Coffee 121g","plan_b":6.48,"diff_m":39.3,"var_pct":0.6061,"batches":42,"ing_count":1,"direction":"over","driver":"","driver_m":0},
+      {"code":"07ND15","name":"Cultured Dairy — Aloe Vera 100g (Improved)","plan_b":4.92,"diff_m":158.8,"var_pct":3.2254,"batches":42,"ing_count":1,"direction":"over","driver":"","driver_m":0},
+      {"code":"07ND12","name":"Cultured Dairy — Aloe Vera 100g (v1)","plan_b":1.48,"diff_m":53.0,"var_pct":3.5786,"batches":17,"ing_count":1,"direction":"over","driver":"","driver_m":0}
     ],
     "worst": [
-      {"code":"07FM10","name":"Cultured Dairy — Greek Topping Variant","plan_b":14.03,"diff_m":1574.1,"var_pct":11.2236,"batches":57,"ing_count":2,"direction":"over","driver":"Cereal Topping Ingredient","driver_m":822.0},
-      {"code":"07ND14","name":"Cultured Dairy — Aloe Vera 100g (v1)","plan_b":3.20,"diff_m":203.6,"var_pct":6.3615,"batches":29,"ing_count":2,"direction":"over","driver":"Fresh Aloe Vera Ingredient","driver_m":173.9},
-      {"code":"07ND13","name":"Cultured Dairy — Aloe Vera 100g (v2)","plan_b":7.06,"diff_m":-374.0,"var_pct":-5.2944,"batches":71,"ing_count":2,"direction":"under","driver":"Fresh Aloe Vera Ingredient","driver_m":-398.2}
+      {"code":"07FM10","name":"Cultured Dairy — Greek Topping Honey 123g","plan_b":14.03,"diff_m":1574.1,"var_pct":11.2236,"batches":57,"ing_count":2,"direction":"over","driver":"Cereal Topping Ingredient","driver_m":822.0},
+      {"code":"07ND14","name":"Cultured Dairy — Aloe Vera 100g (v2)","plan_b":3.20,"diff_m":203.6,"var_pct":6.3615,"batches":29,"ing_count":2,"direction":"over","driver":"Fresh Aloe Vera Ingredient","driver_m":173.9},
+      {"code":"07ND13","name":"Cultured Dairy — Aloe Vera 100g (v3)","plan_b":7.06,"diff_m":-374.0,"var_pct":-5.2944,"batches":71,"ing_count":2,"direction":"under","driver":"Fresh Aloe Vera Ingredient","driver_m":-398.2}
     ]
   },
   "B": {
     "best": [
-      {"code":"99SB43","name":"Powder Base Formula — Export Variant A","plan_b":184.11,"diff_m":0.0,"var_pct":0.0,"batches":18,"ing_count":19,"direction":"under","driver":"","driver_m":0},
-      {"code":"99SB35","name":"Powder Base Formula — Premium Variant","plan_b":167.50,"diff_m":0.0,"var_pct":0.0,"batches":14,"ing_count":22,"direction":"over","driver":"","driver_m":0},
-      {"code":"99SB23","name":"Powder Base Formula — Standard Variant","plan_b":105.15,"diff_m":0.0,"var_pct":0.0,"batches":11,"ing_count":20,"direction":"under","driver":"","driver_m":0}
+      {"code":"02AA15","name":"Infant Formula Product — Stage 1 400g","plan_b":1.32,"diff_m":1.1,"var_pct":0.0831,"batches":5,"ing_count":9,"direction":"over","driver":"","driver_m":0},
+      {"code":"02XE15","name":"Infant Formula Product — Export Stage 1","plan_b":1.87,"diff_m":-2.0,"var_pct":-0.1083,"batches":7,"ing_count":5,"direction":"under","driver":"","driver_m":0},
+      {"code":"02EO28","name":"Infant Formula Product — Stage 2 800g","plan_b":79.51,"diff_m":-87.7,"var_pct":-0.1103,"batches":11,"ing_count":13,"direction":"under","driver":"","driver_m":0}
     ],
     "worst": [
-      {"code":"99AA20","name":"Fat Powder Material — Packed","plan_b":14.02,"diff_m":787.9,"var_pct":5.6209,"batches":7,"ing_count":1,"direction":"over","driver":"Wholemilk Powder (RM)","driver_m":787.9},
-      {"code":"02EG47","name":"Infant Formula Product — 850g Variant","plan_b":25.95,"diff_m":-328.8,"var_pct":-1.2668,"batches":6,"ing_count":11,"direction":"under","driver":"Colostrum Powder (RM)","driver_m":-239.5},
-      {"code":"02XB55","name":"Infant Formula Product — Export 800g","plan_b":18.82,"diff_m":-224.5,"var_pct":-1.1927,"batches":6,"ing_count":8,"direction":"under","driver":"ARA Fatty Acid (SM)","driver_m":-175.6}
+      {"code":"02EG47","name":"Infant Formula Product — Stage 4 850g","plan_b":25.95,"diff_m":-328.8,"var_pct":-1.2668,"batches":6,"ing_count":11,"direction":"under","driver":"Colostrum Powder (RM)","driver_m":-239.5},
+      {"code":"02XB55","name":"Infant Formula Product — Export Stage 3 800g","plan_b":18.82,"diff_m":-224.5,"var_pct":-1.1927,"batches":6,"ing_count":8,"direction":"under","driver":"ARA Fatty Acid (SM)","driver_m":-175.6},
+      {"code":"02XB54","name":"Infant Formula Product — Export Stage 2 800g","plan_b":11.99,"diff_m":-134.2,"var_pct":-1.1188,"batches":6,"ing_count":10,"direction":"under","driver":"ARA Fatty Acid (SM)","driver_m":-96.9}
     ]
   },
   "C": {
     "best": [
-      {"code":"99AA13","name":"Fresh Milk Raw Material (4.0% fat)","plan_b":13.21,"diff_m":0.0,"var_pct":-0.0002,"batches":73,"ing_count":1,"direction":"under","driver":"","driver_m":0},
-      {"code":"99PC13","name":"Cream Raw Material","plan_b":3.52,"diff_m":0.0,"var_pct":0.0002,"batches":77,"ing_count":1,"direction":"over","driver":"","driver_m":0},
-      {"code":"99AA12","name":"Fresh Milk Raw Material (4.06% fat)","plan_b":1.07,"diff_m":0.0,"var_pct":-0.0004,"batches":11,"ing_count":1,"direction":"under","driver":"","driver_m":0}
+      {"code":"07TD10","name":"Cultured Dairy — Coconut Jelly Pandan 100g","plan_b":3.96,"diff_m":-5.3,"var_pct":-0.1341,"batches":45,"ing_count":2,"direction":"under","driver":"","driver_m":0},
+      {"code":"07NC14","name":"Cultured Dairy — Black Glutinous Rice 100g","plan_b":11.11,"diff_m":31.4,"var_pct":0.2828,"batches":63,"ing_count":1,"direction":"over","driver":"","driver_m":0},
+      {"code":"07TC11","name":"Cultured Dairy — Mixed Fruit 100g","plan_b":8.90,"diff_m":-26.3,"var_pct":-0.2956,"batches":72,"ing_count":2,"direction":"under","driver":"","driver_m":0}
     ],
     "worst": [
       {"code":"07ND14","name":"Cultured Dairy — Aloe Vera 100g","plan_b":32.0,"diff_m":2980.6,"var_pct":9.315,"batches":45,"ing_count":2,"direction":"over","driver":"Fresh Aloe Vera Ingredient","driver_m":2962.2},
@@ -367,14 +372,14 @@ const FACTORIES = {
   },
   "D": {
     "best": [
-      {"code":"9904FC","name":"Semi-Finished Chocolate Dairy Base","plan_b":69.03,"diff_m":0.0,"var_pct":0.0,"batches":46,"ing_count":17,"direction":"over","driver":"","driver_m":0},
-      {"code":"9904D1","name":"Semi-Finished Base Milk Product (Sweetened)","plan_b":368.61,"diff_m":0.0,"var_pct":0.0,"batches":16,"ing_count":11,"direction":"over","driver":"","driver_m":0},
-      {"code":"9904A1","name":"Semi-Finished Strawberry Milk Base","plan_b":103.81,"diff_m":0.0,"var_pct":0.0,"batches":4,"ing_count":10,"direction":"under","driver":"","driver_m":0}
+      {"code":"07NH11","name":"Cultured Dairy — Aloe Vera Low Sugar 100g","plan_b":7.35,"diff_m":-0.9,"var_pct":-0.0118,"batches":39,"ing_count":1,"direction":"under","driver":"","driver_m":0},
+      {"code":"07ND13","name":"Cultured Dairy — Aloe Vera Sweetened 100g","plan_b":64.89,"diff_m":-14.5,"var_pct":-0.0224,"batches":72,"ing_count":2,"direction":"under","driver":"","driver_m":0},
+      {"code":"07LI11","name":"Cultured Dairy — Red Pomegranate Collagen 100g","plan_b":5.31,"diff_m":-4.3,"var_pct":-0.0813,"batches":60,"ing_count":2,"direction":"under","driver":"","driver_m":0}
     ],
     "worst": [
-      {"code":"99DD09","name":"Soy Liquid Semi-Finished (3.1% protein)","plan_b":1.43,"diff_m":-118.6,"var_pct":-8.2739,"batches":8,"ing_count":2,"direction":"under","driver":"Soybean Raw Material (RM)","driver_m":-117.8},
-      {"code":"9906SM","name":"Probiotic Culture BTP — Sweetened","plan_b":1.20,"diff_m":-16.9,"var_pct":-1.4003,"batches":11,"ing_count":6,"direction":"under","driver":"Probiotic Culture (SM)","driver_m":-16.9},
-      {"code":"9906PC","name":"Probiotic Culture BTP — Orange Flavor","plan_b":3.87,"diff_m":-47.5,"var_pct":-1.2296,"batches":23,"ing_count":14,"direction":"under","driver":"Probiotic Culture (SM)","driver_m":-47.5}
+      {"code":"07CR12","name":"Cultured Dairy — Black Sugar Pearl 100g","plan_b":28.26,"diff_m":317.6,"var_pct":1.1237,"batches":68,"ing_count":1,"direction":"over","driver":"Black Sugar Pearl Ingredient (SM)","driver_m":317.6},
+      {"code":"07NH19","name":"Cultured Dairy — Aloe Vera Low Sugar 100g (Promo)","plan_b":2.89,"diff_m":29.7,"var_pct":1.0253,"batches":16,"ing_count":1,"direction":"over","driver":"Fresh Aloe Vera Ingredient","driver_m":29.7},
+      {"code":"07ND12","name":"Cultured Dairy — Aloe Vera Sweetened 100g (v2)","plan_b":2.82,"diff_m":28.1,"var_pct":0.9962,"batches":6,"ing_count":1,"direction":"over","driver":"Fresh Aloe Vera Ingredient","driver_m":28.1}
     ]
   }
 };
