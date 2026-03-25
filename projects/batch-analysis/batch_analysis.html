@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Material Batch Variance Analysis — 4 Factories 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root {
+  --yellow:#E8B800; --yellow-light:#FDF3CC; --yellow-dark:#A07800;
+  --black:#0D0D0D; --dark:#1A1A1A; --mid:#3D3D3D; --muted:#888;
+  --light:#F0EFE8; --lighter:#F8F7F2; --white:#FFF; --border:#D8D7D0;
+  --green:#1E8449; --green-light:#E9F7EF; --green-mid:#27AE60;
+  --red:#C0392B; --red-light:#FDECEA;
+  --orange:#E67E22; --orange-light:#FEF0E6;
+  --blue:#2471A3; --blue-light:#EBF5FB;
+  --fa:#2C7BB6; --fb:#D4A017; --fc:#27AE60; --fd:#C0392B;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--dark);background:var(--lighter);line-height:1.6;}
+
+nav{background:var(--black);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:3px solid var(--yellow);}
+.nav-logo{font-family:'DM Mono',monospace;font-size:12px;color:#999;}
+.nav-logo span{color:var(--yellow);}
+.nav-back{font-size:11px;color:#999;text-decoration:none;font-family:'DM Mono',monospace;transition:color 0.2s;}
+.nav-back:hover{color:var(--yellow);}
+
+.hero{background:var(--black);padding:48px 40px 40px;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--yellow),transparent);}
+.hero-tag{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);margin-bottom:10px;font-family:'DM Mono',monospace;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:32px;font-weight:400;color:var(--white);line-height:1.2;margin-bottom:12px;}
+.hero h1 em{color:var(--yellow);font-style:italic;}
+.hero-meta{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:20px;}
+.hero-meta-item{font-size:11px;color:#888;font-family:'DM Mono',monospace;}
+.hero-meta-item span{color:var(--white);}
+.tag-row{display:flex;gap:8px;flex-wrap:wrap;}
+.tag{font-size:10px;font-weight:600;padding:3px 10px;border-radius:3px;background:rgba(255,255,255,0.08);color:#ccc;border:1px solid rgba(255,255,255,0.12);font-family:'DM Mono',monospace;}
+
+.factory-bar{display:grid;grid-template-columns:repeat(4,1fr);background:var(--black);border-bottom:1px solid #222;}
+.factory-stat{padding:16px 24px;border-right:1px solid #222;cursor:pointer;transition:background 0.15s;}
+.factory-stat:last-child{border-right:none;}
+.factory-stat:hover,.factory-stat.active{background:rgba(232,184,0,0.08);}
+.factory-stat.active{border-bottom:3px solid var(--yellow);}
+.fs-code{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:3px;}
+.fs-name{font-size:13px;font-weight:600;color:var(--white);}
+.fs-sub{font-size:10px;color:#666;font-family:'DM Mono',monospace;margin-top:2px;}
+.fa .fs-code{color:var(--fa);}
+.fb .fs-code{color:var(--fb);}
+.fc .fs-code{color:var(--fc);}
+.fd .fs-code{color:var(--fd);}
+
+.tab-bar{background:var(--white);border-bottom:2px solid var(--border);display:flex;padding:0 40px;}
+.tab-btn{padding:12px 22px;font-size:12px;font-weight:600;color:var(--muted);background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;transition:all 0.2s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--black);}
+.tab-btn.active{color:var(--black);border-bottom-color:var(--yellow);}
+.tab-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--yellow-dark);display:block;margin-bottom:1px;font-family:'DM Mono',monospace;}
+
+.tab-content{display:none;max-width:1100px;margin:0 auto;padding:28px 40px;}
+.tab-content.active{display:block;}
+
+.section{background:var(--white);border:1.5px solid var(--border);border-radius:6px;padding:22px 26px;margin-bottom:18px;}
+.section-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--yellow-dark);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;}
+
+.factory-panel{display:none;}
+.factory-panel.active{display:block;}
+
+.bw-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.bw-col-header{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:10px 16px;border-radius:5px 5px 0 0;font-family:'DM Mono',monospace;}
+.bw-col-header.best-hdr{background:var(--green-light);color:var(--green);}
+.bw-col-header.worst-hdr{background:var(--red-light);color:var(--red);}
+.bw-col-header .hdr-sub{font-size:9px;font-weight:400;opacity:0.7;margin-left:6px;text-transform:none;letter-spacing:0;}
+
+.prod-card{border:1.5px solid var(--border);border-radius:6px;padding:16px;margin-bottom:12px;position:relative;background:var(--white);transition:box-shadow 0.15s;}
+.prod-card:hover{box-shadow:0 2px 12px rgba(0,0,0,0.08);}
+.prod-card.best-card{border-left:4px solid var(--green-mid);}
+.prod-card.worst-card{border-left:4px solid var(--red);}
+.prod-rank{position:absolute;top:12px;right:14px;font-size:10px;font-weight:700;font-family:'DM Mono',monospace;color:var(--muted);}
+.prod-code{font-size:10px;font-weight:700;font-family:'DM Mono',monospace;color:var(--muted);margin-bottom:3px;}
+.prod-name{font-size:12px;font-weight:600;color:var(--black);margin-bottom:10px;padding-right:30px;line-height:1.4;}
+.prod-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;}
+.ps-item{background:var(--lighter);border-radius:4px;padding:6px 8px;}
+.ps-label{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.5px;}
+.ps-val{font-size:13px;font-weight:700;color:var(--black);margin-top:1px;}
+.ps-val.over{color:var(--red);}
+.ps-val.under{color:var(--blue);}
+.ps-val.zero{color:var(--green);}
+.driver-row{background:var(--lighter);border-radius:4px;padding:7px 10px;display:flex;align-items:flex-start;gap:8px;margin-top:6px;}
+.driver-icon{font-size:11px;flex-shrink:0;margin-top:1px;}
+.driver-text{font-size:10px;color:var(--mid);line-height:1.5;flex:1;}
+.driver-text strong{color:var(--black);}
+.driver-amt{font-size:11px;font-weight:700;font-family:'DM Mono',monospace;white-space:nowrap;flex-shrink:0;}
+.driver-amt.over{color:var(--red);}
+.driver-amt.under{color:var(--blue);}
+
+.insight{background:var(--black);color:var(--white);border-radius:6px;padding:20px 24px;margin-bottom:18px;border-left:4px solid var(--yellow);}
+.insight h3{font-family:'DM Serif Display',serif;font-size:15px;color:var(--yellow);margin-bottom:8px;}
+.insight p{font-size:12px;color:#ccc;line-height:1.8;}
+.insight strong{color:var(--white);}
+
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.chart-card{background:var(--white);border:1.5px solid var(--border);border-radius:6px;padding:18px;}
+.chart-title{font-size:11px;font-weight:700;color:var(--black);margin-bottom:3px;}
+.chart-sub{font-size:10px;color:var(--muted);margin-bottom:14px;font-family:'DM Mono',monospace;}
+.chart-wrap{position:relative;height:220px;}
+
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{background:var(--light);padding:8px 12px;text-align:left;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);}
+td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--mid);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--lighter);}
+.hl{font-weight:600;color:var(--black);}
+.mono{font-family:'DM Mono',monospace;}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+
+footer{text-align:center;padding:20px;font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;border-top:1px solid var(--border);margin-top:8px;}
+footer span{color:var(--yellow-dark);}
+footer a{color:var(--muted);text-decoration:none;}
+footer a:hover{color:var(--yellow-dark);}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Random <span>Accountant</span></div>
+  <a href="https://ParfaitAmour1814.github.io" class="nav-back">← Portfolio</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">Production Analytics · FMCG Manufacturer · Full Year 2025</div>
+  <h1>Material Batch<br><em>Variance Analysis</em></h1>
+  <div class="hero-meta">
+    <div class="hero-meta-item">Factories <span>4 — A · B · C · D</span></div>
+    <div class="hero-meta-item">Batches <span>27,356 closed batches</span></div>
+    <div class="hero-meta-item">Products <span>652 finished goods</span></div>
+    <div class="hero-meta-item">Period <span>Jan – Dec 2025</span></div>
+  </div>
+  <div class="tag-row">
+    <span class="tag">ERP System</span>
+    <span class="tag">Batch Close</span>
+    <span class="tag">Material Usage Variance</span>
+    <span class="tag">RM / SM Analysis</span>
+    <span class="tag">Packaging Cross-Factory</span>
+    <span class="tag">INV100 Cost Valuation</span>
+  </div>
+</div>
+
+<div class="factory-bar">
+  <div class="factory-stat fa active" onclick="switchFactory('A',this)">
+    <div class="fs-code">Factory A</div>
+    <div class="fs-name">Liquid Dairy</div>
+    <div class="fs-sub">~8K batches</div>
+  </div>
+  <div class="factory-stat fb" onclick="switchFactory('B',this)">
+    <div class="fs-code">Factory B</div>
+    <div class="fs-name">Powder Products</div>
+    <div class="fs-sub">~900 batches</div>
+  </div>
+  <div class="factory-stat fc" onclick="switchFactory('C',this)">
+    <div class="fs-code">Factory C</div>
+    <div class="fs-name">Liquid Dairy</div>
+    <div class="fs-sub">~6.6K batches</div>
+  </div>
+  <div class="factory-stat fd" onclick="switchFactory('D',this)">
+    <div class="fs-code">Factory D</div>
+    <div class="fs-name">Multi-Category</div>
+    <div class="fs-sub">~12K batches</div>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('p1',this)">
+    <span class="tab-label">Part 1</span>RM &amp; SM Variance — Per Factory
+  </button>
+  <button class="tab-btn" onclick="showTab('p2',this)">
+    <span class="tab-label">Part 2</span>Packaging Material — Cross-Factory
+  </button>
+</div>
+
+<!-- ══ PART 1 ══ -->
+<div class="tab-content active" id="p1">
+
+  <div class="factory-panel active" id="panel-A">
+    <div class="insight">
+      <h3>Factory A — RM/SM Insight</h3>
+      <p>
+        Semi-finished base milk products show near-perfect raw material control — variance &lt;0.0001%.
+        The outlier is the specialty yogurt topping range at <strong>+11.2% over-usage</strong>, driven entirely
+        by a cereal topping ingredient with inconsistent yield across 57 batches. Fresh aloe vera drives
+        variance in both directions across two yogurt variants — suggesting formula instability
+        or supplier yield variation for this ingredient.
+      </p>
+    </div>
+    <div class="bw-grid">
+      <div>
+        <div class="bw-col-header best-hdr">✅ Best 3 <span class="hdr-sub">Tightest RM/SM control</span></div>
+        <div id="best-A"></div>
+      </div>
+      <div>
+        <div class="bw-col-header worst-hdr">❌ Worst 3 <span class="hdr-sub">Loosest RM/SM control</span></div>
+        <div id="worst-A"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="factory-panel" id="panel-B">
+    <div class="insight">
+      <h3>Factory B — RM/SM Insight</h3>
+      <p>
+        Export powder blend products are perfectly controlled despite having 19–22 unique RM/SM ingredients
+        per batch — a sign of mature formula execution. The worst product shows
+        <strong>+5.6% over-usage</strong> driven entirely by Wholemilk Powder — likely over-blending
+        to hit protein targets. A high-value fatty acid ingredient (ARA) drives under-usage on an export
+        product at -175M VND — where under-dosing has direct quality implications.
+      </p>
+    </div>
+    <div class="bw-grid">
+      <div>
+        <div class="bw-col-header best-hdr">✅ Best 3 <span class="hdr-sub">Tightest RM/SM control</span></div>
+        <div id="best-B"></div>
+      </div>
+      <div>
+        <div class="bw-col-header worst-hdr">❌ Worst 3 <span class="hdr-sub">Loosest RM/SM control</span></div>
+        <div id="worst-B"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="factory-panel" id="panel-C">
+    <div class="insight">
+      <h3>Factory C — RM/SM Insight</h3>
+      <p>
+        Fresh milk and cream products are best controlled — single-ingredient formulas with tight
+        weight-based dosing. The largest single RM/SM variance in the entire dataset is here:
+        <strong>+2,980M VND (+9.3%)</strong> on an aloe vera yogurt product, driven almost entirely
+        by fresh aloe vera yield inconsistency. The same ingredient causes variance at Factory A too —
+        indicating a <strong>company-wide formula or supplier issue</strong> rather than a factory-specific problem.
+      </p>
+    </div>
+    <div class="bw-grid">
+      <div>
+        <div class="bw-col-header best-hdr">✅ Best 3 <span class="hdr-sub">Tightest RM/SM control</span></div>
+        <div id="best-C"></div>
+      </div>
+      <div>
+        <div class="bw-col-header worst-hdr">❌ Worst 3 <span class="hdr-sub">Loosest RM/SM control</span></div>
+        <div id="worst-C"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="factory-panel" id="panel-D">
+    <div class="insight">
+      <h3>Factory D — RM/SM Insight</h3>
+      <p>
+        The largest factory by batch volume with the best overall raw material control. Semi-finished base
+        milk products show <strong>0.00000% variance</strong> across 10–17 unique RM/SM ingredients per batch.
+        The worst product is a soy-based semi-finished product at <strong>-8.3% under-usage</strong> —
+        soybean yield in wet extraction is harder to standardise. A probiotic culture ingredient
+        drives under-usage across two yogurt BTP products — likely measurement precision at
+        the gram scale for this high-value culture.
+      </p>
+    </div>
+    <div class="bw-grid">
+      <div>
+        <div class="bw-col-header best-hdr">✅ Best 3 <span class="hdr-sub">Tightest RM/SM control</span></div>
+        <div id="best-D"></div>
+      </div>
+      <div>
+        <div class="bw-col-header worst-hdr">❌ Worst 3 <span class="hdr-sub">Loosest RM/SM control</span></div>
+        <div id="worst-D"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ PART 2 ══ -->
+<div class="tab-content" id="p2">
+
+  <div class="insight">
+    <h3>Packaging Material: Factory D worst at -2.66%, Factory A best at -0.84% — yogurt film is the #1 cross-factory issue</h3>
+    <p>
+      All 4 factories show net <strong>under-usage of packaging materials</strong> vs standard formula.
+      <strong>Factory D</strong> has the worst PM variance rate at -2.66% (-11.47B VND absolute).
+      A yogurt film material appears in both Factory C (-2.1B) and Factory D (-1.9B) — same material,
+      two factories, pointing to a <strong>systematic formula quantity issue</strong> rather than
+      a factory-specific problem. One aluminum film item at Factory D shows the highest individual rate at <strong>-9.62%</strong>.
+    </p>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">PM Variance Rate by Factory (%)</div>
+      <div class="chart-sub">Under-usage = actual &lt; standard formula qty · all negative</div>
+      <div class="chart-wrap"><canvas id="pmRateChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">PM Plan Value vs Absolute Variance (B VND)</div>
+      <div class="chart-sub">Factory D largest in absolute terms despite mid-range plan value</div>
+      <div class="chart-wrap"><canvas id="pmAbsChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Top 10 Worst PM Items — All Factories</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Factory</th>
+          <th>Code</th>
+          <th>Description</th>
+          <th>Plan (B VND)</th>
+          <th>Variance (M VND)</th>
+          <th>Var %</th>
+        </tr>
+      </thead>
+      <tbody id="pmTableBody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  <span>Truong Phat</span> · Material Batch Variance Analysis · 4 Factories · Full Year 2025 &nbsp;|&nbsp;
+  <a href="https://ParfaitAmour1814.github.io">← Portfolio</a>
+</footer>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const FACTORIES = {
+  "A": {
+    "best": [
+      {"code":"9904SH","name":"Semi-Finished Base Milk Product","plan_b":51.25,"diff_m":0.0,"var_pct":0.0,"batches":47,"ing_count":3,"direction":"under","driver":"","driver_m":0},
+      {"code":"9904CC","name":"Semi-Finished Chocolate Dairy Product","plan_b":10.75,"diff_m":0.0,"var_pct":0.0,"batches":26,"ing_count":13,"direction":"under","driver":"","driver_m":0},
+      {"code":"9904NC","name":"Semi-Finished Base Milk Product (Unsweetened)","plan_b":26.39,"diff_m":0.0,"var_pct":0.0,"batches":38,"ing_count":5,"direction":"under","driver":"","driver_m":0}
+    ],
+    "worst": [
+      {"code":"07FM10","name":"Cultured Dairy — Greek Topping Variant","plan_b":14.03,"diff_m":1574.1,"var_pct":11.2236,"batches":57,"ing_count":2,"direction":"over","driver":"Cereal Topping Ingredient","driver_m":822.0},
+      {"code":"07ND14","name":"Cultured Dairy — Aloe Vera 100g (v1)","plan_b":3.20,"diff_m":203.6,"var_pct":6.3615,"batches":29,"ing_count":2,"direction":"over","driver":"Fresh Aloe Vera Ingredient","driver_m":173.9},
+      {"code":"07ND13","name":"Cultured Dairy — Aloe Vera 100g (v2)","plan_b":7.06,"diff_m":-374.0,"var_pct":-5.2944,"batches":71,"ing_count":2,"direction":"under","driver":"Fresh Aloe Vera Ingredient","driver_m":-398.2}
+    ]
+  },
+  "B": {
+    "best": [
+      {"code":"99SB43","name":"Powder Base Formula — Export Variant A","plan_b":184.11,"diff_m":0.0,"var_pct":0.0,"batches":18,"ing_count":19,"direction":"under","driver":"","driver_m":0},
+      {"code":"99SB35","name":"Powder Base Formula — Premium Variant","plan_b":167.50,"diff_m":0.0,"var_pct":0.0,"batches":14,"ing_count":22,"direction":"over","driver":"","driver_m":0},
+      {"code":"99SB23","name":"Powder Base Formula — Standard Variant","plan_b":105.15,"diff_m":0.0,"var_pct":0.0,"batches":11,"ing_count":20,"direction":"under","driver":"","driver_m":0}
+    ],
+    "worst": [
+      {"code":"99AA20","name":"Fat Powder Material — Packed","plan_b":14.02,"diff_m":787.9,"var_pct":5.6209,"batches":7,"ing_count":1,"direction":"over","driver":"Wholemilk Powder (RM)","driver_m":787.9},
+      {"code":"02EG47","name":"Infant Formula Product — 850g Variant","plan_b":25.95,"diff_m":-328.8,"var_pct":-1.2668,"batches":6,"ing_count":11,"direction":"under","driver":"Colostrum Powder (RM)","driver_m":-239.5},
+      {"code":"02XB55","name":"Infant Formula Product — Export 800g","plan_b":18.82,"diff_m":-224.5,"var_pct":-1.1927,"batches":6,"ing_count":8,"direction":"under","driver":"ARA Fatty Acid (SM)","driver_m":-175.6}
+    ]
+  },
+  "C": {
+    "best": [
+      {"code":"99AA13","name":"Fresh Milk Raw Material (4.0% fat)","plan_b":13.21,"diff_m":0.0,"var_pct":-0.0002,"batches":73,"ing_count":1,"direction":"under","driver":"","driver_m":0},
+      {"code":"99PC13","name":"Cream Raw Material","plan_b":3.52,"diff_m":0.0,"var_pct":0.0002,"batches":77,"ing_count":1,"direction":"over","driver":"","driver_m":0},
+      {"code":"99AA12","name":"Fresh Milk Raw Material (4.06% fat)","plan_b":1.07,"diff_m":0.0,"var_pct":-0.0004,"batches":11,"ing_count":1,"direction":"under","driver":"","driver_m":0}
+    ],
+    "worst": [
+      {"code":"07ND14","name":"Cultured Dairy — Aloe Vera 100g","plan_b":32.0,"diff_m":2980.6,"var_pct":9.315,"batches":45,"ing_count":2,"direction":"over","driver":"Fresh Aloe Vera Ingredient","driver_m":2962.2},
+      {"code":"07SN10","name":"Cultured Dairy — Aloe Vera Happy Star 100g","plan_b":6.19,"diff_m":415.3,"var_pct":6.7037,"batches":67,"ing_count":1,"direction":"over","driver":"Fresh Aloe Vera Ingredient","driver_m":415.3},
+      {"code":"07PX10","name":"Cultured Dairy — Plant-Based Fruit 100g","plan_b":1.90,"diff_m":96.4,"var_pct":5.0812,"batches":36,"ing_count":1,"direction":"over","driver":"Fruit Jam Ingredient (SM)","driver_m":96.4}
+    ]
+  },
+  "D": {
+    "best": [
+      {"code":"9904FC","name":"Semi-Finished Chocolate Dairy Base","plan_b":69.03,"diff_m":0.0,"var_pct":0.0,"batches":46,"ing_count":17,"direction":"over","driver":"","driver_m":0},
+      {"code":"9904D1","name":"Semi-Finished Base Milk Product (Sweetened)","plan_b":368.61,"diff_m":0.0,"var_pct":0.0,"batches":16,"ing_count":11,"direction":"over","driver":"","driver_m":0},
+      {"code":"9904A1","name":"Semi-Finished Strawberry Milk Base","plan_b":103.81,"diff_m":0.0,"var_pct":0.0,"batches":4,"ing_count":10,"direction":"under","driver":"","driver_m":0}
+    ],
+    "worst": [
+      {"code":"99DD09","name":"Soy Liquid Semi-Finished (3.1% protein)","plan_b":1.43,"diff_m":-118.6,"var_pct":-8.2739,"batches":8,"ing_count":2,"direction":"under","driver":"Soybean Raw Material (RM)","driver_m":-117.8},
+      {"code":"9906SM","name":"Probiotic Culture BTP — Sweetened","plan_b":1.20,"diff_m":-16.9,"var_pct":-1.4003,"batches":11,"ing_count":6,"direction":"under","driver":"Probiotic Culture (SM)","driver_m":-16.9},
+      {"code":"9906PC","name":"Probiotic Culture BTP — Orange Flavor","plan_b":3.87,"diff_m":-47.5,"var_pct":-1.2296,"batches":23,"ing_count":14,"direction":"under","driver":"Probiotic Culture (SM)","driver_m":-47.5}
+    ]
+  }
+};
+
+const PM_SUMMARY = [
+  {"factory":"D","name":"Factory D","plan_b":431.5,"diff_b":-11.47,"var_pct":-2.657},
+  {"factory":"C","name":"Factory C","plan_b":234.0,"diff_b":-4.68,"var_pct":-2.002},
+  {"factory":"B","name":"Factory B","plan_b":530.0,"diff_b":-5.50,"var_pct":-1.039},
+  {"factory":"A","name":"Factory A","plan_b":140.1,"diff_b":-1.18,"var_pct":-0.842}
+];
+
+const PM_TOP10 = [
+  {"factory":"C","ing":"PM-0987","desc":"Yogurt cup film 884mm (Machine P48)","diff_m":-2144.0,"var_pct":-3.69,"plan_b":58.11},
+  {"factory":"D","ing":"PM-0987","desc":"Yogurt cup film 884mm (Machine P48)","diff_m":-1922.0,"var_pct":-3.30,"plan_b":58.20},
+  {"factory":"D","ing":"PM-0555","desc":"Yogurt cup film 452.5mm (Machine EF400)","diff_m":-1278.7,"var_pct":-1.82,"plan_b":70.33},
+  {"factory":"D","ing":"PM-0945","desc":"Aluminum film — probiotic cup 65ml","diff_m":-1065.9,"var_pct":-9.62,"plan_b":11.08},
+  {"factory":"B","ing":"PM-XD42","desc":"Export tin can — infant formula 800g","diff_m":-1018.1,"var_pct":-1.62,"plan_b":62.96},
+  {"factory":"D","ing":"PM-0488","desc":"HIPS plastic granules — probiotic cup","diff_m":-946.0,"var_pct":-1.29,"plan_b":73.35},
+  {"factory":"D","ing":"PM-0285","desc":"Tin plate sheet 0.15mm x 862mm x 927mm","diff_m":-930.6,"var_pct":-1.81,"plan_b":51.55},
+  {"factory":"B","ing":"PM-0512","desc":"Tin bottom cap — powder can","diff_m":-824.6,"var_pct":-6.19,"plan_b":13.33},
+  {"factory":"B","ing":"PM-0514","desc":"Tin plate sheet 0.21mm x 944mm x 1025mm","diff_m":-689.7,"var_pct":-4.74,"plan_b":14.55},
+  {"factory":"B","ing":"PM-0510","desc":"Printed tin top cap — export powder can","diff_m":-521.0,"var_pct":-2.12,"plan_b":24.59}
+];
+
+const F_COLORS = {"A":"#2C7BB6","B":"#D4A017","C":"#27AE60","D":"#C0392B"};
+const F_BG = {"A":"#EBF5FB","B":"#FDFCE8","C":"#E9F7EF","D":"#FDECEA"};
+const font = {family:'DM Sans',size:11};
+
+// ── RENDER PRODUCT CARDS ──────────────────────────────────────────────────────
+function renderCards(factory) {
+  const d = FACTORIES[factory];
+  ['best','worst'].forEach(type => {
+    const el = document.getElementById(type + '-' + factory);
+    if (!el) return;
+    el.innerHTML = d[type].map((p, i) => {
+      const isZero = Math.abs(p.var_pct) < 0.01;
+      const cls = type === 'best' ? 'best-card' : 'worst-card';
+      const varCls = isZero ? 'zero' : (p.direction === 'over' ? 'over' : 'under');
+      const sign = p.var_pct >= 0 ? '+' : '';
+      const signM = p.diff_m >= 0 ? '+' : '';
+      const varStr = isZero ? '≈ 0.000%' : sign + p.var_pct.toFixed(4) + '%';
+      const diffStr = isZero ? '≈ 0M' : signM + Math.abs(p.diff_m).toFixed(1) + 'M';
+      const direction = p.diff_m > 0.1 ? '🔴 OVER' : p.diff_m < -0.1 ? '🔵 UNDER' : '✅ ON PLAN';
+      const driverRow = (type === 'worst' && p.driver)
+        ? `<div class="driver-row">
+             <span class="driver-icon">⚑</span>
+             <span class="driver-text"><strong>Key RM/SM driver:</strong> ${p.driver}</span>
+             <span class="driver-amt ${p.driver_m >= 0 ? 'over' : 'under'}">${p.driver_m >= 0 ? '+' : ''}${p.driver_m.toFixed(1)}M</span>
+           </div>` : '';
+      return `<div class="prod-card ${cls}">
+        <span class="prod-rank">#${i+1}</span>
+        <div class="prod-code">${p.code}</div>
+        <div class="prod-name">${p.name}</div>
+        <div class="prod-stats">
+          <div class="ps-item"><div class="ps-label">RM/SM Plan</div><div class="ps-val">${p.plan_b}B</div></div>
+          <div class="ps-item"><div class="ps-label">Variance</div><div class="ps-val ${varCls}">${diffStr}</div></div>
+          <div class="ps-item"><div class="ps-label">Var %</div><div class="ps-val ${varCls}">${varStr}</div></div>
+        </div>
+        <div class="prod-stats">
+          <div class="ps-item"><div class="ps-label">Batches</div><div class="ps-val">${p.batches}</div></div>
+          <div class="ps-item"><div class="ps-label">RM/SM Ingr.</div><div class="ps-val">${p.ing_count}</div></div>
+          <div class="ps-item"><div class="ps-label">Direction</div><div class="ps-val" style="font-size:10px">${direction}</div></div>
+        </div>
+        ${driverRow}
+      </div>`;
+    }).join('');
+  });
+}
+
+// Render all on load
+['A','B','C','D'].forEach(f => renderCards(f));
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function switchFactory(factory, el) {
+  document.querySelectorAll('.factory-stat').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.factory-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  const panel = document.getElementById('panel-' + factory);
+  if (panel) panel.classList.add('active');
+}
+
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── PM CHARTS ─────────────────────────────────────────────────────────────────
+new Chart(document.getElementById('pmRateChart'), {
+  type: 'bar',
+  data: {
+    labels: PM_SUMMARY.map(d => d.name),
+    datasets: [{
+      data: PM_SUMMARY.map(d => d.var_pct),
+      backgroundColor: PM_SUMMARY.map(d => F_COLORS[d.factory] + 'AA'),
+      borderColor: PM_SUMMARY.map(d => F_COLORS[d.factory]),
+      borderWidth: 2, borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { ticks: { font, color: '#999', callback: v => v + '%' }, grid: { color: '#eee' } },
+      x: { ticks: { font, color: '#999' } }
+    }
+  }
+});
+
+new Chart(document.getElementById('pmAbsChart'), {
+  type: 'bar',
+  data: {
+    labels: PM_SUMMARY.map(d => d.name),
+    datasets: [
+      { label: 'Plan (B)', data: PM_SUMMARY.map(d => d.plan_b), backgroundColor: '#e8e8e8', borderColor: '#ccc', borderWidth: 1, borderRadius: 4 },
+      { label: 'Variance (B)', data: PM_SUMMARY.map(d => Math.abs(d.diff_b)), backgroundColor: PM_SUMMARY.map(d => F_COLORS[d.factory] + 'AA'), borderColor: PM_SUMMARY.map(d => F_COLORS[d.factory]), borderWidth: 2, borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { font, color: '#999' } } },
+    scales: {
+      y: { ticks: { font, color: '#999', callback: v => v + 'B' }, grid: { color: '#eee' } },
+      x: { ticks: { font, color: '#999' } }
+    }
+  }
+});
+
+// PM table
+const tbody = document.getElementById('pmTableBody');
+PM_TOP10.forEach(r => {
+  const tr = document.createElement('tr');
+  tr.style.background = F_BG[r.factory] || '';
+  tr.innerHTML = `
+    <td><span class="dot" style="background:${F_COLORS[r.factory]}"></span><strong>Factory ${r.factory}</strong></td>
+    <td class="mono">${r.ing}</td>
+    <td>${r.desc}</td>
+    <td class="mono">${r.plan_b.toFixed(1)}B</td>
+    <td class="mono" style="color:#2471A3;font-weight:600">${r.diff_m.toFixed(1)}M</td>
+    <td class="mono" style="color:#2471A3;font-weight:600">${r.var_pct.toFixed(2)}%</td>`;
+  tbody.appendChild(tr);
+});
+</script>
+</body>
+</html>
