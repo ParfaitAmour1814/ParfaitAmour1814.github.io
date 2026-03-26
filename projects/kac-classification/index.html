@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KA Customer Classification — KAC vs KAM</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root {
+  --yellow:#E8B800; --yellow-light:#FDF3CC; --yellow-dark:#A07800;
+  --black:#0D0D0D; --dark:#1A1A1A; --mid:#3D3D3D; --muted:#888;
+  --light:#F0EFE8; --lighter:#F8F7F2; --white:#FFF; --border:#D8D7D0;
+  --green:#1E8449; --green-light:#E9F7EF; --green-mid:#27AE60;
+  --red:#C0392B; --red-light:#FDECEA;
+  --orange:#E67E22; --orange-light:#FEF0E6;
+  --blue:#2471A3; --blue-light:#EBF5FB;
+  --kac:#2471A3; --kam:#C0392B;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--dark);background:var(--lighter);line-height:1.6;}
+
+nav{background:var(--black);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:3px solid var(--yellow);}
+.nav-logo{font-family:'DM Mono',monospace;font-size:12px;color:#999;}
+.nav-logo span{color:var(--yellow);}
+.nav-back{font-size:11px;color:#999;text-decoration:none;font-family:'DM Mono',monospace;transition:color 0.2s;}
+.nav-back:hover{color:var(--yellow);}
+
+.hero{background:var(--black);padding:48px 40px 40px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(232,184,0,0.06) 0%,transparent 70%);pointer-events:none;}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--yellow),transparent);}
+.hero-tag{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);margin-bottom:10px;font-family:'DM Mono',monospace;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:32px;font-weight:400;color:var(--white);line-height:1.2;margin-bottom:12px;}
+.hero h1 em{color:var(--yellow);font-style:italic;}
+.hero-meta{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:20px;}
+.hero-meta-item{font-size:11px;color:#888;font-family:'DM Mono',monospace;}
+.hero-meta-item span{color:var(--white);}
+.tag-row{display:flex;gap:8px;flex-wrap:wrap;}
+.tag{font-size:10px;font-weight:600;padding:3px 10px;border-radius:3px;background:rgba(255,255,255,0.08);color:#ccc;border:1px solid rgba(255,255,255,0.12);font-family:'DM Mono',monospace;}
+.tag.wip{background:rgba(232,184,0,0.15);border-color:var(--yellow);color:var(--yellow);}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;padding:24px 40px;background:var(--white);border-bottom:1px solid var(--border);}
+.stat-card{text-align:center;padding:14px;border-radius:6px;border:1.5px solid var(--border);}
+.stat-val{font-family:'DM Serif Display',serif;font-size:24px;color:var(--yellow-dark);line-height:1;margin-bottom:3px;}
+.stat-lbl{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.8px;}
+
+/* TABS */
+.tab-bar{background:var(--white);border-bottom:2px solid var(--border);display:flex;padding:0 40px;}
+.tab-btn{padding:12px 22px;font-size:12px;font-weight:600;color:var(--muted);background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;transition:all 0.2s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--black);}
+.tab-btn.active{color:var(--black);border-bottom-color:var(--yellow);}
+.tab-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--yellow-dark);display:block;margin-bottom:1px;font-family:'DM Mono',monospace;}
+
+.tab-content{display:none;max-width:960px;margin:0 auto;padding:28px 40px;}
+.tab-content.active{display:block;}
+
+.section{background:var(--white);border:1.5px solid var(--border);border-radius:6px;padding:22px 26px;margin-bottom:18px;}
+.section-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--yellow-dark);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;}
+
+.insight{background:var(--black);color:var(--white);border-radius:6px;padding:20px 24px;margin-bottom:18px;border-left:4px solid var(--yellow);}
+.insight h3{font-family:'DM Serif Display',serif;font-size:15px;color:var(--yellow);margin-bottom:8px;}
+.insight p{font-size:12px;color:#ccc;line-height:1.8;}
+.insight strong{color:var(--white);}
+
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.chart-card{background:var(--white);border:1.5px solid var(--border);border-radius:6px;padding:18px;}
+.chart-title{font-size:11px;font-weight:700;color:var(--black);margin-bottom:3px;}
+.chart-sub{font-size:10px;color:var(--muted);margin-bottom:14px;font-family:'DM Mono',monospace;}
+.chart-wrap{position:relative;height:220px;}
+.chart-wrap.tall{height:280px;}
+
+/* MODEL CHOICE BOX */
+.model-choice{border:1.5px solid var(--green-mid);border-radius:6px;padding:20px 24px;margin-bottom:18px;background:var(--green-light);position:relative;}
+.model-choice::before{content:'★ CHOSEN MODEL';position:absolute;top:-10px;left:16px;background:var(--green-mid);color:#fff;font-size:9px;font-weight:700;letter-spacing:1px;padding:2px 8px;border-radius:3px;font-family:'DM Mono',monospace;}
+.model-choice h3{font-size:14px;font-weight:700;color:var(--green);margin-bottom:8px;}
+.model-choice p{font-size:12px;color:var(--mid);line-height:1.8;}
+.model-choice strong{color:var(--dark);}
+
+/* CONFUSION MATRIX */
+.cm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:280px;}
+.cm-cell{padding:14px;border-radius:6px;text-align:center;}
+.cm-cell .cm-val{font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;line-height:1;}
+.cm-cell .cm-lbl{font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.5px;margin-top:3px;}
+.cm-tp{background:var(--green-light);border:2px solid var(--green-mid);}
+.cm-tp .cm-val{color:var(--green);}
+.cm-tn{background:var(--blue-light);border:2px solid var(--blue);}
+.cm-tn .cm-val{color:var(--blue);}
+.cm-fp,.cm-fn{background:var(--red-light);border:2px solid #e8a89e;}
+.cm-fp .cm-val,.cm-fn .cm-val{color:var(--red);}
+
+/* ROADMAP */
+.roadmap{display:flex;flex-direction:column;gap:0;}
+.rm-item{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);}
+.rm-item:last-child{border-bottom:none;}
+.rm-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px;}
+.rm-dot.done{background:var(--green-light);border:2px solid var(--green-mid);}
+.rm-dot.active{background:var(--yellow-light);border:2px solid var(--yellow);}
+.rm-dot.planned{background:var(--light);border:2px solid var(--border);}
+.rm-title{font-size:12px;font-weight:700;color:var(--black);margin-bottom:3px;}
+.rm-desc{font-size:11px;color:var(--muted);line-height:1.6;}
+.rm-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;font-family:'DM Mono',monospace;margin-left:8px;}
+.rm-badge.done{background:var(--green-light);color:var(--green);border:1px solid #a9dfbf;}
+.rm-badge.active{background:var(--yellow-light);color:var(--yellow-dark);border:1px solid var(--yellow);}
+.rm-badge.planned{background:var(--light);color:var(--muted);border:1px solid var(--border);}
+
+/* FEATURE TABLE */
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{background:var(--light);padding:8px 12px;text-align:left;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);}
+td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--mid);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--lighter);}
+.hl{font-weight:600;color:var(--black);}
+.mono{font-family:'DM Mono',monospace;}
+.pos{color:var(--blue);font-weight:600;}
+.neg{color:var(--red);font-weight:600;}
+
+.badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;font-family:'DM Mono',monospace;}
+.badge-kac{background:var(--blue-light);color:var(--blue);border:1px solid #aed6f1;}
+.badge-kam{background:var(--red-light);color:var(--red);border:1px solid #f5b7b1;}
+
+footer{text-align:center;padding:20px;font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;border-top:1px solid var(--border);margin-top:8px;}
+footer span{color:var(--yellow-dark);}
+footer a{color:var(--muted);text-decoration:none;}
+footer a:hover{color:var(--yellow-dark);}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Random <span>Accountant</span></div>
+  <a href="https://ParfaitAmour1814.github.io" class="nav-back">← Portfolio</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">Commercial Analytics · Key Account Management · ML Classification</div>
+  <h1>KA Customer Classification<br><em>KAC vs KAM</em></h1>
+  <div class="hero-meta">
+    <div class="hero-meta-item">Source <span>676 F1 Pricing Approval PDFs</span></div>
+    <div class="hero-meta-item">Labelled <span>402 records</span></div>
+    <div class="hero-meta-item">Model <span>Logistic Regression</span></div>
+    <div class="hero-meta-item">CV AUC <span>0.910</span></div>
+  </div>
+  <div class="tag-row">
+    <span class="tag">PDF ETL</span>
+    <span class="tag">NLP Extraction</span>
+    <span class="tag">Logistic Regression</span>
+    <span class="tag">scikit-learn</span>
+    <span class="tag">Feature Engineering</span>
+    <span class="tag wip">🔄 K-Means Planned</span>
+    <span class="tag wip">🔄 Expanding Dataset</span>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-card"><div class="stat-val">676</div><div class="stat-lbl">PDFs Processed</div></div>
+  <div class="stat-card"><div class="stat-val">402</div><div class="stat-lbl">Labelled Records</div></div>
+  <div class="stat-card"><div class="stat-val">0.910</div><div class="stat-lbl">CV AUC (LR)</div></div>
+  <div class="stat-card"><div class="stat-val">79%</div><div class="stat-lbl">Test Accuracy</div></div>
+  <div class="stat-card"><div class="stat-val">21</div><div class="stat-lbl">Features</div></div>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('overview',this)">
+    <span class="tab-label">Tab 1</span>Overview & ETL
+  </button>
+  <button class="tab-btn" onclick="showTab('model',this)">
+    <span class="tab-label">Tab 2</span>Model & Results
+  </button>
+  <button class="tab-btn" onclick="showTab('features',this)">
+    <span class="tab-label">Tab 3</span>Feature Analysis
+  </button>
+  <button class="tab-btn" onclick="showTab('roadmap',this)">
+    <span class="tab-label">Tab 4</span>Roadmap
+  </button>
+</div>
+
+<!-- ══ TAB 1: OVERVIEW ══ -->
+<div class="tab-content active" id="overview">
+
+  <div class="insight">
+    <h3>Problem: 676 pricing approval PDFs, no structured database</h3>
+    <p>
+      Key Account customers are split into two tiers — <strong>KAC (Key Account Chain)</strong> and
+      <strong>KAM (Key Account Management)</strong> — each with different pricing policies, discount structures,
+      and contract terms. Classification currently relies on manual assignment via the <code>Mã LH</code> field
+      (KA01 = KAC, KA00 = KAM) inside F1 pricing approval forms. This project builds a
+      <strong>supervised ML model</strong> to predict classification from customer profile features,
+      and will expand to <strong>K-Means clustering</strong> to discover natural customer segments
+      beyond the binary KAC/KAM split.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">ETL Pipeline — From PDFs to Feature Matrix</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+      <div style="background:var(--lighter);border:1.5px solid var(--border);border-radius:6px;padding:14px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:6px;">📄</div>
+        <div style="font-size:11px;font-weight:700;color:var(--black);">676 PDFs</div>
+        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;">Raw F1 forms</div>
+      </div>
+      <div style="background:var(--lighter);border:1.5px solid var(--border);border-radius:6px;padding:14px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:6px;">⚙️</div>
+        <div style="font-size:11px;font-weight:700;color:var(--black);">pdftotext</div>
+        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;">Layout extraction</div>
+      </div>
+      <div style="background:var(--lighter);border:1.5px solid var(--border);border-radius:6px;padding:14px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:6px;">🔍</div>
+        <div style="font-size:11px;font-weight:700;color:var(--black);">Regex Parser</div>
+        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;">15 fields per doc</div>
+      </div>
+      <div style="background:var(--lighter);border:1.5px solid var(--border);border-radius:6px;padding:14px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:6px;">📊</div>
+        <div style="font-size:11px;font-weight:700;color:var(--black);">Feature Matrix</div>
+        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;">402 × 21</div>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>Field Extracted</th><th>Source in PDF</th><th>Coverage</th><th>Used As Feature</th></tr></thead>
+      <tbody>
+        <tr><td class="hl">Mã LH (KA00/KA01)</td><td class="mono">Section I — Customer Info</td><td>67%</td><td><span class="badge badge-kac">TARGET LABEL</span></td></tr>
+        <tr><td class="hl">Client type code (XXXX)</td><td class="mono">Mã LH suffix</td><td>85%</td><td>✅ One-hot encoded</td></tr>
+        <tr><td class="hl">Number of ship-to locations</td><td class="mono">Số lượng Ship-to</td><td>67%</td><td>✅ Numeric</td></tr>
+        <tr><td class="hl">Revenue target / year</td><td class="mono">Section II — Policy table</td><td>95%</td><td>✅ Log-transformed</td></tr>
+        <tr><td class="hl">Revenue target / month</td><td class="mono">Section II — Policy table</td><td>95%</td><td>✅ Numeric</td></tr>
+        <tr><td class="hl">Total discount + support %</td><td class="mono">Tổng tỷ lệ hỗ trợ</td><td>97%</td><td>✅ Numeric</td></tr>
+        <tr><td class="hl">Contract duration (months)</td><td class="mono">Thời hạn</td><td>98%</td><td>✅ Numeric</td></tr>
+        <tr><td class="hl">Historical sales 12M</td><td class="mono">Section III — History</td><td>81%</td><td>✅ Log-transformed</td></tr>
+        <tr><td class="hl">Number of product categories</td><td class="mono">Policy table rows</td><td>97%</td><td>✅ Numeric</td></tr>
+        <tr><td class="hl">Geographic coverage</td><td class="mono">Phân bố tại</td><td>100%</td><td>✅ Binary flags</td></tr>
+        <tr><td class="hl">Order frequency / month</td><td class="mono">Tần suất mua hàng</td><td>45%</td><td>✅ Numeric (median-filled)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Label Distribution — KAC vs KAM</div>
+      <div class="chart-sub">From 402 labelled records (191 pending manual review)</div>
+      <div class="chart-wrap"><canvas id="labelChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Client Type Code Distribution</div>
+      <div class="chart-sub">BVXX = Hospital · CQXX = Corp Office · GKCF = F&B Chain</div>
+      <div class="chart-wrap"><canvas id="clientChart"></canvas></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ TAB 2: MODEL ══ -->
+<div class="tab-content" id="model">
+
+  <div class="model-choice">
+    <h3>Logistic Regression — Chosen for interpretability over raw performance</h3>
+    <p>
+      Gradient Boosting achieved the highest test accuracy (90%) and Gradient Boosting and Random Forest
+      both outperform Logistic Regression on raw AUC. However, <strong>Logistic Regression was chosen</strong>
+      for three reasons: <strong>(1) Interpretability</strong> — a KA manager needs to understand why a customer
+      is classified as KAC or KAM; LR coefficients provide direct, explainable answers.
+      <strong>(2) Sample size risk</strong> — with only 402 labelled records, tree-based models risk
+      overfitting patterns that won't generalise to new customers; LR's regularisation is more robust.
+      <strong>(3) Deployment simplicity</strong> — LR outputs a calibrated probability score per customer
+      that can be thresholded and explained in a business context.
+      RF is retained as a <em>sanity check</em>: when both models agree, confidence is high;
+      when they disagree, the case is flagged for manual review.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Model Comparison — Cross-Validation (5-fold, stratified)</div>
+    <div class="chart-card" style="margin-bottom:16px;">
+      <div class="chart-title">CV AUC Comparison — All 3 Models</div>
+      <div class="chart-sub">Mean ± std across 5 folds · higher = better · chosen model highlighted</div>
+      <div class="chart-wrap"><canvas id="modelAucChart"></canvas></div>
+    </div>
+    <table>
+      <thead><tr><th>Model</th><th>CV AUC</th><th>CV Std</th><th>Test AUC</th><th>Test Accuracy</th><th>Chosen?</th></tr></thead>
+      <tbody>
+        <tr style="background:var(--green-light)">
+          <td class="hl">Logistic Regression ★</td>
+          <td class="mono">0.910</td><td class="mono">±0.046</td>
+          <td class="mono">0.868</td><td class="mono">79%</td>
+          <td><span class="badge" style="background:var(--green-light);color:var(--green);border:1px solid #a9dfbf">✅ Chosen</span></td>
+        </tr>
+        <tr>
+          <td class="hl">Random Forest</td>
+          <td class="mono">0.930</td><td class="mono">±0.041</td>
+          <td class="mono">0.931</td><td class="mono">86%</td>
+          <td><span class="badge" style="background:var(--light);color:var(--muted);border:1px solid var(--border)">Sanity check</span></td>
+        </tr>
+        <tr>
+          <td class="hl">Gradient Boosting</td>
+          <td class="mono">0.939</td><td class="mono">±0.042</td>
+          <td class="mono">0.938</td><td class="mono">90%</td>
+          <td><span class="badge" style="background:var(--light);color:var(--muted);border:1px solid var(--border)">Overfit risk</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Confusion Matrix — Logistic Regression (Test Set)</div>
+      <div class="chart-sub">81 test records · 49 KAC · 32 KAM</div>
+      <div style="display:flex;gap:24px;align-items:flex-start;margin-top:8px;">
+        <div class="cm-grid">
+          <div class="cm-cell cm-tn"><div class="cm-val">23</div><div class="cm-lbl">True KAM</div></div>
+          <div class="cm-cell cm-fp"><div class="cm-val">9</div><div class="cm-lbl">False KAC</div></div>
+          <div class="cm-cell cm-fn"><div class="cm-val">8</div><div class="cm-lbl">False KAM</div></div>
+          <div class="cm-cell cm-tp"><div class="cm-val">41</div><div class="cm-lbl">True KAC</div></div>
+        </div>
+        <div style="font-size:11px;color:var(--mid);line-height:2;">
+          <div>Precision KAC: <strong>82%</strong></div>
+          <div>Recall KAC: <strong>84%</strong></div>
+          <div>Precision KAM: <strong>74%</strong></div>
+          <div>Recall KAM: <strong>72%</strong></div>
+          <div>Overall Acc: <strong>79%</strong></div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Hyperparameters — Logistic Regression</div>
+      <div class="chart-sub">Current settings · to be tuned on full dataset</div>
+      <div style="margin-top:12px;">
+        <table>
+          <thead><tr><th>Parameter</th><th>Value</th><th>Rationale</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">C</td><td class="mono">1.0</td><td>Moderate regularisation</td></tr>
+            <tr><td class="mono">penalty</td><td class="mono">l2</td><td>Ridge — keeps all features</td></tr>
+            <tr><td class="mono">solver</td><td class="mono">lbfgs</td><td>Efficient for small n</td></tr>
+            <tr><td class="mono">max_iter</td><td class="mono">1000</td><td>Ensures convergence</td></tr>
+            <tr><td class="mono">class_weight</td><td class="mono">None</td><td>60/40 split — balanced</td></tr>
+            <tr><td class="mono">scaler</td><td class="mono">StandardScaler</td><td>Required for LR stability</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:10px;color:var(--muted);margin-top:10px;font-family:'DM Mono',monospace;">
+          Pending: GridSearchCV over C=[0.01,0.1,0.5,1,5,10] + L1 vs L2 on full dataset
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ TAB 3: FEATURES ══ -->
+<div class="tab-content" id="features">
+
+  <div class="insight">
+    <h3>Key finding: Number of ship-to locations is the strongest KAC predictor</h3>
+    <p>
+      The most interpretable finding from the LR coefficients: <strong>KAC customers have more
+      ship-to locations</strong> (coefficient +2.00) — chain customers by definition have multiple
+      outlets. <strong>Hospital clients (BVXX)</strong> strongly predict KAM (-0.83) — medical channel
+      customers are managed differently regardless of size. <strong>HCM-based customers</strong> lean KAC
+      (+1.12) — chain headquarters are concentrated in Ho Chi Minh City.
+      <strong>Higher monthly revenue target</strong> also predicts KAC (+1.06) — chains commit to
+      larger monthly volumes than institutional KAM accounts.
+    </p>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">LR Coefficients — Top 10 Features</div>
+      <div class="chart-sub">Positive = predicts KAC · Negative = predicts KAM</div>
+      <div class="chart-wrap tall"><canvas id="coefChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Random Forest Feature Importance</div>
+      <div class="chart-sub">Sanity check — consistent top features across both models</div>
+      <div class="chart-wrap tall"><canvas id="fiChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Feature Engineering Decisions</div>
+    <table>
+      <thead><tr><th>Feature</th><th>Engineering</th><th>LR Coef</th><th>Direction</th></tr></thead>
+      <tbody>
+        <tr><td class="hl">NUM_SHIP_TO</td><td>Raw count</td><td class="mono pos">+2.001</td><td><span class="badge badge-kac">→ KAC</span></td></tr>
+        <tr><td class="hl">IS_HCM</td><td>Binary flag from geo coverage</td><td class="mono pos">+1.121</td><td><span class="badge badge-kac">→ KAC</span></td></tr>
+        <tr><td class="hl">REVENUE_TARGET_MONTH</td><td>Raw VND value</td><td class="mono pos">+1.062</td><td><span class="badge badge-kac">→ KAC</span></td></tr>
+        <tr><td class="hl">NUM_PRODUCT_GROUPS</td><td>Count of product lines in policy</td><td class="mono pos">+0.992</td><td><span class="badge badge-kac">→ KAC</span></td></tr>
+        <tr><td class="hl">NUM_CATEGORIES</td><td>Count of product categories (A/B/C/D)</td><td class="mono neg">-0.840</td><td><span class="badge badge-kam">→ KAM</span></td></tr>
+        <tr><td class="hl">IS_NATIONAL</td><td>Binary flag — nationwide delivery</td><td class="mono pos">+0.832</td><td><span class="badge badge-kac">→ KAC</span></td></tr>
+        <tr><td class="hl">CG_HOSPITAL</td><td>One-hot from client type code</td><td class="mono neg">-0.829</td><td><span class="badge badge-kam">→ KAM</span></td></tr>
+        <tr><td class="hl">CG_SERVICE</td><td>One-hot — hotels, airports, transport</td><td class="mono pos">+0.818</td><td><span class="badge badge-kac">→ KAC</span></td></tr>
+        <tr><td class="hl">LOG_REVENUE_TARGET_YEAR</td><td>Log transform — skewed distribution</td><td class="mono neg">-0.714</td><td><span class="badge badge-kam">→ KAM</span></td></tr>
+        <tr><td class="hl">LOG_HIST_SALES_12M</td><td>Log transform — 12M historical sales</td><td class="mono neg">-0.523</td><td><span class="badge badge-kam">→ KAM</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- ══ TAB 4: ROADMAP ══ -->
+<div class="tab-content" id="roadmap">
+
+  <div class="insight">
+    <h3>Next: Expand to K-Means clustering — go beyond the binary KAC/KAM split</h3>
+    <p>
+      The supervised model answers <em>"is this customer KAC or KAM?"</em> But a more interesting
+      business question is: <em>"are there natural sub-segments within KAC and KAM that behave differently?"</em>
+      K-Means clustering on the same feature matrix will reveal whether, for example,
+      <strong>high-revenue hospital KAM accounts</strong> are actually more similar to chain KAC accounts
+      than to small hospital KAM accounts. This unsupervised layer will feed into a richer
+      <strong>customer segmentation strategy</strong> beyond the current binary classification.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Project Roadmap</div>
+    <div class="roadmap">
+      <div class="rm-item">
+        <div class="rm-dot done">✅</div>
+        <div>
+          <div class="rm-title">PDF ETL Pipeline <span class="rm-badge done">Completed</span></div>
+          <div class="rm-desc">Extracted 15 structured fields from 676 F1 pricing approval PDFs using pdftotext + regex parser. 593/594 PDFs successfully processed. 402 records labelled from Mã LH field.</div>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-dot done">✅</div>
+        <div>
+          <div class="rm-title">Baseline Classification Model <span class="rm-badge done">Completed</span></div>
+          <div class="rm-desc">Logistic Regression trained on 402 labelled records. CV AUC = 0.910. Compared against Random Forest (0.930) and Gradient Boosting (0.939). LR chosen for interpretability and generalisation robustness on small dataset.</div>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-dot active">🔄</div>
+        <div>
+          <div class="rm-title">Manual Label Completion <span class="rm-badge active">In Progress</span></div>
+          <div class="rm-desc">191 unlabelled PDFs identified (older F1 format without Mã LH field). Manual review Excel exported — labels being filled. Expected to grow dataset to ~590 records (+47%).</div>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-dot planned">📋</div>
+        <div>
+          <div class="rm-title">Hyperparameter Tuning <span class="rm-badge planned">Planned</span></div>
+          <div class="rm-desc">GridSearchCV over C=[0.01, 0.1, 0.5, 1.0, 5.0, 10.0] and L1 vs L2 penalty. Re-evaluate class_weight='balanced' with expanded dataset. Expected AUC improvement to 0.92+.</div>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-dot planned">📋</div>
+        <div>
+          <div class="rm-title">K-Means Customer Segmentation <span class="rm-badge planned">Planned</span></div>
+          <div class="rm-desc">Unsupervised clustering on the full feature matrix. Elbow method + silhouette score to determine optimal k. Goal: discover natural customer sub-segments beyond the binary KAC/KAM split — e.g. high-volume hospital vs institutional KAM, chain food service vs chain retail KAC.</div>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-dot planned">📋</div>
+        <div>
+          <div class="rm-title">Segment Profiling & Business Recommendations <span class="rm-badge planned">Planned</span></div>
+          <div class="rm-desc">Profile each K-Means cluster by revenue, discount rate, product mix, and geography. Map clusters to existing KAC/KAM labels to identify mis-classifications and pricing policy opportunities.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span>Truong Phat</span> · KA Customer Classification · ML + Unsupervised Expansion · 2025–2026 &nbsp;|&nbsp;
+  <a href="https://ParfaitAmour1814.github.io">← Portfolio</a>
+</footer>
+
+<script>
+const DATA_MODELS = [{"name":"Logistic Regression","cv_auc":0.9102,"cv_std":0.0455,"test_auc":0.868,"test_acc":79.0,"chosen":true},{"name":"Random Forest","cv_auc":0.9302,"cv_std":0.0411,"test_auc":0.9305,"test_acc":86.4,"chosen":false},{"name":"Gradient Boosting","cv_auc":0.9391,"cv_std":0.0419,"test_auc":0.9381,"test_acc":90.1,"chosen":false}];
+const DATA_COEFS = [{"feature":"NUM_SHIP_TO","coef":2.001},{"feature":"IS_HCM","coef":1.121},{"feature":"REVENUE_TARGET_MONTH","coef":1.062},{"feature":"NUM_PRODUCT_GROUPS","coef":0.992},{"feature":"NUM_CATEGORIES","coef":-0.84},{"feature":"IS_NATIONAL","coef":0.832},{"feature":"CG_HOSPITAL","coef":-0.829},{"feature":"CG_SERVICE","coef":0.818},{"feature":"LOG_REVENUE_TARGET_YEAR","coef":-0.714},{"feature":"LOG_HIST_SALES_12M","coef":-0.523}];
+const DATA_CLIENTS = [{"code":"BVXX","label":"Hospital","count":147,"lean":"KAM"},{"code":"CQXX","label":"Corp Office","count":131,"lean":"KAC"},{"code":"GKCF","label":"F&B Chain","count":33,"lean":"KAC"},{"code":"KSNH","label":"Hotel","count":32,"lean":"KAC"},{"code":"SACN","label":"Industrial","count":30,"lean":"KAM"},{"code":"SATH","label":"Port/Airport","count":27,"lean":"KAC"},{"code":"AUNH","label":"School/Uni","count":21,"lean":"KAM"},{"code":"CBTP","label":"Food Mfg","count":21,"lean":"KAM"}];
+const RF_FI = [{"feature":"NUM_SHIP_TO","importance":0.095},{"feature":"CG_SERVICE","importance":0.079},{"feature":"CG_HOSPITAL","importance":0.075},{"feature":"LOG_REVENUE_TARGET_YEAR","importance":0.073},{"feature":"REVENUE_TARGET_YEAR","importance":0.071},{"feature":"LOG_REVENUE_TARGET_MONTH","importance":0.070},{"feature":"REVENUE_TARGET_MONTH","importance":0.069},{"feature":"ORDER_FREQ_MONTH","importance":0.068},{"feature":"NUM_PRODUCT_GROUPS","importance":0.058},{"feature":"IS_NATIONAL","importance":0.055}];
+
+const Y='#E8B800',G='#27AE60',B='#2471A3',R='#C0392B',O='#E67E22';
+const KAC_C='#2471A3',KAM_C='#C0392B';
+const font={family:'DM Sans',size:11};
+
+function showTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Label distribution doughnut
+new Chart(document.getElementById('labelChart'),{
+  type:'doughnut',
+  data:{
+    labels:['KAC (KA01)','KAM (KA00)','Unlabelled'],
+    datasets:[{data:[241,161,191],backgroundColor:[KAC_C+'CC',KAM_C+'CC','#ccc'],borderColor:'#fff',borderWidth:2}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'right',labels:{font,color:'#666',boxWidth:12}}}}
+});
+
+// Client type bar
+new Chart(document.getElementById('clientChart'),{
+  type:'bar',
+  data:{
+    labels:DATA_CLIENTS.map(d=>d.label),
+    datasets:[{
+      data:DATA_CLIENTS.map(d=>d.count),
+      backgroundColor:DATA_CLIENTS.map(d=>d.lean==='KAC'?KAC_C+'99':KAM_C+'99'),
+      borderColor:DATA_CLIENTS.map(d=>d.lean==='KAC'?KAC_C:KAM_C),
+      borderWidth:2,borderRadius:4
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const d=DATA_CLIENTS[ctx.dataIndex];return ` ${d.count} — leans ${d.lean}`;} }}},
+    scales:{y:{ticks:{font,color:'#999'},grid:{color:'#eee'}},x:{ticks:{font,color:'#999'}}}}
+});
+
+// Model AUC comparison
+new Chart(document.getElementById('modelAucChart'),{
+  type:'bar',
+  data:{
+    labels:DATA_MODELS.map(d=>d.name),
+    datasets:[
+      {label:'CV AUC',data:DATA_MODELS.map(d=>d.cv_auc),backgroundColor:DATA_MODELS.map(d=>d.chosen?Y+'CC':'#ccc'),borderColor:DATA_MODELS.map(d=>d.chosen?Y:'#aaa'),borderWidth:2,borderRadius:4},
+      {label:'Test AUC',data:DATA_MODELS.map(d=>d.test_auc),backgroundColor:DATA_MODELS.map(d=>d.chosen?B+'99':'#ddd'),borderColor:DATA_MODELS.map(d=>d.chosen?B:'#bbb'),borderWidth:2,borderRadius:4}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top',labels:{font,color:'#999'}}},
+    scales:{y:{min:0.75,ticks:{font,color:'#999'},grid:{color:'#eee'}},x:{ticks:{font,color:'#999'}}}}
+});
+
+// LR Coefficients horizontal bar
+new Chart(document.getElementById('coefChart'),{
+  type:'bar',
+  data:{
+    labels:DATA_COEFS.map(d=>d.feature),
+    datasets:[{
+      data:DATA_COEFS.map(d=>d.coef),
+      backgroundColor:DATA_COEFS.map(d=>d.coef>0?KAC_C+'99':KAM_C+'99'),
+      borderColor:DATA_COEFS.map(d=>d.coef>0?KAC_C:KAM_C),
+      borderWidth:2,borderRadius:4
+    }]
+  },
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{x:{ticks:{font,color:'#999'},grid:{color:'#eee'}},y:{ticks:{font,color:'#666',font:{size:10}}}}}
+});
+
+// RF feature importance
+new Chart(document.getElementById('fiChart'),{
+  type:'bar',
+  data:{
+    labels:RF_FI.map(d=>d.feature),
+    datasets:[{
+      data:RF_FI.map(d=>d.importance),
+      backgroundColor:Y+'99',borderColor:Y,borderWidth:2,borderRadius:4
+    }]
+  },
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{x:{ticks:{font,color:'#999'},grid:{color:'#eee'}},y:{ticks:{font,color:'#666',font:{size:10}}}}}
+});
+</script>
+</body>
+</html>
