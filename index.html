@@ -3,987 +3,559 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Random Accountant Do Data Analysis — Truong Phat</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<title>KA Customer Classification — KAC vs KAM</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
-  :root {
-    --yellow: #E8B800;
-    --yellow-light: #FDF3CC;
-    --yellow-dark: #A07800;
-    --black: #0D0D0D;
-    --dark: #1A1A1A;
-    --mid: #3D3D3D;
-    --muted: #666666;
-    --light: #F0EFE8;
-    --lighter: #F8F7F2;
-    --white: #FFFFFF;
-    --border: #CCCCBF;
-    --border-light: #E5E4DC;
-  }
+:root {
+  --yellow:#E8B800; --yellow-light:#FDF3CC; --yellow-dark:#A07800;
+  --black:#0D0D0D; --dark:#1A1A1A; --mid:#3D3D3D; --muted:#888;
+  --light:#F0EFE8; --lighter:#F8F7F2; --white:#FFF; --border:#D8D7D0;
+  --green:#1E8449; --green-light:#E9F7EF; --green-mid:#27AE60;
+  --red:#C0392B; --red-light:#FDECEA;
+  --orange:#E67E22; --orange-light:#FEF0E6;
+  --blue:#2471A3; --blue-light:#EBF5FB;
+  --kac:#2471A3; --kam:#C0392B;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--dark);background:var(--lighter);line-height:1.6;}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+nav{background:var(--black);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:3px solid var(--yellow);}
+.nav-logo{font-family:'DM Mono',monospace;font-size:12px;color:#999;}
+.nav-logo span{color:var(--yellow);}
+.nav-back{font-size:11px;color:#999;text-decoration:none;font-family:'DM Mono',monospace;transition:color 0.2s;}
+.nav-back:hover{color:var(--yellow);}
 
-  html { scroll-behavior: smooth; }
+.hero{background:var(--black);padding:48px 40px 40px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(232,184,0,0.06) 0%,transparent 70%);pointer-events:none;}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--yellow),transparent);}
+.hero-tag{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);margin-bottom:10px;font-family:'DM Mono',monospace;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:32px;font-weight:400;color:var(--white);line-height:1.2;margin-bottom:12px;}
+.hero h1 em{color:var(--yellow);font-style:italic;}
+.hero-meta{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:20px;}
+.hero-meta-item{font-size:11px;color:#888;font-family:'DM Mono',monospace;}
+.hero-meta-item span{color:var(--white);}
+.tag-row{display:flex;gap:8px;flex-wrap:wrap;}
+.tag{font-size:10px;font-weight:600;padding:3px 10px;border-radius:3px;background:rgba(255,255,255,0.08);color:#ccc;border:1px solid rgba(255,255,255,0.12);font-family:'DM Mono',monospace;}
+.tag.wip{background:rgba(232,184,0,0.15);border-color:var(--yellow);color:var(--yellow);}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    color: var(--dark);
-    background: var(--lighter);
-    line-height: 1.6;
-  }
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;padding:24px 40px;background:var(--white);border-bottom:1px solid var(--border);}
+.stat-card{text-align:center;padding:14px;border-radius:6px;border:1.5px solid var(--border);}
+.stat-val{font-family:'DM Serif Display',serif;font-size:24px;color:var(--yellow-dark);line-height:1;margin-bottom:3px;}
+.stat-lbl{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.8px;}
 
-  /* NAV */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-light);
-    padding: 0 40px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .nav-logo {
-    font-family: 'DM Serif Display', serif;
-    font-size: 18px;
-    color: var(--black);
-    letter-spacing: -0.3px;
-  }
-  .nav-logo span {
-    color: var(--yellow-dark);
-  }
-  .nav-links {
-    display: flex;
-    gap: 32px;
-    list-style: none;
-  }
-  .nav-links a {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--muted);
-    text-decoration: none;
-    letter-spacing: 0.3px;
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--black); }
-  .nav-cta {
-    background: var(--yellow);
-    color: var(--black) !important;
-    padding: 7px 16px;
-    border-radius: 4px;
-    font-weight: 600 !important;
-    transition: background 0.2s !important;
-  }
-  .nav-cta:hover { background: var(--yellow-dark) !important; color: var(--white) !important; }
+/* TABS */
+.tab-bar{background:var(--white);border-bottom:2px solid var(--border);display:flex;padding:0 40px;}
+.tab-btn{padding:12px 22px;font-size:12px;font-weight:600;color:var(--muted);background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;transition:all 0.2s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--black);}
+.tab-btn.active{color:var(--black);border-bottom-color:var(--yellow);}
+.tab-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--yellow-dark);display:block;margin-bottom:1px;font-family:'DM Mono',monospace;}
 
-  /* HERO */
-  .hero {
-    padding: 140px 80px 100px;
-    max-width: 1100px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 60px;
-    align-items: center;
-  }
-  .hero-tag {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--yellow-dark);
-    background: var(--yellow-light);
-    border: 1px solid var(--yellow);
-    padding: 4px 12px;
-    border-radius: 3px;
-    margin-bottom: 20px;
-  }
-  .hero h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 52px;
-    line-height: 1.1;
-    color: var(--black);
-    letter-spacing: -1px;
-    margin-bottom: 16px;
-  }
-  .hero h1 em {
-    font-style: italic;
-    color: var(--yellow-dark);
-  }
-  .hero-sub {
-    font-size: 16px;
-    color: var(--muted);
-    line-height: 1.7;
-    max-width: 480px;
-    margin-bottom: 32px;
-  }
-  .hero-buttons {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s;
-    cursor: pointer;
-    border: none;
-  }
-  .btn-primary {
-    background: var(--black);
-    color: var(--white);
-  }
-  .btn-primary:hover { background: var(--dark); transform: translateY(-1px); }
-  .btn-secondary {
-    background: var(--white);
-    color: var(--dark);
-    border: 1.5px solid var(--border);
-  }
-  .btn-secondary:hover { border-color: var(--black); transform: translateY(-1px); }
+.tab-content{display:none;max-width:960px;margin:0 auto;padding:28px 40px;}
+.tab-content.active{display:block;}
 
-  /* HERO CARD */
-  .hero-card {
-    background: var(--white);
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    padding: 28px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-  }
-  .hero-card-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border-light);
-  }
-  .avatar {
-    width: 52px; height: 52px;
-    background: linear-gradient(135deg, var(--yellow), #F0A500);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'DM Serif Display', serif;
-    font-size: 20px;
-    color: var(--black);
-    flex-shrink: 0;
-  }
-  .hero-card-name { font-size: 15px; font-weight: 700; color: var(--black); }
-  .hero-card-role { font-size: 11px; color: var(--yellow-dark); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
-  .stat-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-  .stat-item {
-    background: var(--lighter);
-    border: 1px solid var(--border-light);
-    border-radius: 4px;
-    padding: 10px 12px;
-    text-align: center;
-  }
-  .stat-val { font-size: 22px; font-weight: 700; color: var(--black); line-height: 1; }
-  .stat-lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
-  .tag-row { display: flex; flex-wrap: wrap; gap: 5px; }
-  .tag {
-    font-size: 10px;
-    padding: 3px 8px;
-    border-radius: 3px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    background: var(--white);
-  }
-  .tag.hi { border-color: var(--yellow-dark); color: var(--yellow-dark); background: var(--yellow-light); }
+.section{background:var(--white);border:1.5px solid var(--border);border-radius:6px;padding:22px 26px;margin-bottom:18px;}
+.section-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--yellow-dark);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;}
 
-  /* SECTIONS */
-  section {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 80px 80px;
-  }
-  .section-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: var(--yellow-dark);
-    margin-bottom: 8px;
-  }
-  .section-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 36px;
-    color: var(--black);
-    letter-spacing: -0.5px;
-    margin-bottom: 12px;
-  }
-  .section-sub {
-    font-size: 15px;
-    color: var(--muted);
-    max-width: 560px;
-    margin-bottom: 48px;
-    line-height: 1.7;
-  }
-  .divider {
-    width: 100%;
-    height: 1px;
-    background: var(--border-light);
-    margin: 0;
-  }
+.insight{background:var(--black);color:var(--white);border-radius:6px;padding:20px 24px;margin-bottom:18px;border-left:4px solid var(--yellow);}
+.insight h3{font-family:'DM Serif Display',serif;font-size:15px;color:var(--yellow);margin-bottom:8px;}
+.insight p{font-size:12px;color:#ccc;line-height:1.8;}
+.insight strong{color:var(--white);}
 
-  /* ABOUT */
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    align-items: start;
-  }
-  .about-text {
-    font-size: 15px;
-    color: var(--mid);
-    line-height: 1.8;
-  }
-  .about-text p { margin-bottom: 16px; }
-  .about-text strong { color: var(--black); }
-  .about-highlight {
-    background: var(--white);
-    border: 1.5px solid var(--border);
-    border-left: 4px solid var(--yellow);
-    border-radius: 0 6px 6px 0;
-    padding: 20px 24px;
-    margin-bottom: 16px;
-  }
-  .about-highlight-label {
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--yellow-dark);
-    margin-bottom: 6px;
-  }
-  .about-highlight p {
-    font-size: 13px;
-    color: var(--mid);
-    line-height: 1.6;
-    margin: 0;
-  }
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.chart-card{background:var(--white);border:1.5px solid var(--border);border-radius:6px;padding:18px;}
+.chart-title{font-size:11px;font-weight:700;color:var(--black);margin-bottom:3px;}
+.chart-sub{font-size:10px;color:var(--muted);margin-bottom:14px;font-family:'DM Mono',monospace;}
+.chart-wrap{position:relative;height:220px;}
+.chart-wrap.tall{height:280px;}
 
-  /* PROJECTS */
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-  .project-card {
-    background: var(--white);
-    border: 1.5px solid var(--border);
-    border-radius: 6px;
-    padding: 24px;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .project-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--yellow);
-  }
-  .project-card:hover {
-    border-color: var(--yellow-dark);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-    transform: translateY(-2px);
-  }
-  .project-card.coming-soon {
-    opacity: 0.6;
-    cursor: default;
-  }
-  .project-card.coming-soon::before { background: var(--border); }
-  .project-card.coming-soon:hover {
-    transform: none;
-    box-shadow: none;
-    border-color: var(--border);
-  }
-  .project-status {
-    display: inline-block;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 2px 8px;
-    border-radius: 3px;
-    margin-bottom: 12px;
-  }
-  .status-live { background: #E6F4EA; color: #2E7D32; border: 1px solid #A5D6A7; }
-  .status-wip { background: var(--yellow-light); color: var(--yellow-dark); border: 1px solid var(--yellow); }
-  .status-soon { background: var(--light); color: var(--muted); border: 1px solid var(--border); }
-  .project-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--black);
-    margin-bottom: 8px;
-    line-height: 1.3;
-  }
-  .project-desc {
-    font-size: 12.5px;
-    color: var(--muted);
-    line-height: 1.6;
-    margin-bottom: 16px;
-  }
-  .project-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 16px; }
-  .project-tag {
-    font-size: 9px;
-    padding: 2px 6px;
-    border-radius: 2px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-  }
-  .project-link {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--yellow-dark);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .project-link:hover { color: var(--black); }
-  .project-link.secondary {
-    background: transparent;
-    color: var(--muted);
-    border: 1.5px solid var(--border);
-    margin-left: 8px;
-  }
-  .project-link.secondary:hover { color: var(--black); border-color: var(--black); }
-  .project-links { display: flex; gap: 0; margin-top: 14px; }
+/* MODEL CHOICE BOX */
+.model-choice{border:1.5px solid var(--green-mid);border-radius:6px;padding:20px 24px;margin-bottom:18px;background:var(--green-light);position:relative;}
+.model-choice::before{content:'★ CHOSEN MODEL';position:absolute;top:-10px;left:16px;background:var(--green-mid);color:#fff;font-size:9px;font-weight:700;letter-spacing:1px;padding:2px 8px;border-radius:3px;font-family:'DM Mono',monospace;}
+.model-choice h3{font-size:14px;font-weight:700;color:var(--green);margin-bottom:8px;}
+.model-choice p{font-size:12px;color:var(--mid);line-height:1.8;}
+.model-choice strong{color:var(--dark);}
 
-  /* SKILLS */
-  .skills-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-  }
-  .skill-group {
-    background: var(--white);
-    border: 1.5px solid var(--border);
-    border-radius: 6px;
-    padding: 20px;
-  }
-  .skill-group-title {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--yellow-dark);
-    margin-bottom: 14px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border-light);
-  }
-  .skill-item-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    font-size: 12.5px;
-  }
-  .skill-name { color: var(--dark); }
-  .skill-bar-mini {
-    width: 60px;
-    height: 3px;
-    background: var(--border-light);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .skill-bar-fill {
-    height: 100%;
-    background: var(--yellow);
-    border-radius: 2px;
-  }
-  .skill-bar-fill.blue { background: #2196F3; }
-  .skill-bar-fill.green { background: #21B573; }
-  .skill-bar-fill.orange { background: #E8A838; }
-  .skill-bar-fill.purple { background: #8764B8; }
+/* CONFUSION MATRIX */
+.cm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:280px;}
+.cm-cell{padding:14px;border-radius:6px;text-align:center;}
+.cm-cell .cm-val{font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;line-height:1;}
+.cm-cell .cm-lbl{font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.5px;margin-top:3px;}
+.cm-tp{background:var(--green-light);border:2px solid var(--green-mid);}
+.cm-tp .cm-val{color:var(--green);}
+.cm-tn{background:var(--blue-light);border:2px solid var(--blue);}
+.cm-tn .cm-val{color:var(--blue);}
+.cm-fp,.cm-fn{background:var(--red-light);border:2px solid #e8a89e;}
+.cm-fp .cm-val,.cm-fn .cm-val{color:var(--red);}
 
-  /* CERTIFICATIONS */
-  .cert-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
-  .cert-card {
-    background: var(--white);
-    border: 1.5px solid var(--border);
-    border-radius: 6px;
-    padding: 20px;
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-    transition: all 0.2s;
-  }
-  .cert-card:hover { border-color: var(--yellow-dark); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
-  .cert-icon {
-    width: 36px; height: 36px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-  .cert-name { font-size: 13px; font-weight: 600; color: var(--black); line-height: 1.3; margin-bottom: 3px; }
-  .cert-issuer { font-size: 11px; color: var(--muted); }
-  .cert-date { font-size: 10px; color: var(--yellow-dark); font-weight: 600; margin-top: 4px; font-family: 'DM Mono', monospace; }
+/* ROADMAP */
+.roadmap{display:flex;flex-direction:column;gap:0;}
+.rm-item{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);}
+.rm-item:last-child{border-bottom:none;}
+.rm-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px;}
+.rm-dot.done{background:var(--green-light);border:2px solid var(--green-mid);}
+.rm-dot.active{background:var(--yellow-light);border:2px solid var(--yellow);}
+.rm-dot.planned{background:var(--light);border:2px solid var(--border);}
+.rm-title{font-size:12px;font-weight:700;color:var(--black);margin-bottom:3px;}
+.rm-desc{font-size:11px;color:var(--muted);line-height:1.6;}
+.rm-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;font-family:'DM Mono',monospace;margin-left:8px;}
+.rm-badge.done{background:var(--green-light);color:var(--green);border:1px solid #a9dfbf;}
+.rm-badge.active{background:var(--yellow-light);color:var(--yellow-dark);border:1px solid var(--yellow);}
+.rm-badge.planned{background:var(--light);color:var(--muted);border:1px solid var(--border);}
 
-  /* CONTACT */
-  .contact-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    align-items: center;
-  }
-  .contact-text h3 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 28px;
-    color: var(--black);
-    margin-bottom: 12px;
-  }
-  .contact-text p { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
-  .contact-items { display: flex; flex-direction: column; gap: 12px; }
-  .contact-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 13px;
-    color: var(--mid);
-  }
-  .contact-dot {
-    width: 8px; height: 8px;
-    background: var(--yellow);
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .contact-item a { color: var(--mid); text-decoration: none; }
-  .contact-item a:hover { color: var(--yellow-dark); }
+/* FEATURE TABLE */
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{background:var(--light);padding:8px 12px;text-align:left;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);}
+td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--mid);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--lighter);}
+.hl{font-weight:600;color:var(--black);}
+.mono{font-family:'DM Mono',monospace;}
+.pos{color:var(--blue);font-weight:600;}
+.neg{color:var(--red);font-weight:600;}
 
-  /* MUSIC PLAYER */
-  .music-player {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 200;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
-  }
-  .music-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: var(--yellow);
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    transition: all 0.2s;
-  }
-  .music-btn:hover { background: var(--yellow-dark); transform: scale(1.05); }
-  .music-label {
-    font-size: 10px;
-    font-family: 'DM Mono', monospace;
-    color: var(--muted);
-    background: var(--white);
-    border: 1px solid var(--border);
-    padding: 3px 8px;
-    border-radius: 3px;
-    white-space: nowrap;
-  }
-  .youtube-frame { display: none; }
+.badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;font-family:'DM Mono',monospace;}
+.badge-kac{background:var(--blue-light);color:var(--blue);border:1px solid #aed6f1;}
+.badge-kam{background:var(--red-light);color:var(--red);border:1px solid #f5b7b1;}
 
-  /* FOOTER */
-  footer {
-    background: var(--black);
-    color: var(--muted);
-    text-align: center;
-    padding: 28px 40px;
-    font-size: 12px;
-    font-family: 'DM Mono', monospace;
-  }
-  footer span { color: var(--yellow); }
-
-  /* ANIMATIONS */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .hero-left { animation: fadeUp 0.6s ease forwards; }
-  .hero-card { animation: fadeUp 0.6s ease 0.2s forwards; opacity: 0; }
-
-  /* BG ACCENT */
-  .bg-section {
-    background: var(--white);
-    border-top: 1px solid var(--border-light);
-    border-bottom: 1px solid var(--border-light);
-  }
+footer{text-align:center;padding:20px;font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;border-top:1px solid var(--border);margin-top:8px;}
+footer span{color:var(--yellow-dark);}
+footer a{color:var(--muted);text-decoration:none;}
+footer a:hover{color:var(--yellow-dark);}
 </style>
 </head>
 <body>
 
-<!-- MUSIC PLAYER -->
-<div class="music-player">
-  <div class="music-label" id="music-label">♪ All By Myself — Dominic Miller</div>
-  <button class="music-btn" id="music-btn" onclick="toggleMusic()" title="Play music">▶</button>
-</div>
-<div id="yt-frame" style="display:none"></div>
-
-<script>
-  var tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  document.head.appendChild(tag);
-  var player;
-  var playing = false;
-  window.onYouTubeIframeAPIReady = function() {
-    player = new YT.Player('yt-frame', {
-      height: '0', width: '0',
-      videoId: 'ERXUMh1S2ws',
-      playerVars: { autoplay: 0, start: 1080, end: 1268 },
-      events: { onStateChange: onPlayerStateChange }
-    });
-  };
-  function onPlayerStateChange(e) {
-    if (e.data === 0) {
-      document.getElementById('music-btn').innerHTML = '▶';
-      document.getElementById('music-label').innerHTML = '♪ All By Myself — Dominic Miller';
-      playing = false;
-    }
-  }
-  function toggleMusic() {
-    if (!player) return;
-    if (playing) {
-      player.pauseVideo();
-      document.getElementById('music-btn').innerHTML = '▶';
-      document.getElementById('music-label').innerHTML = '♪ All By Myself — Dominic Miller';
-    } else {
-      player.playVideo();
-      document.getElementById('music-btn').innerHTML = '⏸';
-      document.getElementById('music-label').innerHTML = '▶ Now playing...';
-    }
-    playing = !playing;
-  }
-</script>
-
-<!-- NAV -->
 <nav>
   <div class="nav-logo">Random <span>Accountant</span></div>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#learning">Coursera</a></li>
-    <li><a href="#skills">Skills</a></li>
-    <li><a href="#certifications">Certifications</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="TruongPhat_CV_A4_PRIMARY.pdf" class="nav-cta" download>↓ Download CV</a></li>
-  </ul>
+  <a href="https://ParfaitAmour1814.github.io" class="nav-back">← Portfolio</a>
 </nav>
 
-<!-- HERO -->
 <div class="hero">
-  <div class="hero-left">
-    <div class="hero-tag">Random Accountant Do Data Analysis</div>
-    <h1>Where <em>finance</em><br>meets data.</h1>
-    <p class="hero-sub">
-      8+ years bridging Big 4 audit, IFRS reporting, cost & pricing accounting,
-      and enterprise data work — now building toward data science in finance.
-      Based in Ho Chi Minh City, Vietnam.
+  <div class="hero-tag">Commercial Analytics · Key Account Management · ML Classification</div>
+  <h1>KA Customer Classification<br><em>KAC vs KAM</em></h1>
+  <div class="hero-meta">
+    <div class="hero-meta-item">Source <span>676 F1 Pricing Approval PDFs</span></div>
+    <div class="hero-meta-item">Labelled <span>402 records</span></div>
+    <div class="hero-meta-item">Model <span>Logistic Regression</span></div>
+    <div class="hero-meta-item">CV AUC <span>0.910</span></div>
+  </div>
+  <div class="tag-row">
+    <span class="tag">PDF ETL</span>
+    <span class="tag">NLP Extraction</span>
+    <span class="tag">Logistic Regression</span>
+    <span class="tag">scikit-learn</span>
+    <span class="tag">Feature Engineering</span>
+    <span class="tag wip">🔄 K-Means Planned</span>
+    <span class="tag wip">🔄 Expanding Dataset</span>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-card"><div class="stat-val">676</div><div class="stat-lbl">PDFs Processed</div></div>
+  <div class="stat-card"><div class="stat-val">402</div><div class="stat-lbl">Labelled Records</div></div>
+  <div class="stat-card"><div class="stat-val">0.910</div><div class="stat-lbl">CV AUC (LR)</div></div>
+  <div class="stat-card"><div class="stat-val">79%</div><div class="stat-lbl">Test Accuracy</div></div>
+  <div class="stat-card"><div class="stat-val">21</div><div class="stat-lbl">Features</div></div>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('overview',this)">
+    <span class="tab-label">Tab 1</span>Overview & ETL
+  </button>
+  <button class="tab-btn" onclick="showTab('model',this)">
+    <span class="tab-label">Tab 2</span>Model & Results
+  </button>
+  <button class="tab-btn" onclick="showTab('features',this)">
+    <span class="tab-label">Tab 3</span>Feature Analysis
+  </button>
+  <button class="tab-btn" onclick="showTab('roadmap',this)">
+    <span class="tab-label">Tab 4</span>Roadmap
+  </button>
+</div>
+
+<!-- ══ TAB 1: OVERVIEW ══ -->
+<div class="tab-content active" id="overview">
+
+  <div class="insight">
+    <h3>Problem: 676 pricing approval PDFs, no structured database</h3>
+    <p>
+      Key Account customers are split into two tiers — <strong>KAC (Key Account Chain)</strong> and
+      <strong>KAM (Key Account Management)</strong> — each with different pricing policies, discount structures,
+      and contract terms. Classification currently relies on manual assignment via the <code>Mã LH</code> field
+      (KA01 = KAC, KA00 = KAM) inside F1 pricing approval forms. This project builds a
+      <strong>supervised ML model</strong> to predict classification from customer profile features,
+      and will expand to <strong>K-Means clustering</strong> to discover natural customer segments
+      beyond the binary KAC/KAM split.
     </p>
-    <div class="hero-buttons">
-      <a href="#projects" class="btn btn-primary">View Projects</a>
-      <a href="#about" class="btn btn-secondary">About Me</a>
-      <a href="TruongPhat_CV_A4_PRIMARY.pdf" class="btn btn-secondary" download>↓ CV</a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">ETL Pipeline — From PDFs to Feature Matrix</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+      <div style="background:var(--lighter);border:1.5px solid var(--border);border-radius:6px;padding:14px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:6px;">📄</div>
+        <div style="font-size:11px;font-weight:700;color:var(--black);">676 PDFs</div>
+        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;">Raw F1 forms</div>
+      </div>
+      <div style="background:var(--lighter);border:1.5px solid var(--border);border-radius:6px;padding:14px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:6px;">⚙️</div>
+        <div style="font-size:11px;font-weight:700;color:var(--black);">pdftotext</div>
+        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;">Layout extraction</div>
+      </div>
+      <div style="background:var(--lighter);border:1.5px solid var(--border);border-radius:6px;padding:14px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:6px;">🔍</div>
+        <div style="font-size:11px;font-weight:700;color:var(--black);">Regex Parser</div>
+        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;">15 fields per doc</div>
+      </div>
+      <div style="background:var(--lighter);border:1.5px solid var(--border);border-radius:6px;padding:14px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:6px;">📊</div>
+        <div style="font-size:11px;font-weight:700;color:var(--black);">Feature Matrix</div>
+        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;">402 × 21</div>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>Field Extracted</th><th>Source in PDF</th><th>Coverage</th><th>Used As Feature</th></tr></thead>
+      <tbody>
+        <tr><td class="hl">Mã LH (KA00/KA01)</td><td class="mono">Section I — Customer Info</td><td>67%</td><td><span class="badge badge-kac">TARGET LABEL</span></td></tr>
+        <tr><td class="hl">Client type code (XXXX)</td><td class="mono">Mã LH suffix</td><td>85%</td><td>✅ One-hot encoded</td></tr>
+        <tr><td class="hl">Number of ship-to locations</td><td class="mono">Số lượng Ship-to</td><td>67%</td><td>✅ Numeric</td></tr>
+        <tr><td class="hl">Revenue target / year</td><td class="mono">Section II — Policy table</td><td>95%</td><td>✅ Log-transformed</td></tr>
+        <tr><td class="hl">Revenue target / month</td><td class="mono">Section II — Policy table</td><td>95%</td><td>✅ Numeric</td></tr>
+        <tr><td class="hl">Total discount + support %</td><td class="mono">Tổng tỷ lệ hỗ trợ</td><td>97%</td><td>✅ Numeric</td></tr>
+        <tr><td class="hl">Contract duration (months)</td><td class="mono">Thời hạn</td><td>98%</td><td>✅ Numeric</td></tr>
+        <tr><td class="hl">Historical sales 12M</td><td class="mono">Section III — History</td><td>81%</td><td>✅ Log-transformed</td></tr>
+        <tr><td class="hl">Number of product categories</td><td class="mono">Policy table rows</td><td>97%</td><td>✅ Numeric</td></tr>
+        <tr><td class="hl">Geographic coverage</td><td class="mono">Phân bố tại</td><td>100%</td><td>✅ Binary flags</td></tr>
+        <tr><td class="hl">Order frequency / month</td><td class="mono">Tần suất mua hàng</td><td>45%</td><td>✅ Numeric (median-filled)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Label Distribution — KAC vs KAM</div>
+      <div class="chart-sub">From 402 labelled records (191 pending manual review)</div>
+      <div class="chart-wrap"><canvas id="labelChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Client Type Code Distribution</div>
+      <div class="chart-sub">BVXX = Hospital · CQXX = Corp Office · GKCF = F&B Chain</div>
+      <div class="chart-wrap"><canvas id="clientChart"></canvas></div>
     </div>
   </div>
 
-  <div class="hero-card">
-    <div class="hero-card-header">
-      <div class="avatar">TP</div>
-      <div>
-        <div class="hero-card-name">Truong Phat</div>
-        <div class="hero-card-role">Finance & BI Professional</div>
-      </div>
-    </div>
-    <div class="stat-row">
-      <div class="stat-item"><div class="stat-val">8+</div><div class="stat-lbl">Years Exp.</div></div>
-      <div class="stat-item"><div class="stat-val">4</div><div class="stat-lbl">Companies</div></div>
-      <div class="stat-item"><div class="stat-val">945</div><div class="stat-lbl">TOEIC</div></div>
-      <div class="stat-item"><div class="stat-val">5</div><div class="stat-lbl">Certs</div></div>
-    </div>
-    <div class="tag-row">
-      <span class="tag hi">Power BI</span>
-      <span class="tag hi">SAP FICO</span>
-      <span class="tag hi">Oracle EBS</span>
-      <span class="tag hi">SQL</span>
-      <span class="tag">IFRS</span>
-      <span class="tag">Python</span>
-      <span class="tag">VBA</span>
-      <span class="tag">Gen AI</span>
-    </div>
-  </div>
 </div>
 
-<div class="divider"></div>
+<!-- ══ TAB 2: MODEL ══ -->
+<div class="tab-content" id="model">
 
-<!-- ABOUT -->
-<section id="about">
-  <div class="section-label">About Me</div>
-  <div class="section-title">Finance professional,<br>data curious.</div>
-  <div class="about-grid">
-    <div class="about-text">
-      <p>
-        I started my career at <strong>Deloitte Vietnam</strong> as an auditor, where I spent 3.5 years working across industries. I joined as a third-year university student — running between the printing room and binding desks to get financial statements out the door, learning to read them page by page under the guidance of partners' secretaries. From there I moved into fieldwork, working directly with clients and eventually leading audit teams. Numbers came naturally to me, and more importantly, I enjoyed thinking critically about the connections between them. The last 1.5 years at Deloitte took me into <strong>IFRS and US GAAP engagements</strong>, which led naturally to a Finance Executive role at <strong>Home Credit Vietnam</strong>.
-      </p>
-      <p>
-        At Home Credit, I worked with a <strong>30-million-row Oracle data warehouse</strong> — writing and
-        extending production SQL covering IFRS 9 stage classification, provision variance analysis,
-        and loan portfolio segmentation across multiple product types. That experience made me realise
-        how much I enjoy working at the intersection of finance domain knowledge and data.
-      </p>
-      <p>
-        Today at <strong>Vinamilk</strong>, I work in cost & pricing accounting while independently building
-        data workflows — regression-based sales forecasting, channel-to-P&L analysis, and Power BI
-        reporting. I'm actively developing a portfolio that connects real financial datasets to
-        data science techniques.
-      </p>
-      <p>
-        Outside the technical work, I think of myself as a natural problem solver — whether that's helping a colleague fix a formula in Excel, or recommending the right angle to take on an audit engagement. I genuinely believe people have more potential than they realise, and I've always found satisfaction in helping draw that out. Teaching has been a constant thread throughout my career — from university, through Deloitte and Home Credit, to today. I see it as the most effective way to both share and refresh knowledge. And honestly, I just enjoy talking to people — the interesting ones especially.
-      </p>
+  <div class="model-choice">
+    <h3>Logistic Regression — Chosen for interpretability over raw performance</h3>
+    <p>
+      Gradient Boosting achieved the highest test accuracy (90%) and Gradient Boosting and Random Forest
+      both outperform Logistic Regression on raw AUC. However, <strong>Logistic Regression was chosen</strong>
+      for three reasons: <strong>(1) Interpretability</strong> — a KA manager needs to understand why a customer
+      is classified as KAC or KAM; LR coefficients provide direct, explainable answers.
+      <strong>(2) Sample size risk</strong> — with only 402 labelled records, tree-based models risk
+      overfitting patterns that won't generalise to new customers; LR's regularisation is more robust.
+      <strong>(3) Deployment simplicity</strong> — LR outputs a calibrated probability score per customer
+      that can be thresholded and explained in a business context.
+      RF is retained as a <em>sanity check</em>: when both models agree, confidence is high;
+      when they disagree, the case is flagged for manual review.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Model Comparison — Cross-Validation (5-fold, stratified)</div>
+    <div class="chart-card" style="margin-bottom:16px;">
+      <div class="chart-title">CV AUC Comparison — All 3 Models</div>
+      <div class="chart-sub">Mean ± std across 5 folds · higher = better · chosen model highlighted</div>
+      <div class="chart-wrap"><canvas id="modelAucChart"></canvas></div>
     </div>
-    <div>
-      <div class="about-highlight">
-        <div class="about-highlight-label">What I bring</div>
-        <p>Finance domain depth most data scientists don't have — I understand what the numbers mean, not just how to query them.</p>
+    <table>
+      <thead><tr><th>Model</th><th>CV AUC</th><th>CV Std</th><th>Test AUC</th><th>Test Accuracy</th><th>Chosen?</th></tr></thead>
+      <tbody>
+        <tr style="background:var(--green-light)">
+          <td class="hl">Logistic Regression ★</td>
+          <td class="mono">0.910</td><td class="mono">±0.046</td>
+          <td class="mono">0.868</td><td class="mono">79%</td>
+          <td><span class="badge" style="background:var(--green-light);color:var(--green);border:1px solid #a9dfbf">✅ Chosen</span></td>
+        </tr>
+        <tr>
+          <td class="hl">Random Forest</td>
+          <td class="mono">0.930</td><td class="mono">±0.041</td>
+          <td class="mono">0.931</td><td class="mono">86%</td>
+          <td><span class="badge" style="background:var(--light);color:var(--muted);border:1px solid var(--border)">Sanity check</span></td>
+        </tr>
+        <tr>
+          <td class="hl">Gradient Boosting</td>
+          <td class="mono">0.939</td><td class="mono">±0.042</td>
+          <td class="mono">0.938</td><td class="mono">90%</td>
+          <td><span class="badge" style="background:var(--light);color:var(--muted);border:1px solid var(--border)">Overfit risk</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Confusion Matrix — Logistic Regression (Test Set)</div>
+      <div class="chart-sub">81 test records · 49 KAC · 32 KAM</div>
+      <div style="display:flex;gap:24px;align-items:flex-start;margin-top:8px;">
+        <div class="cm-grid">
+          <div class="cm-cell cm-tn"><div class="cm-val">23</div><div class="cm-lbl">True KAM</div></div>
+          <div class="cm-cell cm-fp"><div class="cm-val">9</div><div class="cm-lbl">False KAC</div></div>
+          <div class="cm-cell cm-fn"><div class="cm-val">8</div><div class="cm-lbl">False KAM</div></div>
+          <div class="cm-cell cm-tp"><div class="cm-val">41</div><div class="cm-lbl">True KAC</div></div>
+        </div>
+        <div style="font-size:11px;color:var(--mid);line-height:2;">
+          <div>Precision KAC: <strong>82%</strong></div>
+          <div>Recall KAC: <strong>84%</strong></div>
+          <div>Precision KAM: <strong>74%</strong></div>
+          <div>Recall KAM: <strong>72%</strong></div>
+          <div>Overall Acc: <strong>79%</strong></div>
+        </div>
       </div>
-      <div class="about-highlight">
-        <div class="about-highlight-label">What I'm building toward</div>
-        <p>Data Scientist or Data Management roles in finance or consulting — where deep domain expertise and analytical capability work together.</p>
-      </div>
-      <div class="about-highlight">
-        <div class="about-highlight-label">Currently</div>
-        <p>Pricing & Costing Specialist at Vinamilk · Ho Chi Minh City, Vietnam · Open to opportunities.</p>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Hyperparameters — Logistic Regression</div>
+      <div class="chart-sub">Current settings · to be tuned on full dataset</div>
+      <div style="margin-top:12px;">
+        <table>
+          <thead><tr><th>Parameter</th><th>Value</th><th>Rationale</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">C</td><td class="mono">1.0</td><td>Moderate regularisation</td></tr>
+            <tr><td class="mono">penalty</td><td class="mono">l2</td><td>Ridge — keeps all features</td></tr>
+            <tr><td class="mono">solver</td><td class="mono">lbfgs</td><td>Efficient for small n</td></tr>
+            <tr><td class="mono">max_iter</td><td class="mono">1000</td><td>Ensures convergence</td></tr>
+            <tr><td class="mono">class_weight</td><td class="mono">None</td><td>60/40 split — balanced</td></tr>
+            <tr><td class="mono">scaler</td><td class="mono">StandardScaler</td><td>Required for LR stability</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:10px;color:var(--muted);margin-top:10px;font-family:'DM Mono',monospace;">
+          Pending: GridSearchCV over C=[0.01,0.1,0.5,1,5,10] + L1 vs L2 on full dataset
+        </div>
       </div>
     </div>
   </div>
-</section>
 
-<div class="divider"></div>
-
-<!-- PROJECTS -->
-<div class="bg-section">
-<section id="projects">
-  <div class="section-label">Portfolio</div>
-  <div class="section-title">Projects</div>
-  <p class="section-sub">Real financial data, real analysis. Projects are being built progressively — check back as new ones are added.</p>
-
-  <div class="projects-grid">
-
-    <!-- Project 1 -->
-    <div class="project-card">
-      <div class="project-status status-live">Live</div>
-      <div class="project-title">Loan Portfolio Provision Variance Analysis</div>
-      <div class="project-desc">Production Oracle SQL pipeline for MoM IFRS 9 provision movement analysis across 8 product segments (CD, TW, CLX, REL, RM) — full outer join CTE pattern classifying movements as New Write-Down, Recovery, or Additional Write-Off. Built on 30M-row enterprise data warehouse at Home Credit Vietnam.</div>
-      <div class="project-tags">
-        <span class="project-tag">Oracle SQL</span>
-        <span class="project-tag">IFRS 9</span>
-        <span class="project-tag">CTE</span>
-        <span class="project-tag">ETL</span>
-        <span class="project-tag">Finance</span>
-      </div>
-      <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/loan-provision-variance" class="project-link" target="_blank">View on GitHub →</a>
-    </div>
-
-    <!-- Project 2 -->
-    <div class="project-card">
-      <div class="project-status status-live">Live</div>
-      <div class="project-title">Sales Channel Forecasting Model</div>
-      <div class="project-desc">Linear regression vs time-series forecast comparison for monthly FMCG sales prediction across 5 channels — avg price as key input, R²=0.93, MAPE=1.7%. Macro variables (CPI, GDP, interest rate) tested and excluded after low R². Marketing spend (Account 641) tested across 72 months — R²=17.0%, p=0.0003, strongest external variable found. Product group deep dive reveals Powdered Milk (02XXXX) as most macro-sensitive group (R²=18.4%). Q1 2026 out-of-sample validation: Jan MAPE=6.1%, Feb MAPE=15.0%.</div>
-      <div class="project-tags">
-        <span class="project-tag">Python</span>
-        <span class="project-tag">Regression</span>
-        <span class="project-tag">Power BI</span>
-        <span class="project-tag">Excel</span>
-        <span class="project-tag">sklearn</span>
-        <span class="project-tag">scipy</span>
-      </div>
-      <div class="project-links">
-        <a href="https://ParfaitAmour1814.github.io/projects/sales-forecasting/macro_executive_summary.html" class="project-link" target="_blank">Live Summary →</a>
-        <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/sales-forecasting" class="project-link secondary" target="_blank">GitHub</a>
-      </div>
-    </div>
-
-    <!-- Project 3 -->
-    <div class="project-card">
-      <div class="project-status status-live">Live</div>
-      <div class="project-title">Cost Variance Dashboard (627)</div>
-      <div class="project-desc">5-page Power BI dashboard analysing manufacturing overhead across 13 factories — YoY variance, cost-per-kg efficiency, and cost-as-%-of-revenue. Built from Oracle EBS GL extracts covering accounts 627, 641, 642 (2023–2025).</div>
-      <div class="project-tags">
-        <span class="project-tag">Power BI</span>
-        <span class="project-tag">Oracle EBS</span>
-        <span class="project-tag">Power Query</span>
-        <span class="project-tag">DAX</span>
-        <span class="project-tag">VAS</span>
-      </div>
-      <div class="project-links">
-        <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/cost-variance-dashboard" class="project-link" target="_blank">View on GitHub →</a>
-      </div>
-    </div>
-
-    <!-- Project 4 -->
-    <div class="project-card">
-      <div class="project-status status-wip">WIP</div>
-      <div class="project-title">Finished Product Unit Cost — Root Cause Investigation</div>
-      <div class="project-desc">Monthly root cause analysis of % change in finished product unit cost — decomposing variance into batch data (material consumption, resource usage) and expense data (overhead allocation) to identify and explain cost drivers at the product level.</div>
-      <div class="project-tags">
-        <span class="project-tag">Power BI</span>
-        <span class="project-tag">Oracle EBS</span>
-        <span class="project-tag">Cost Accounting</span>
-        <span class="project-tag">Variance Analysis</span>
-      </div>
-    </div>
-
-    <!-- Project 5 — Batch Analysis -->
-    <div class="project-card">
-      <div class="project-status status-live">Live</div>
-      <div class="project-title">Material Batch Variance Analysis</div>
-      <div class="project-desc">
-        Full-year 2025 material usage variance analysis across 4 production factories — 27,356 closed batches, 652 finished goods. Joined ERP batch data with INV100 inventory cost (PMAC) to convert quantity variance into VND value. Split RM/SM from packaging material, ranked top 3 best and worst products per factory by value-weighted variance %, and identified key ingredient drivers. Cross-factory packaging analysis reveals systematic yogurt film under-usage across multiple sites.
-      </div>
-      <div class="project-tags">
-        <span class="project-tag">Python</span>
-        <span class="project-tag">pandas</span>
-        <span class="project-tag">ERP Batch Data</span>
-        <span class="project-tag">Cost Valuation</span>
-        <span class="project-tag">RM/SM Analysis</span>
-        <span class="project-tag">Variance Analysis</span>
-      </div>
-      <div class="project-links">
-        <a href="https://ParfaitAmour1814.github.io/projects/batch-analysis/" class="project-link" target="_blank">Live Page →</a>
-        <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/batch-analysis" class="project-link secondary" target="_blank">GitHub</a>
-      </div>
-    </div>
-
-  </div>
-</section>
 </div>
 
-<div class="divider"></div>
+<!-- ══ TAB 3: FEATURES ══ -->
+<div class="tab-content" id="features">
 
-<!-- COURSERA PROJECTS -->
-<section id="learning">
-  <div class="section-label">Continuous Learning</div>
-  <div class="section-title">Coursera Capstone Projects</div>
-  <p class="section-sub">Hands-on projects completed as part of Google's Advanced Data Analytics certification.</p>
-
-  <div class="projects-grid">
-
-    <!-- Salifort Motors -->
-    <div class="project-card">
-      <div class="project-status status-live">Completed</div>
-      <div class="project-title">Employee Turnover Prediction — Salifort Motors</div>
-      <div class="project-desc">
-        Built and compared 4 classification models (Logistic Regression, Decision Tree, Random Forest, XGBoost) on 14,999 employee records to predict turnover risk. Conducted full EDA, feature engineering (overwork flag, tenure buckets), and model evaluation using precision, recall, F1, AUC, and accuracy. Key finding: employees are systematically overworked — number of projects, tenure, and last evaluation score are the strongest predictors of departure. Logistic Regression achieved 83% accuracy with strong interpretability for stakeholder communication.
-      </div>
-      <div class="project-tags">
-        <span class="project-tag">Python</span>
-        <span class="project-tag">scikit-learn</span>
-        <span class="project-tag">Logistic Regression</span>
-        <span class="project-tag">Random Forest</span>
-        <span class="project-tag">XGBoost</span>
-        <span class="project-tag">EDA</span>
-      </div>
-      <div style="margin-top:12px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:10px;">
-        Google Advanced Data Analytics Certificate · Course 7 Capstone
-      </div>
-      <div class="project-links">
-        <a href="https://ParfaitAmour1814.github.io/projects/salifort-motors/" class="project-link" target="_blank">Live Page →</a>
-        <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/salifort-motors" class="project-link secondary" target="_blank">GitHub</a>
-      </div>
-    </div>
-
-    <!-- TikTok -->
-    <div class="project-card">
-      <div class="project-status status-live">Completed</div>
-      <div class="project-title">TikTok Claims vs Opinions — Full Analytics Pipeline</div>
-      <div class="project-desc">
-        End-to-end analytics pipeline across 4 courses: EDA on ~19,000 TikTok videos, hypothesis testing (verified vs unverified accounts, p=2.6×10⁻¹²⁰), logistic regression for verified status prediction, and Random Forest / XGBoost classification achieving ~100% accuracy on claim vs opinion detection. Key finding: engagement metrics alone perfectly predict whether a video makes a claim.
-      </div>
-      <div class="project-tags">
-        <span class="project-tag">Python</span>
-        <span class="project-tag">EDA</span>
-        <span class="project-tag">Hypothesis Testing</span>
-        <span class="project-tag">Logistic Regression</span>
-        <span class="project-tag">Random Forest</span>
-        <span class="project-tag">XGBoost</span>
-      </div>
-      <div style="margin-top:12px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:10px;">
-        Google Advanced Data Analytics Certificate · Courses 3–6
-      </div>
-      <div class="project-links">
-        <a href="https://ParfaitAmour1814.github.io/projects/tiktok-claims/" class="project-link" target="_blank">Live Page →</a>
-        <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/tiktok-claims" class="project-link secondary" target="_blank">GitHub</a>
-      </div>
-    </div>
-
+  <div class="insight">
+    <h3>Key finding: Number of ship-to locations is the strongest KAC predictor</h3>
+    <p>
+      The most interpretable finding from the LR coefficients: <strong>KAC customers have more
+      ship-to locations</strong> (coefficient +2.00) — chain customers by definition have multiple
+      outlets. <strong>Hospital clients (BVXX)</strong> strongly predict KAM (-0.83) — medical channel
+      customers are managed differently regardless of size. <strong>HCM-based customers</strong> lean KAC
+      (+1.12) — chain headquarters are concentrated in Ho Chi Minh City.
+      <strong>Higher monthly revenue target</strong> also predicts KAC (+1.06) — chains commit to
+      larger monthly volumes than institutional KAM accounts.
+    </p>
   </div>
-</section>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">LR Coefficients — Top 10 Features</div>
+      <div class="chart-sub">Positive = predicts KAC · Negative = predicts KAM</div>
+      <div class="chart-wrap tall"><canvas id="coefChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Random Forest Feature Importance</div>
+      <div class="chart-sub">Sanity check — consistent top features across both models</div>
+      <div class="chart-wrap tall"><canvas id="fiChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Feature Engineering Decisions</div>
+    <table>
+      <thead><tr><th>Feature</th><th>Engineering</th><th>LR Coef</th><th>Direction</th></tr></thead>
+      <tbody>
+        <tr><td class="hl">NUM_SHIP_TO</td><td>Raw count</td><td class="mono pos">+2.001</td><td><span class="badge badge-kac">→ KAC</span></td></tr>
+        <tr><td class="hl">IS_HCM</td><td>Binary flag from geo coverage</td><td class="mono pos">+1.121</td><td><span class="badge badge-kac">→ KAC</span></td></tr>
+        <tr><td class="hl">REVENUE_TARGET_MONTH</td><td>Raw VND value</td><td class="mono pos">+1.062</td><td><span class="badge badge-kac">→ KAC</span></td></tr>
+        <tr><td class="hl">NUM_PRODUCT_GROUPS</td><td>Count of product lines in policy</td><td class="mono pos">+0.992</td><td><span class="badge badge-kac">→ KAC</span></td></tr>
+        <tr><td class="hl">NUM_CATEGORIES</td><td>Count of product categories (A/B/C/D)</td><td class="mono neg">-0.840</td><td><span class="badge badge-kam">→ KAM</span></td></tr>
+        <tr><td class="hl">IS_NATIONAL</td><td>Binary flag — nationwide delivery</td><td class="mono pos">+0.832</td><td><span class="badge badge-kac">→ KAC</span></td></tr>
+        <tr><td class="hl">CG_HOSPITAL</td><td>One-hot from client type code</td><td class="mono neg">-0.829</td><td><span class="badge badge-kam">→ KAM</span></td></tr>
+        <tr><td class="hl">CG_SERVICE</td><td>One-hot — hotels, airports, transport</td><td class="mono pos">+0.818</td><td><span class="badge badge-kac">→ KAC</span></td></tr>
+        <tr><td class="hl">LOG_REVENUE_TARGET_YEAR</td><td>Log transform — skewed distribution</td><td class="mono neg">-0.714</td><td><span class="badge badge-kam">→ KAM</span></td></tr>
+        <tr><td class="hl">LOG_HIST_SALES_12M</td><td>Log transform — 12M historical sales</td><td class="mono neg">-0.523</td><td><span class="badge badge-kam">→ KAM</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
 </div>
 
-<div class="divider"></div>
+<!-- ══ TAB 4: ROADMAP ══ -->
+<div class="tab-content" id="roadmap">
 
-<!-- SKILLS -->
-<section id="skills">
-  <div class="section-label">Capabilities</div>
-  <div class="section-title">Skills & Tools</div>
-  <p class="section-sub">Built across 8+ years of real-world finance, audit, and data work.</p>
-
-  <div class="skills-grid">
-    <div class="skill-group">
-      <div class="skill-group-title">Finance & Accounting</div>
-      <div class="skill-item-row"><span class="skill-name">Excel / VBA</span><div class="skill-bar-mini"><div class="skill-bar-fill green" style="width:90%"></div></div></div>
-      <div class="skill-item-row"><span class="skill-name">IFRS / US GAAP</span><div class="skill-bar-mini"><div class="skill-bar-fill" style="width:85%"></div></div></div>
-      <div class="skill-item-row"><span class="skill-name">Cost & Pricing Acct.</span><div class="skill-bar-mini"><div class="skill-bar-fill" style="width:80%"></div></div></div>
-      <div class="skill-item-row"><span class="skill-name">VAS</span><div class="skill-bar-mini"><div class="skill-bar-fill" style="width:85%"></div></div></div>
-    </div>
-    <div class="skill-group">
-      <div class="skill-group-title">ERP Systems</div>
-      <div class="skill-item-row"><span class="skill-name">SAP FICO</span><div class="skill-bar-mini"><div class="skill-bar-fill orange" style="width:85%"></div></div></div>
-      <div class="skill-item-row"><span class="skill-name">Oracle EBS</span><div class="skill-bar-mini"><div class="skill-bar-fill orange" style="width:70%"></div></div></div>
-      <div class="skill-item-row"><span class="skill-name">Oracle DB</span><div class="skill-bar-mini"><div class="skill-bar-fill orange" style="width:80%"></div></div></div>
-      <div class="skill-item-row"><span class="skill-name">Oracle BI</span><div class="skill-bar-mini"><div class="skill-bar-fill orange" style="width:70%"></div></div></div>
-    </div>
-    <div class="skill-group">
-      <div class="skill-group-title">Data & BI</div>
-      <div class="skill-item-row"><span class="skill-name">Power BI</span><div class="skill-bar-mini"><div class="skill-bar-fill blue" style="width:88%"></div></div></div>
-      <div class="skill-item-row"><span class="skill-name">SQL</span><div class="skill-bar-mini"><div class="skill-bar-fill blue" style="width:85%"></div></div></div>
-      <div class="skill-item-row"><span class="skill-name">Data Analysis</span><div class="skill-bar-mini"><div class="skill-bar-fill blue" style="width:78%"></div></div></div>
-      <div class="skill-item-row"><span class="skill-name">Python (basics)</span><div class="skill-bar-mini"><div class="skill-bar-fill blue" style="width:55%"></div></div></div>
-    </div>
-    <div class="skill-group">
-      <div class="skill-group-title">Soft Skills</div>
-      <div class="skill-item-row"><span class="skill-name">Stakeholder Comms</span><div class="skill-bar-mini"><div class="skill-bar-fill purple" style="width:85%"></div></div></div>
-      <div class="skill-item-row"><span class="skill-name">Cross-functional</span><div class="skill-bar-mini"><div class="skill-bar-fill purple" style="width:85%"></div></div></div>
-      <div class="skill-item-row"><span class="skill-name">English (TOEIC 945)</span><div class="skill-bar-mini"><div class="skill-bar-fill purple" style="width:94%"></div></div></div>
-      <div class="skill-item-row"><span class="skill-name">Gen AI Tools</span><div class="skill-bar-mini"><div class="skill-bar-fill purple" style="width:65%"></div></div></div>
-    </div>
+  <div class="insight">
+    <h3>Next: Expand to K-Means clustering — go beyond the binary KAC/KAM split</h3>
+    <p>
+      The supervised model answers <em>"is this customer KAC or KAM?"</em> But a more interesting
+      business question is: <em>"are there natural sub-segments within KAC and KAM that behave differently?"</em>
+      K-Means clustering on the same feature matrix will reveal whether, for example,
+      <strong>high-revenue hospital KAM accounts</strong> are actually more similar to chain KAC accounts
+      than to small hospital KAM accounts. This unsupervised layer will feed into a richer
+      <strong>customer segmentation strategy</strong> beyond the current binary classification.
+    </p>
   </div>
-</section>
 
-<div class="divider"></div>
-
-<!-- CERTIFICATIONS -->
-<div class="bg-section">
-<section id="certifications">
-  <div class="section-label">Credentials</div>
-  <div class="section-title">Certifications</div>
-  <p class="section-sub">Recent certifications focused on data analytics, BI, and AI — building on a finance foundation.</p>
-
-  <div class="cert-grid">
-    <div class="cert-card">
-      <div class="cert-icon" style="background:#EFF6FF">🪟</div>
-      <div>
-        <div class="cert-name">Power BI Data Analyst Associate</div>
-        <div class="cert-issuer">Microsoft</div>
-        <div class="cert-date">Jan 2026</div>
+  <div class="section">
+    <div class="section-title">Project Roadmap</div>
+    <div class="roadmap">
+      <div class="rm-item">
+        <div class="rm-dot done">✅</div>
+        <div>
+          <div class="rm-title">PDF ETL Pipeline <span class="rm-badge done">Completed</span></div>
+          <div class="rm-desc">Extracted 15 structured fields from 676 F1 pricing approval PDFs using pdftotext + regex parser. 593/594 PDFs successfully processed. 402 records labelled from Mã LH field.</div>
+        </div>
       </div>
-    </div>
-    <div class="cert-card">
-      <div class="cert-icon" style="background:#EFF6FF">📊</div>
-      <div>
-        <div class="cert-name">Power BI Data Analyst Professional</div>
-        <div class="cert-issuer">Coursera / Microsoft</div>
-        <div class="cert-date">Jan 2026</div>
+      <div class="rm-item">
+        <div class="rm-dot done">✅</div>
+        <div>
+          <div class="rm-title">Baseline Classification Model <span class="rm-badge done">Completed</span></div>
+          <div class="rm-desc">Logistic Regression trained on 402 labelled records. CV AUC = 0.910. Compared against Random Forest (0.930) and Gradient Boosting (0.939). LR chosen for interpretability and generalisation robustness on small dataset.</div>
+        </div>
       </div>
-    </div>
-    <div class="cert-card">
-      <div class="cert-icon" style="background:#F0FDF4">🔵</div>
-      <div>
-        <div class="cert-name">Advanced Data Analytics</div>
-        <div class="cert-issuer">Coursera / Google</div>
-        <div class="cert-date">Jan 2026</div>
+      <div class="rm-item">
+        <div class="rm-dot active">🔄</div>
+        <div>
+          <div class="rm-title">Manual Label Completion <span class="rm-badge active">In Progress</span></div>
+          <div class="rm-desc">191 unlabelled PDFs identified (older F1 format without Mã LH field). Manual review Excel exported — labels being filled. Expected to grow dataset to ~590 records (+47%).</div>
+        </div>
       </div>
-    </div>
-    <div class="cert-card">
-      <div class="cert-icon" style="background:#FFFBEB">🤖</div>
-      <div>
-        <div class="cert-name">Generative AI Specialization</div>
-        <div class="cert-issuer">Coursera / Google</div>
-        <div class="cert-date">Jan 2026</div>
+      <div class="rm-item">
+        <div class="rm-dot planned">📋</div>
+        <div>
+          <div class="rm-title">Hyperparameter Tuning <span class="rm-badge planned">Planned</span></div>
+          <div class="rm-desc">GridSearchCV over C=[0.01, 0.1, 0.5, 1.0, 5.0, 10.0] and L1 vs L2 penalty. Re-evaluate class_weight='balanced' with expanded dataset. Expected AUC improvement to 0.92+.</div>
+        </div>
       </div>
-    </div>
-    <div class="cert-card">
-      <div class="cert-icon" style="background:#F0FDF4">📋</div>
-      <div>
-        <div class="cert-name">MOS Master — Word & Excel</div>
-        <div class="cert-issuer">IIG Vietnam</div>
-        <div class="cert-date">Oct 2014</div>
+      <div class="rm-item">
+        <div class="rm-dot planned">📋</div>
+        <div>
+          <div class="rm-title">K-Means Customer Segmentation <span class="rm-badge planned">Planned</span></div>
+          <div class="rm-desc">Unsupervised clustering on the full feature matrix. Elbow method + silhouette score to determine optimal k. Goal: discover natural customer sub-segments beyond the binary KAC/KAM split — e.g. high-volume hospital vs institutional KAM, chain food service vs chain retail KAC.</div>
+        </div>
       </div>
-    </div>
-    <div class="cert-card">
-      <div class="cert-icon" style="background:#FFF7ED">🎓</div>
-      <div>
-        <div class="cert-name">B.Acc — Auditing Specialisation</div>
-        <div class="cert-issuer">University of Economics, HCMC</div>
-        <div class="cert-date">2013 – 2017</div>
+      <div class="rm-item">
+        <div class="rm-dot planned">📋</div>
+        <div>
+          <div class="rm-title">Segment Profiling & Business Recommendations <span class="rm-badge planned">Planned</span></div>
+          <div class="rm-desc">Profile each K-Means cluster by revenue, discount rate, product mix, and geography. Map clusters to existing KAC/KAM labels to identify mis-classifications and pricing policy opportunities.</div>
+        </div>
       </div>
     </div>
   </div>
-</section>
+
 </div>
 
-<div class="divider"></div>
+<footer>
+  <span>Truong Phat</span> · KA Customer Classification · ML + Unsupervised Expansion · 2025–2026 &nbsp;|&nbsp;
+  <a href="https://ParfaitAmour1814.github.io">← Portfolio</a>
+</footer>
 
-<!-- CONTACT -->
-<section id="contact">
-  <div class="section-label">Get in Touch</div>
-  <div class="contact-grid">
-    <div class="contact-text">
-      <h3>Open to the right opportunities.</h3>
-      <p>Interested in Data Scientist, Data Management, or Finance Consulting roles — particularly where finance domain expertise and data capability work together. Based in Ho Chi Minh City, Vietnam.</p>
-      <a href="TruongPhat_CV_A4_PRIMARY.pdf" class="btn btn-primary" download>↓ Download CV</a>
-    </div>
-    <div class="contact-items">
-      <div class="contact-item">
-        <div class="contact-dot"></div>
-        <a href="mailto:truongphat11t@gmail.com">truongphat11t@gmail.com</a>
-      </div>
-      <div class="contact-item">
-        <div class="contact-dot"></div>
-        (+84) 948 772 514
-      </div>
-      <div class="contact-item">
-        <div class="contact-dot"></div>
-        Ho Chi Minh City, Vietnam
-      </div>
-      <div class="contact-item">
-        <div class="contact-dot"></div>
-        <a href="https://github.com/ParfaitAmour1814" target="_blank">github.com/ParfaitAmour1814</a>
-      </div>
-    </div>
-  </div>
-</section>
+<script>
+const DATA_MODELS = [{"name":"Logistic Regression","cv_auc":0.9102,"cv_std":0.0455,"test_auc":0.868,"test_acc":79.0,"chosen":true},{"name":"Random Forest","cv_auc":0.9302,"cv_std":0.0411,"test_auc":0.9305,"test_acc":86.4,"chosen":false},{"name":"Gradient Boosting","cv_auc":0.9391,"cv_std":0.0419,"test_auc":0.9381,"test_acc":90.1,"chosen":false}];
+const DATA_COEFS = [{"feature":"NUM_SHIP_TO","coef":2.001},{"feature":"IS_HCM","coef":1.121},{"feature":"REVENUE_TARGET_MONTH","coef":1.062},{"feature":"NUM_PRODUCT_GROUPS","coef":0.992},{"feature":"NUM_CATEGORIES","coef":-0.84},{"feature":"IS_NATIONAL","coef":0.832},{"feature":"CG_HOSPITAL","coef":-0.829},{"feature":"CG_SERVICE","coef":0.818},{"feature":"LOG_REVENUE_TARGET_YEAR","coef":-0.714},{"feature":"LOG_HIST_SALES_12M","coef":-0.523}];
+const DATA_CLIENTS = [{"code":"BVXX","label":"Hospital","count":147,"lean":"KAM"},{"code":"CQXX","label":"Corp Office","count":131,"lean":"KAC"},{"code":"GKCF","label":"F&B Chain","count":33,"lean":"KAC"},{"code":"KSNH","label":"Hotel","count":32,"lean":"KAC"},{"code":"SACN","label":"Industrial","count":30,"lean":"KAM"},{"code":"SATH","label":"Port/Airport","count":27,"lean":"KAC"},{"code":"AUNH","label":"School/Uni","count":21,"lean":"KAM"},{"code":"CBTP","label":"Food Mfg","count":21,"lean":"KAM"}];
+const RF_FI = [{"feature":"NUM_SHIP_TO","importance":0.095},{"feature":"CG_SERVICE","importance":0.079},{"feature":"CG_HOSPITAL","importance":0.075},{"feature":"LOG_REVENUE_TARGET_YEAR","importance":0.073},{"feature":"REVENUE_TARGET_YEAR","importance":0.071},{"feature":"LOG_REVENUE_TARGET_MONTH","importance":0.070},{"feature":"REVENUE_TARGET_MONTH","importance":0.069},{"feature":"ORDER_FREQ_MONTH","importance":0.068},{"feature":"NUM_PRODUCT_GROUPS","importance":0.058},{"feature":"IS_NATIONAL","importance":0.055}];
+
+const Y='#E8B800',G='#27AE60',B='#2471A3',R='#C0392B',O='#E67E22';
+const KAC_C='#2471A3',KAM_C='#C0392B';
+const font={family:'DM Sans',size:11};
+
+function showTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Label distribution doughnut
+new Chart(document.getElementById('labelChart'),{
+  type:'doughnut',
+  data:{
+    labels:['KAC (KA01)','KAM (KA00)','Unlabelled'],
+    datasets:[{data:[241,161,191],backgroundColor:[KAC_C+'CC',KAM_C+'CC','#ccc'],borderColor:'#fff',borderWidth:2}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'right',labels:{font,color:'#666',boxWidth:12}}}}
+});
+
+// Client type bar
+new Chart(document.getElementById('clientChart'),{
+  type:'bar',
+  data:{
+    labels:DATA_CLIENTS.map(d=>d.label),
+    datasets:[{
+      data:DATA_CLIENTS.map(d=>d.count),
+      backgroundColor:DATA_CLIENTS.map(d=>d.lean==='KAC'?KAC_C+'99':KAM_C+'99'),
+      borderColor:DATA_CLIENTS.map(d=>d.lean==='KAC'?KAC_C:KAM_C),
+      borderWidth:2,borderRadius:4
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const d=DATA_CLIENTS[ctx.dataIndex];return ` ${d.count} — leans ${d.lean}`;} }}},
+    scales:{y:{ticks:{font,color:'#999'},grid:{color:'#eee'}},x:{ticks:{font,color:'#999'}}}}
+});
+
+// Model AUC comparison
+new Chart(document.getElementById('modelAucChart'),{
+  type:'bar',
+  data:{
+    labels:DATA_MODELS.map(d=>d.name),
+    datasets:[
+      {label:'CV AUC',data:DATA_MODELS.map(d=>d.cv_auc),backgroundColor:DATA_MODELS.map(d=>d.chosen?Y+'CC':'#ccc'),borderColor:DATA_MODELS.map(d=>d.chosen?Y:'#aaa'),borderWidth:2,borderRadius:4},
+      {label:'Test AUC',data:DATA_MODELS.map(d=>d.test_auc),backgroundColor:DATA_MODELS.map(d=>d.chosen?B+'99':'#ddd'),borderColor:DATA_MODELS.map(d=>d.chosen?B:'#bbb'),borderWidth:2,borderRadius:4}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top',labels:{font,color:'#999'}}},
+    scales:{y:{min:0.75,ticks:{font,color:'#999'},grid:{color:'#eee'}},x:{ticks:{font,color:'#999'}}}}
+});
+
+// LR Coefficients horizontal bar
+new Chart(document.getElementById('coefChart'),{
+  type:'bar',
+  data:{
+    labels:DATA_COEFS.map(d=>d.feature),
+    datasets:[{
+      data:DATA_COEFS.map(d=>d.coef),
+      backgroundColor:DATA_COEFS.map(d=>d.coef>0?KAC_C+'99':KAM_C+'99'),
+      borderColor:DATA_COEFS.map(d=>d.coef>0?KAC_C:KAM_C),
+      borderWidth:2,borderRadius:4
+    }]
+  },
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{x:{ticks:{font,color:'#999'},grid:{color:'#eee'}},y:{ticks:{font,color:'#666',font:{size:10}}}}}
+});
+
+// RF feature importance
+new Chart(document.getElementById('fiChart'),{
+  type:'bar',
+  data:{
+    labels:RF_FI.map(d=>d.feature),
+    datasets:[{
+      data:RF_FI.map(d=>d.importance),
+      backgroundColor:Y+'99',borderColor:Y,borderWidth:2,borderRadius:4
+    }]
+  },
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{x:{ticks:{font,color:'#999'},grid:{color:'#eee'}},y:{ticks:{font,color:'#666',font:{size:10}}}}}
+});
+</script>
+</body>
+</html>
