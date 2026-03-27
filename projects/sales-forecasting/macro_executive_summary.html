@@ -289,6 +289,10 @@
     <span class="tab-label">Page 3</span>
     EDA & Linearity Checks
   </button>
+  <button class="tab-btn" onclick="showPage('page4', this)">
+    <span class="tab-label">Page 4</span>
+    Limitations &amp; Future Work
+  </button>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════
@@ -297,10 +301,24 @@
 <div class="page active" id="page1">
 <div class="page-content">
 
+  <!-- ⚠️ DATA REMINDER BANNER -->
+  <div style="background:#1A1A1A;border-left:4px solid #E8B800;border-radius:6px;padding:14px 20px;margin-bottom:18px;display:flex;gap:16px;align-items:flex-start;">
+    <span style="font-size:18px;flex-shrink:0;">⚠️</span>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:#E8B800;letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:6px;">DATA COMPLETENESS REMINDER</div>
+      <div style="font-size:12px;color:#ccc;line-height:1.8;">
+        <strong style="color:#fff;">Aug–Dec 2025 data is incomplete</strong> — Power BI Service export limit of 150,000 rows/month was reached for these 5 months
+        (Aug: 149,998 · Sep: 149,998 · Oct: 149,999 · Nov: 149,998 · Dec: 149,999 rows).
+        Actual transaction count exceeds this cap. Re-export with date filters (e.g. split by region or channel) to get full data.
+        <br><strong style="color:#fff;">Q1 2026 validation data</strong> not yet uploaded — pending input. All 2026 figures have been removed from this analysis.
+      </div>
+    </div>
+  </div>
+
   <div class="header">
     <div class="header-tag">Research Output · Sales Forecasting Model · Updated Mar 2026</div>
     <h1>Sales Volume Regression<br><em>Full Model — All Variables Tested</em></h1>
-    <p>Author: Truong Phat &nbsp;|&nbsp; Method: OLS (scipy.stats) &nbsp;|&nbsp; Period: Jan 2020 – Dec 2025 &nbsp;|&nbsp; n = 72 months</p>
+    <p>Author: Truong Phat &nbsp;|&nbsp; Method: OLS (scipy.stats) &nbsp;|&nbsp; Period: Jan 2020 – Dec 2025 &nbsp;|&nbsp; n = 72 months &nbsp;|&nbsp; <span style="color:#E8B800">⚠️ Aug–Dec 2025 data capped at 150K rows</span></p>
   </div>
 
   <!-- Conclusion -->
@@ -481,9 +499,9 @@
         <div class="roadmap-desc">Add monthly A&P expenditure as a feature. Test whether marketing spend explains additional variance — especially for premium groups (02XXXX, 07PROU).</div>
       </div>
       <div class="roadmap-item planned">
-        <span class="roadmap-badge badge-done">✅ Completed</span>
+        <span class="roadmap-badge badge-planned">🔄 Pending</span>
         <div class="roadmap-title">Q1 2026 Out-of-Sample Validation</div>
-        <div class="roadmap-desc">Validate model predictions against actual Q1 2026 sales data (Jan–Mar 2026) — true out-of-sample test to confirm model generalises beyond the 2020–2025 training period.</div>
+        <div class="roadmap-desc">Q1 2026 transaction data pending upload and validation. Will test Jan–Mar 2026 actuals against model predictions as a true out-of-sample test beyond the 2020–2025 training period.</div>
       </div>
       <div class="roadmap-item done">
         <span class="roadmap-badge badge-done">✅ Completed</span>
@@ -503,7 +521,7 @@
       </div>
       <div class="method-item">
         <div class="method-label">Data</div>
-        <div class="method-val">72 months (Jan 2020–Dec 2025). Sales: transaction data joined to item master. Macro: GSO Vietnam (CPI), State Bank of Vietnam (rate), World Bank/GSO (GDP quarterly → monthly)</div>
+        <div class="method-val">72 months (Jan 2020–Dec 2025). Sales: 9.5M transaction rows (normal sales). <strong>Note:</strong> Aug–Dec 2025 data capped at 150,000 rows/month due to Power BI export limit — actual volumes may be understated for these months. Macro: GSO Vietnam (CPI), State Bank of Vietnam (rate), World Bank/GSO (GDP quarterly → monthly).</div>
       </div>
       <div class="method-item">
         <div class="method-label">Evaluation Metrics</div>
@@ -1148,6 +1166,207 @@ function showPage(pageId, btn) {
   })();
 </script>
 
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE 4 — LIMITATIONS & FUTURE IMPROVEMENTS
+══════════════════════════════════════════════════════════════════════ -->
+<div class="page" id="page4">
+<div class="page-content">
+
+  <div class="header">
+    <div class="header-tag">Page 4 · Model Critique &amp; Roadmap</div>
+    <h1>Limitations &amp;<br><em>Future Improvements</em></h1>
+    <p>Author: Truong Phat &nbsp;|&nbsp; Honest assessment of what the model does and does not explain</p>
+  </div>
+
+  <!-- REMINDER BANNER -->
+  <div style="background:#1A1A1A;border-left:4px solid #E8B800;border-radius:6px;padding:14px 20px;margin-bottom:22px;display:flex;gap:16px;align-items:flex-start;">
+    <span style="font-size:18px;flex-shrink:0;">📋</span>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:#E8B800;letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:4px;">TO-DO REMINDER</div>
+      <div style="font-size:12px;color:#ccc;line-height:1.8;">
+        This page is a <strong style="color:#fff;">work in progress</strong>. Still pending:
+        <strong style="color:#fff;">Aug–Dec 2025 full data</strong> (currently capped at 150K rows/month — re-export by region/channel) ·
+        <strong style="color:#fff;">Q1 2026 validation data</strong> (upload actuals to run true out-of-sample test) ·
+        <strong style="color:#fff;">Product-group level ASP</strong> (currently using blended ASP — decompose by group 01/02/04/07 for more precise elasticity estimates).
+      </div>
+    </div>
+  </div>
+
+  <!-- UNEXPLAINED VARIANCE CALLOUT -->
+  <div class="conclusion" style="border-left-color:#C0392B;">
+    <h3>The model explains ~66% of quantity variance — 34% remains unexplained</h3>
+    <p>
+      The best-performing model (Model C: ASP + Marketing + Seasonality) achieves R²=0.666, meaning
+      <strong>approximately 34% of the month-to-month variation in quantity sold is not yet accounted for</strong>.
+      Even including a lagged quantity variable (Model E), R² only reaches 0.689 — still leaving ~31% unexplained.
+      This is a deliberate trade-off: the model prioritises interpretability and generalisability over
+      overfitting to the training data. The sections below document the known sources of this unexplained variance
+      and the planned steps to address them.
+    </p>
+  </div>
+
+  <!-- LIMITATIONS SECTION -->
+  <div class="section">
+    <div class="section-title">Known Limitations</div>
+
+    <!-- Limitation 1 -->
+    <div style="border:1.5px solid #e8b80044;border-left:4px solid #E8B800;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#A07800;margin-bottom:6px;">1 · Data Quality — User-Forced Manual Entries</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        The transaction dataset contains rows where <strong>quantity = 0 but amount &gt; 0</strong> (349 rows identified
+        across 72 months). These are ERP entries forced manually by users — likely to record service fees,
+        promotional adjustments, or system corrections without a corresponding physical shipment.
+        While the absolute value is negligible (27.5M VND total, &lt;0.001% of revenue), they indicate
+        the data is <strong>not a pure reflection of physical product movement</strong> and requires
+        judgement in interpretation. Quantity-based metrics (units sold, ASP) are computed excluding these rows.
+      </p>
+    </div>
+
+    <!-- Limitation 2 -->
+    <div style="border:1.5px solid #c0392b44;border-left:4px solid #C0392B;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#C0392B;margin-bottom:6px;">2 · Unexplained Variance — 34% of Quantity Change Not Captured</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        The current model (R²=0.666) leaves approximately <strong>34% of month-to-month quantity variation unexplained</strong>.
+        Known missing variables include: <strong>competitor pricing and promotions</strong> (not observable from internal data);
+        <strong>distribution expansion</strong> (new customers, new regions — captured only indirectly via trend);
+        <strong>product mix shift</strong> (changing sales composition within each month affects blended ASP and volume);
+        <strong>trade promotion mechanics</strong> (volume discounts, free goods, end-of-quarter push — not separated from
+        standard revenue); and <strong>weather and seasonality interactions</strong> beyond the simple sine/cosine approximation
+        (e.g. heat waves driving beverage demand).
+      </p>
+    </div>
+
+    <!-- Limitation 3 -->
+    <div style="border:1.5px solid #2471a344;border-left:4px solid #2471A3;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#2471A3;margin-bottom:6px;">3 · Blended ASP — Masks Product Mix Effects</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        The current ASP is computed as total revenue ÷ total units across all products and channels.
+        This means the ASP can rise not just because prices increased, but because the
+        <strong>product mix shifted toward higher-value SKUs</strong> (e.g. more powdered infant formula 02XXXX,
+        less condensed milk 01XXXX). True price elasticity measurement requires
+        <strong>holding product mix constant</strong> — or decomposing ASP by product group.
+        The elasticity estimate of −0.97 should be interpreted cautiously as it conflates
+        genuine price effects with mix effects.
+      </p>
+    </div>
+
+    <!-- Limitation 4 -->
+    <div style="border:1.5px solid #8e44ad44;border-left:4px solid #8E44AD;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#8E44AD;margin-bottom:6px;">4 · Data Cap — Aug–Dec 2025 Understated</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        Five months in 2025 hit the <strong>150,000-row Power BI export limit</strong>
+        (Aug: 149,998 · Sep: 149,998 · Oct: 149,999 · Nov: 149,998 · Dec: 149,999).
+        These months are truncated — actual transaction volume exceeds what was captured.
+        As a result, <strong>revenue and quantity figures for Aug–Dec 2025 are likely understated</strong>,
+        potentially distorting ASP calculations and model training for the most recent period.
+        This also means the model's 2025 parameters are trained on incomplete data.
+      </p>
+    </div>
+
+    <!-- Limitation 5 -->
+    <div style="border:1.5px solid #27ae6044;border-left:4px solid #27AE60;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#1E8449;margin-bottom:6px;">5 · Marketing Spend Endogeneity</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        Account 641 marketing spend is treated as an exogenous predictor of quantity, but in practice
+        <strong>marketing budgets are often set in response to sales forecasts or past performance</strong>
+        — creating reverse causality. High sales months may drive higher marketing spend (rewarding success),
+        or low-sales months may trigger compensatory spend (defensive investment). This endogeneity means
+        the marketing coefficient (+0.346 beta) may <strong>overstate the causal impact</strong> of
+        marketing on volume. An instrumental variable or lagged spend approach would be needed to
+        establish true causal direction.
+      </p>
+    </div>
+  </div>
+
+  <!-- FUTURE IMPROVEMENTS -->
+  <div class="section">
+    <div class="section-title">Future Improvements</div>
+    <div class="roadmap-grid">
+
+      <div class="roadmap-item planned">
+        <span class="roadmap-badge badge-planned">🔄 Next</span>
+        <div class="roadmap-title">Re-export Aug–Dec 2025 Full Data</div>
+        <div class="roadmap-desc">Split Power BI export by region or sales channel to stay under the 150K row limit per file. Combine and retrain model on complete 2025 data. Expected impact: ~3–5% improvement in 2025 parameter estimates.</div>
+      </div>
+
+      <div class="roadmap-item planned">
+        <span class="roadmap-badge badge-planned">🔄 Next</span>
+        <div class="roadmap-title">Q1 2026 Out-of-Sample Validation</div>
+        <div class="roadmap-desc">Upload Jan–Mar 2026 actuals. Compute MAPE per month vs model predictions. This is the true test of generalisation — model has never seen 2026 data. Target: MAPE &lt;8% per month.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Product-Group Level ASP &amp; Elasticity</div>
+        <div class="roadmap-desc">Decompose ASP and volume by product group (01/02/04/07). Estimate separate price elasticities per group — expected to show powdered milk (02) is more elastic than liquid milk (04). Enables more precise pricing strategy by category.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Channel-Level Model</div>
+        <div class="roadmap-desc">Separate regression models per distribution channel (GT, MT, KA, Horeca, Export). Channel mix shift is a major unexplained variance driver — modelling each channel independently would capture channel-specific seasonality, elasticity, and growth rates.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Lagged Marketing Spend</div>
+        <div class="roadmap-desc">Test 1–3 month lagged marketing spend instead of contemporaneous spend — addressing endogeneity and capturing delayed consumer response to advertising. Expected to produce a cleaner, more causally interpretable marketing coefficient.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Trade Promotion Separation</div>
+        <div class="roadmap-desc">Separate standard sales from volume-discount and promotional transactions (identifiable by discount code or price deviation from standard). Model baseline demand separately from promotional uplift — common practice in FMCG revenue management.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">ARIMA / Prophet Time Series Benchmark</div>
+        <div class="roadmap-desc">Build a pure time-series model (ARIMA or Facebook Prophet) as a benchmark. Compare MAPE vs the current OLS regression. If ARIMA outperforms, it suggests the current features are not adding signal beyond what's already in the time series structure.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Competitor &amp; External Price Data</div>
+        <div class="roadmap-desc">Incorporate competitor retail price indices (available from Nielsen/Kantar for FMCG) or proxy via relative price positioning. This would allow estimation of cross-price elasticity — how much competitor price changes affect own-brand volume — capturing the 34% unexplained variance.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WHAT GOOD LOOKS LIKE -->
+  <div class="section">
+    <div class="section-title">What "Good" Looks Like — Realistic R² Targets</div>
+    <table style="width:100%;border-collapse:collapse;font-size:11px;">
+      <thead><tr style="background:var(--light);">
+        <th style="padding:8px;border-bottom:2px solid var(--border);text-align:left;">Improvement</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">Expected R² gain</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">Effort</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">Priority</th>
+      </tr></thead>
+      <tbody>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Fix Aug–Dec 2025 data cap</td><td style="padding:8px;text-align:center;">+1–3%</td><td style="padding:8px;text-align:center;">Low</td><td style="padding:8px;text-align:center;color:#C0392B;font-weight:700;">★★★ High</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Product-group ASP decomposition</td><td style="padding:8px;text-align:center;">+5–8%</td><td style="padding:8px;text-align:center;">Medium</td><td style="padding:8px;text-align:center;color:#C0392B;font-weight:700;">★★★ High</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Channel-level separate models</td><td style="padding:8px;text-align:center;">+8–12%</td><td style="padding:8px;text-align:center;">High</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Lagged marketing spend</td><td style="padding:8px;text-align:center;">+2–4%</td><td style="padding:8px;text-align:center;">Low</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Trade promotion separation</td><td style="padding:8px;text-align:center;">+5–10%</td><td style="padding:8px;text-align:center;">High</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
+        <tr><td style="padding:8px;">Competitor price data</td><td style="padding:8px;text-align:center;">+5–15%</td><td style="padding:8px;text-align:center;">Very High</td><td style="padding:8px;text-align:center;color:#888;">★ Low</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:10px;font-family:'DM Mono',monospace;">
+      Combined realistic target: R² = 0.80–0.85 with full data and channel-level models.
+      R² = 0.90+ would require competitor data or highly granular promotion tracking.
+    </p>
+  </div>
+
+  <div class="footer">
+    <span>Truong Phat</span> · Sales Channel Forecasting Model · Limitations &amp; Future Work · March 2026
+  </div>
+
+</div>
+</div>
+
 </body>
 </html>
 
@@ -1255,6 +1474,207 @@ function showPage(pageId, btn) {
 </div>
 
 
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE 4 — LIMITATIONS & FUTURE IMPROVEMENTS
+══════════════════════════════════════════════════════════════════════ -->
+<div class="page" id="page4">
+<div class="page-content">
+
+  <div class="header">
+    <div class="header-tag">Page 4 · Model Critique &amp; Roadmap</div>
+    <h1>Limitations &amp;<br><em>Future Improvements</em></h1>
+    <p>Author: Truong Phat &nbsp;|&nbsp; Honest assessment of what the model does and does not explain</p>
+  </div>
+
+  <!-- REMINDER BANNER -->
+  <div style="background:#1A1A1A;border-left:4px solid #E8B800;border-radius:6px;padding:14px 20px;margin-bottom:22px;display:flex;gap:16px;align-items:flex-start;">
+    <span style="font-size:18px;flex-shrink:0;">📋</span>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:#E8B800;letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:4px;">TO-DO REMINDER</div>
+      <div style="font-size:12px;color:#ccc;line-height:1.8;">
+        This page is a <strong style="color:#fff;">work in progress</strong>. Still pending:
+        <strong style="color:#fff;">Aug–Dec 2025 full data</strong> (currently capped at 150K rows/month — re-export by region/channel) ·
+        <strong style="color:#fff;">Q1 2026 validation data</strong> (upload actuals to run true out-of-sample test) ·
+        <strong style="color:#fff;">Product-group level ASP</strong> (currently using blended ASP — decompose by group 01/02/04/07 for more precise elasticity estimates).
+      </div>
+    </div>
+  </div>
+
+  <!-- UNEXPLAINED VARIANCE CALLOUT -->
+  <div class="conclusion" style="border-left-color:#C0392B;">
+    <h3>The model explains ~66% of quantity variance — 34% remains unexplained</h3>
+    <p>
+      The best-performing model (Model C: ASP + Marketing + Seasonality) achieves R²=0.666, meaning
+      <strong>approximately 34% of the month-to-month variation in quantity sold is not yet accounted for</strong>.
+      Even including a lagged quantity variable (Model E), R² only reaches 0.689 — still leaving ~31% unexplained.
+      This is a deliberate trade-off: the model prioritises interpretability and generalisability over
+      overfitting to the training data. The sections below document the known sources of this unexplained variance
+      and the planned steps to address them.
+    </p>
+  </div>
+
+  <!-- LIMITATIONS SECTION -->
+  <div class="section">
+    <div class="section-title">Known Limitations</div>
+
+    <!-- Limitation 1 -->
+    <div style="border:1.5px solid #e8b80044;border-left:4px solid #E8B800;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#A07800;margin-bottom:6px;">1 · Data Quality — User-Forced Manual Entries</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        The transaction dataset contains rows where <strong>quantity = 0 but amount &gt; 0</strong> (349 rows identified
+        across 72 months). These are ERP entries forced manually by users — likely to record service fees,
+        promotional adjustments, or system corrections without a corresponding physical shipment.
+        While the absolute value is negligible (27.5M VND total, &lt;0.001% of revenue), they indicate
+        the data is <strong>not a pure reflection of physical product movement</strong> and requires
+        judgement in interpretation. Quantity-based metrics (units sold, ASP) are computed excluding these rows.
+      </p>
+    </div>
+
+    <!-- Limitation 2 -->
+    <div style="border:1.5px solid #c0392b44;border-left:4px solid #C0392B;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#C0392B;margin-bottom:6px;">2 · Unexplained Variance — 34% of Quantity Change Not Captured</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        The current model (R²=0.666) leaves approximately <strong>34% of month-to-month quantity variation unexplained</strong>.
+        Known missing variables include: <strong>competitor pricing and promotions</strong> (not observable from internal data);
+        <strong>distribution expansion</strong> (new customers, new regions — captured only indirectly via trend);
+        <strong>product mix shift</strong> (changing sales composition within each month affects blended ASP and volume);
+        <strong>trade promotion mechanics</strong> (volume discounts, free goods, end-of-quarter push — not separated from
+        standard revenue); and <strong>weather and seasonality interactions</strong> beyond the simple sine/cosine approximation
+        (e.g. heat waves driving beverage demand).
+      </p>
+    </div>
+
+    <!-- Limitation 3 -->
+    <div style="border:1.5px solid #2471a344;border-left:4px solid #2471A3;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#2471A3;margin-bottom:6px;">3 · Blended ASP — Masks Product Mix Effects</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        The current ASP is computed as total revenue ÷ total units across all products and channels.
+        This means the ASP can rise not just because prices increased, but because the
+        <strong>product mix shifted toward higher-value SKUs</strong> (e.g. more powdered infant formula 02XXXX,
+        less condensed milk 01XXXX). True price elasticity measurement requires
+        <strong>holding product mix constant</strong> — or decomposing ASP by product group.
+        The elasticity estimate of −0.97 should be interpreted cautiously as it conflates
+        genuine price effects with mix effects.
+      </p>
+    </div>
+
+    <!-- Limitation 4 -->
+    <div style="border:1.5px solid #8e44ad44;border-left:4px solid #8E44AD;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#8E44AD;margin-bottom:6px;">4 · Data Cap — Aug–Dec 2025 Understated</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        Five months in 2025 hit the <strong>150,000-row Power BI export limit</strong>
+        (Aug: 149,998 · Sep: 149,998 · Oct: 149,999 · Nov: 149,998 · Dec: 149,999).
+        These months are truncated — actual transaction volume exceeds what was captured.
+        As a result, <strong>revenue and quantity figures for Aug–Dec 2025 are likely understated</strong>,
+        potentially distorting ASP calculations and model training for the most recent period.
+        This also means the model's 2025 parameters are trained on incomplete data.
+      </p>
+    </div>
+
+    <!-- Limitation 5 -->
+    <div style="border:1.5px solid #27ae6044;border-left:4px solid #27AE60;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#1E8449;margin-bottom:6px;">5 · Marketing Spend Endogeneity</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        Account 641 marketing spend is treated as an exogenous predictor of quantity, but in practice
+        <strong>marketing budgets are often set in response to sales forecasts or past performance</strong>
+        — creating reverse causality. High sales months may drive higher marketing spend (rewarding success),
+        or low-sales months may trigger compensatory spend (defensive investment). This endogeneity means
+        the marketing coefficient (+0.346 beta) may <strong>overstate the causal impact</strong> of
+        marketing on volume. An instrumental variable or lagged spend approach would be needed to
+        establish true causal direction.
+      </p>
+    </div>
+  </div>
+
+  <!-- FUTURE IMPROVEMENTS -->
+  <div class="section">
+    <div class="section-title">Future Improvements</div>
+    <div class="roadmap-grid">
+
+      <div class="roadmap-item planned">
+        <span class="roadmap-badge badge-planned">🔄 Next</span>
+        <div class="roadmap-title">Re-export Aug–Dec 2025 Full Data</div>
+        <div class="roadmap-desc">Split Power BI export by region or sales channel to stay under the 150K row limit per file. Combine and retrain model on complete 2025 data. Expected impact: ~3–5% improvement in 2025 parameter estimates.</div>
+      </div>
+
+      <div class="roadmap-item planned">
+        <span class="roadmap-badge badge-planned">🔄 Next</span>
+        <div class="roadmap-title">Q1 2026 Out-of-Sample Validation</div>
+        <div class="roadmap-desc">Upload Jan–Mar 2026 actuals. Compute MAPE per month vs model predictions. This is the true test of generalisation — model has never seen 2026 data. Target: MAPE &lt;8% per month.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Product-Group Level ASP &amp; Elasticity</div>
+        <div class="roadmap-desc">Decompose ASP and volume by product group (01/02/04/07). Estimate separate price elasticities per group — expected to show powdered milk (02) is more elastic than liquid milk (04). Enables more precise pricing strategy by category.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Channel-Level Model</div>
+        <div class="roadmap-desc">Separate regression models per distribution channel (GT, MT, KA, Horeca, Export). Channel mix shift is a major unexplained variance driver — modelling each channel independently would capture channel-specific seasonality, elasticity, and growth rates.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Lagged Marketing Spend</div>
+        <div class="roadmap-desc">Test 1–3 month lagged marketing spend instead of contemporaneous spend — addressing endogeneity and capturing delayed consumer response to advertising. Expected to produce a cleaner, more causally interpretable marketing coefficient.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Trade Promotion Separation</div>
+        <div class="roadmap-desc">Separate standard sales from volume-discount and promotional transactions (identifiable by discount code or price deviation from standard). Model baseline demand separately from promotional uplift — common practice in FMCG revenue management.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">ARIMA / Prophet Time Series Benchmark</div>
+        <div class="roadmap-desc">Build a pure time-series model (ARIMA or Facebook Prophet) as a benchmark. Compare MAPE vs the current OLS regression. If ARIMA outperforms, it suggests the current features are not adding signal beyond what's already in the time series structure.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Competitor &amp; External Price Data</div>
+        <div class="roadmap-desc">Incorporate competitor retail price indices (available from Nielsen/Kantar for FMCG) or proxy via relative price positioning. This would allow estimation of cross-price elasticity — how much competitor price changes affect own-brand volume — capturing the 34% unexplained variance.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WHAT GOOD LOOKS LIKE -->
+  <div class="section">
+    <div class="section-title">What "Good" Looks Like — Realistic R² Targets</div>
+    <table style="width:100%;border-collapse:collapse;font-size:11px;">
+      <thead><tr style="background:var(--light);">
+        <th style="padding:8px;border-bottom:2px solid var(--border);text-align:left;">Improvement</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">Expected R² gain</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">Effort</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">Priority</th>
+      </tr></thead>
+      <tbody>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Fix Aug–Dec 2025 data cap</td><td style="padding:8px;text-align:center;">+1–3%</td><td style="padding:8px;text-align:center;">Low</td><td style="padding:8px;text-align:center;color:#C0392B;font-weight:700;">★★★ High</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Product-group ASP decomposition</td><td style="padding:8px;text-align:center;">+5–8%</td><td style="padding:8px;text-align:center;">Medium</td><td style="padding:8px;text-align:center;color:#C0392B;font-weight:700;">★★★ High</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Channel-level separate models</td><td style="padding:8px;text-align:center;">+8–12%</td><td style="padding:8px;text-align:center;">High</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Lagged marketing spend</td><td style="padding:8px;text-align:center;">+2–4%</td><td style="padding:8px;text-align:center;">Low</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Trade promotion separation</td><td style="padding:8px;text-align:center;">+5–10%</td><td style="padding:8px;text-align:center;">High</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
+        <tr><td style="padding:8px;">Competitor price data</td><td style="padding:8px;text-align:center;">+5–15%</td><td style="padding:8px;text-align:center;">Very High</td><td style="padding:8px;text-align:center;color:#888;">★ Low</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:10px;font-family:'DM Mono',monospace;">
+      Combined realistic target: R² = 0.80–0.85 with full data and channel-level models.
+      R² = 0.90+ would require competitor data or highly granular promotion tracking.
+    </p>
+  </div>
+
+  <div class="footer">
+    <span>Truong Phat</span> · Sales Channel Forecasting Model · Limitations &amp; Future Work · March 2026
+  </div>
+
+</div>
+</div>
 
 </body>
 </html>
