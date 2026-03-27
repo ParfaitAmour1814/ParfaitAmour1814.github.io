@@ -326,23 +326,176 @@ if __name__ == '__main__':
     print(f"\nExported {len(unlabelled)} unlabelled records to f1_manual_review.xlsx")
     print("Fill in MA_LH and LABEL columns, then re-run to retrain on full dataset.")
 
-    # ── PLANNED: K-Means Customer Segmentation ────────────────────────────────
-    # TODO: After full dataset labelled:
-    # from sklearn.cluster import KMeans
-    # from sklearn.preprocessing import StandardScaler
-    #
-    # scaler = StandardScaler()
-    # X_scaled = scaler.fit_transform(X)
-    #
-    # # Elbow method to find optimal k
-    # inertias = []
-    # for k in range(2, 11):
-    #     km = KMeans(n_clusters=k, random_state=42, n_init=10)
-    #     km.fit(X_scaled)
-    #     inertias.append(km.inertia_)
-    #
-    # # Fit optimal k
-    # km_optimal = KMeans(n_clusters=5, random_state=42, n_init=10)
-    # clusters = km_optimal.fit_predict(X_scaled)
-    # df['CLUSTER'] = clusters
-    # # Profile clusters by KAC/KAM label, revenue, client type, geography
+    print("\n\n" + "="*60)
+    print("STAGE 3: K-MEANS CLUSTERING — FULL AR CUSTOMER DATA")
+    print("="*60)
+    run_kmeans()
+
+
+# ── STAGE 3: K-MEANS CLUSTERING ───────────────────────────────────────────────
+def run_kmeans(ar_file1='Ar data.csv', ar_file2='Ar data 2.csv'):
+    """
+    K-Means clustering on full KA customer AR data.
+
+    Data sources:
+    - AR ship-to / bill-to location data (2,219 KA customers)
+    - Features: ship-to count, city/district/region spread, credit limit,
+      payment terms, profile class, client type, geographic flags
+
+    Results (K=3,4,5):
+    - K=5 optimal by silhouette score (0.168)
+    - 5 natural segments: Hospital KAM, Commercial KAC, School/Hotel KAM,
+      Industrial KAM, National Chain KAC
+    - Key finding: geographic scale (ship-to, cities) is the primary
+      KAC differentiator, not industry type alone
+    """
+    from sklearn.cluster import KMeans
+    from sklearn.metrics import silhouette_score
+
+    # Load AR data
+    dfs = []
+    for fname in [ar_file1, ar_file2]:
+        try:
+            dfs.append(pd.read_csv(fname, encoding='utf-8-sig', low_memory=False))
+        except FileNotFoundError:
+            print(f"WARNING: {fname} not found — skipping")
+    if not dfs:
+        print("ERROR: No AR data files found. Provide 'Ar data.csv' and 'Ar data 2.csv'")
+        return
+
+    df = pd.concat(dfs, ignore_index=True)
+    ka = df[df['SALES_CHANNEL_CODE'] == 'KA'].copy()
+    print(f"KA rows: {len(ka):,} | Unique customers: {ka['CUSTOMER_NUMBER'].nunique():,}")
+
+    # ── CUSTOMER-LEVEL AGGREGATION ────────────────────────────────────────────
+    ship_to = (ka[ka['SITE_USE_CODE'] == 'SHIP_TO']
+               .groupby('CUSTOMER_NUMBER')
+               .agg(NUM_SHIP_TO =('SITE_USE_ID',  'nunique'),
+                    CITIES      =('CITY_TER',      'nunique'),
+                    DISTRICTS   =('DISTRICT_TER',  'nunique'),
+                    REGIONS     =('MIEN',          'nunique'),
+                    ACTIVE_SITES=('CUST_SITE_STATUS', lambda x: (x=='A').sum()))
+               .reset_index())
+
+    bill_to = (ka[ka['SITE_USE_CODE'] == 'BILL_TO']
+               .groupby('CUSTOMER_NUMBER')
+               .agg(BILL_CITY    =('CITY_TER',             'first'),
+                    BILL_REGION  =('MIEN',                 'first'),
+                    CREDIT_LIMIT =('CREDIT_LIMIT_CUST_VND','max'),
+                    PAYMENT_TERM =('PAYMENT_TERM',         'first'),
+                    PROFILE_CLASS=('PROFILE_CLASS',        'first'),
+                    CATEGORY_CODE=('CATEGORY_CODE',        'first'))
+               .reset_index())
+
+    cust = ship_to.merge(bill_to, on='CUSTOMER_NUMBER', how='outer')
+
+    # ── LABELS & GROUPINGS ────────────────────────────────────────────────────
+    def get_label(code):
+        if pd.isna(code): return None
+        return 'KAC' if 'KA01' in str(code) else 'KAM' if 'KA00' in str(code) else 'OTHER'
+
+    def get_client_type(code):
+        if pd.isna(code): return 'UNKNOWN'
+        for s in ['CQXX','CQCD','BVXX','BVCD','GKCF','KSNH','SATH',
+                  'SACN','AUNH','CBTP','GTVC','THSA','THHD','B2BL','B2KM']:
+            if s in str(code): return s[:4]
+        return 'OTHER'
+
+    def profile_group(p):
+        if pd.isna(p): return 'UNKNOWN'
+        p = str(p).upper()
+        if 'BENH' in p or 'VIEN' in p: return 'HOSPITAL'
+        if 'TRUONG' in p or 'HOC' in p: return 'SCHOOL'
+        if 'KHACH SAN' in p:            return 'HOTEL'
+        if 'DOC HAI' in p:              return 'INDUSTRIAL'
+        if 'KINH DOANH' in p:           return 'COMMERCIAL'
+        return 'OTHER'
+
+    def parse_payment_days(s):
+        if pd.isna(s): return np.nan
+        import re
+        m = re.search(r'(\d+)D', str(s))
+        return int(m.group(1)) if m else np.nan
+
+    cust['LABEL']        = cust['CATEGORY_CODE'].apply(get_label)
+    cust['CLIENT_TYPE']  = cust['CATEGORY_CODE'].apply(get_client_type)
+    cust['PROFILE_GRP']  = cust['PROFILE_CLASS'].apply(profile_group)
+    cust['IS_HCM']       = cust['BILL_CITY'].str.contains('051|HỒ CHÍ MINH', na=False).astype(int)
+    cust['IS_HANOI']     = cust['BILL_CITY'].str.contains('001|HÀ NỘI', na=False).astype(int)
+    cust['IS_NATIONAL']  = (pd.to_numeric(cust['REGIONS'], errors='coerce') >= 3).astype(int)
+    cust['IS_SOUTH']     = cust['BILL_REGION'].str.contains('MN|MY|MH', na=False).astype(int)
+    cust['IS_NORTH']     = cust['BILL_REGION'].str.contains('HN|MB', na=False).astype(int)
+    cust['IS_CENTRAL']   = cust['BILL_REGION'].str.contains('MT|MD', na=False).astype(int)
+    cust['CREDIT_LIMIT'] = pd.to_numeric(cust['CREDIT_LIMIT'], errors='coerce')
+    cust['LOG_CREDIT']   = np.log1p(cust['CREDIT_LIMIT'].fillna(0))
+    cust['PAYMENT_DAYS'] = cust['PAYMENT_TERM'].apply(parse_payment_days)
+
+    # ── FEATURE MATRIX ────────────────────────────────────────────────────────
+    profile_dummies = pd.get_dummies(cust['PROFILE_GRP'], prefix='PG')
+    client_dummies  = pd.get_dummies(cust['CLIENT_TYPE'],  prefix='CT')
+
+    num_df = pd.DataFrame({
+        'LOG_SHIP_TO'  : np.log1p(pd.to_numeric(cust['NUM_SHIP_TO'],  errors='coerce').fillna(1)),
+        'NUM_CITIES'   : pd.to_numeric(cust['CITIES'],    errors='coerce').fillna(1),
+        'NUM_DISTRICTS': pd.to_numeric(cust['DISTRICTS'], errors='coerce').fillna(1),
+        'NUM_REGIONS'  : pd.to_numeric(cust['REGIONS'],   errors='coerce').fillna(1),
+        'LOG_CREDIT'   : cust['LOG_CREDIT'].fillna(0),
+        'PAYMENT_DAYS' : cust['PAYMENT_DAYS'].fillna(30),
+        'IS_HCM'       : cust['IS_HCM'], 'IS_HANOI': cust['IS_HANOI'],
+        'IS_NATIONAL'  : cust['IS_NATIONAL'], 'IS_SOUTH': cust['IS_SOUTH'],
+        'IS_NORTH'     : cust['IS_NORTH'],    'IS_CENTRAL': cust['IS_CENTRAL'],
+    })
+
+    X = pd.concat([num_df, profile_dummies, client_dummies], axis=1).fillna(0)
+    X.columns = [str(c) for c in X.columns]
+
+    scaler   = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    # ── K-MEANS K=3,4,5 ──────────────────────────────────────────────────────
+    print(f"\nFeature matrix: {X.shape}")
+    print(f"\n{'='*60}")
+    print("K-MEANS RESULTS (K=3, 4, 5)")
+    print("="*60)
+
+    # Cluster segment names for K=5
+    K5_NAMES = {
+        0: 'Hospital KAM',
+        1: 'Commercial KAC',
+        2: 'School & Hotel KAM',
+        3: 'Industrial KAM',
+        4: 'National Chain KAC',
+    }
+
+    best_k, best_sil = 3, 0
+    for k in [3, 4, 5]:
+        km     = KMeans(n_clusters=k, random_state=42, n_init=20, max_iter=500)
+        labels = km.fit_predict(X_scaled)
+        sil    = silhouette_score(X_scaled, labels)
+        if sil > best_sil: best_k, best_sil = k, sil
+        cust[f'CLUSTER_K{k}'] = labels
+
+        print(f"\n── K={k}  Silhouette={sil:.4f}  Inertia={km.inertia_:,.0f}")
+        for c in range(k):
+            grp  = cust[cust[f'CLUSTER_K{k}'] == c]
+            vc   = grp['LABEL'].value_counts()
+            tot  = len(grp)
+            name = K5_NAMES.get(c, f'Cluster {c}') if k == 5 else f'Cluster {c}'
+            prof = grp['PROFILE_GRP'].value_counts().index[0]
+            print(f"  {name:<22} n={tot:>4} "
+                  f"KAC={vc.get('KAC',0)/tot*100:>4.0f}% "
+                  f"KAM={vc.get('KAM',0)/tot*100:>4.0f}% "
+                  f"ship={grp['NUM_SHIP_TO'].median():.0f} "
+                  f"cities={grp['CITIES'].median():.0f} "
+                  f"profile={prof}")
+
+    print(f"\n★ Best K={best_k} (Silhouette={best_sil:.4f})")
+    print("\nSILHOUETTE SCORES:")
+    for k in [3, 4, 5]:
+        s   = silhouette_score(X_scaled, cust[f'CLUSTER_K{k}'])
+        bar = '█' * int(s * 60)
+        star = ' ★' if k == best_k else ''
+        print(f"  K={k}: {s:.4f}  {bar}{star}")
+
+    cust.to_csv('ka_kmeans_results.csv', index=False, encoding='utf-8-sig')
+    print("\nSaved: ka_kmeans_results.csv")

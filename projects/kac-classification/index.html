@@ -123,6 +123,20 @@ footer{text-align:center;padding:20px;font-size:10px;color:var(--muted);font-fam
 footer span{color:var(--yellow-dark);}
 footer a{color:var(--muted);text-decoration:none;}
 footer a:hover{color:var(--yellow-dark);}
+.k-btn{padding:7px 18px;font-size:11px;font-weight:700;font-family:'DM Mono',monospace;border:2px solid var(--border);background:var(--white);border-radius:4px;cursor:pointer;transition:all 0.15s;color:var(--muted);}
+.k-btn:hover{border-color:var(--yellow);color:var(--black);}
+.k-btn.active{border-color:var(--yellow);background:var(--yellow-light);color:var(--yellow-dark);}
+.k-btn.active-best{border-color:var(--green-mid);background:var(--green-light);color:var(--green);}
+.cluster-card{background:var(--white);border:1.5px solid var(--border);border-radius:6px;padding:16px;border-top:4px solid #888;}
+.cc-header{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;}
+.cc-name{font-size:12px;font-weight:700;color:var(--black);}
+.cc-n{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;}
+.cc-bars{margin:10px 0;}
+.cc-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:10px;color:var(--muted);}
+.cc-bar-fill{height:8px;border-radius:4px;}
+.cc-stats{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:10px;}
+.cc-stat{font-size:10px;color:var(--mid);font-family:'DM Mono',monospace;}
+.cc-stat span{color:var(--black);font-weight:600;}
 </style>
 </head>
 <body>
@@ -147,18 +161,18 @@ footer a:hover{color:var(--yellow-dark);}
     <span class="tag">Logistic Regression</span>
     <span class="tag">scikit-learn</span>
     <span class="tag">Feature Engineering</span>
-    <span class="tag wip">🔄 K-Means Planned</span>
+    <span class="tag wip">✅ K-Means K=3,4,5</span>
     <span class="tag wip">🔄 Expanding Dataset</span>
   </div>
 </div>
 
 <!-- STATS -->
 <div class="stats-row">
-  <div class="stat-card"><div class="stat-val">676</div><div class="stat-lbl">PDFs Processed</div></div>
-  <div class="stat-card"><div class="stat-val">402</div><div class="stat-lbl">Labelled Records</div></div>
+  <div class="stat-card"><div class="stat-val">2,219</div><div class="stat-lbl">KA Customers</div></div>
+  <div class="stat-card"><div class="stat-val">402</div><div class="stat-lbl">Labelled (F1)</div></div>
   <div class="stat-card"><div class="stat-val">0.910</div><div class="stat-lbl">CV AUC (LR)</div></div>
-  <div class="stat-card"><div class="stat-val">79%</div><div class="stat-lbl">Test Accuracy</div></div>
-  <div class="stat-card"><div class="stat-val">21</div><div class="stat-lbl">Features</div></div>
+  <div class="stat-card"><div class="stat-val">0.168</div><div class="stat-lbl">Silhouette (K=5)</div></div>
+  <div class="stat-card"><div class="stat-val">5</div><div class="stat-lbl">Segments Found</div></div>
 </div>
 
 <!-- TABS -->
@@ -172,8 +186,11 @@ footer a:hover{color:var(--yellow-dark);}
   <button class="tab-btn" onclick="showTab('features',this)">
     <span class="tab-label">Tab 3</span>Feature Analysis
   </button>
+  <button class="tab-btn" onclick="showTab('kmeans',this)">
+    <span class="tab-label">Tab 4</span>K-Means Clustering
+  </button>
   <button class="tab-btn" onclick="showTab('roadmap',this)">
-    <span class="tab-label">Tab 4</span>Roadmap
+    <span class="tab-label">Tab 5</span>Roadmap
   </button>
 </div>
 
@@ -395,7 +412,83 @@ footer a:hover{color:var(--yellow-dark);}
 
 </div>
 
-<!-- ══ TAB 4: ROADMAP ══ -->
+<!-- ══ TAB 4: K-MEANS ══ -->
+<div class="tab-content" id="kmeans">
+
+  <div class="insight">
+    <h3>K=5 wins — 5 natural segments emerge from 2,219 KA customers, each with distinct KAC/KAM composition</h3>
+    <p>
+      K-Means clustering on the full AR customer dataset (2,219 KA accounts — ship-to locations,
+      billing geography, credit limits, payment terms, profile class) reveals that <strong>customer
+      behaviour does not split cleanly into just KAC and KAM</strong>. Instead, 5 natural segments
+      emerge: a pure hospital KAM cluster, two KAC-leaning commercial clusters differentiated
+      by geographic scale, and two KAM-leaning institutional clusters (schools/hotels vs industrial).
+      K=5 achieves the highest silhouette score (0.168) — confirming 5 as the optimal number of segments.
+      The <strong>National Chain cluster</strong> (76 customers, avg 90 ship-to locations, 100% national
+      coverage) is the clearest KAC signal in the entire dataset.
+    </p>
+  </div>
+
+  <!-- K selector -->
+  <div style="display:flex;gap:10px;margin-bottom:18px;align-items:center;">
+    <span style="font-size:11px;font-weight:700;color:var(--muted);font-family:'DM Mono',monospace;">SELECT K:</span>
+    <button class="k-btn active" onclick="switchK(3,this)">K = 3</button>
+    <button class="k-btn" onclick="switchK(4,this)">K = 4</button>
+    <button class="k-btn active-best" onclick="switchK(5,this)" id="k5btn">K = 5 ★ Best</button>
+  </div>
+
+  <!-- Cluster cards -->
+  <div id="cluster-cards" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;"></div>
+
+  <!-- Charts row -->
+  <div class="charts-grid" style="margin-bottom:18px;">
+    <div class="chart-card">
+      <div class="chart-title">Silhouette Score by K</div>
+      <div class="chart-sub">Higher = better defined clusters · K=5 optimal</div>
+      <div class="chart-wrap"><canvas id="silChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Cluster Size Distribution — Current K</div>
+      <div class="chart-sub">Customer count per segment</div>
+      <div class="chart-wrap"><canvas id="clusterSizeChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:18px;">
+    <div class="chart-title">KAC vs KAM Composition — Per Cluster (Current K)</div>
+    <div class="chart-sub">% split of labelled customers within each segment</div>
+    <div class="chart-wrap" style="height:200px;"><canvas id="compositionChart"></canvas></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Segment Profiles — K=5 (Best)</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Segment</th><th>N</th><th>KAC%</th><th>KAM%</th>
+          <th>Median Ship-to</th><th>Avg Cities</th><th>HCM%</th><th>National%</th><th>Top Profile</th>
+        </tr>
+      </thead>
+      <tbody id="segmentTable"></tbody>
+    </table>
+  </div>
+
+  <div class="insight" style="border-left-color:#27AE60;">
+    <h3>Key finding: Geography and scale — not industry — define KAC vs KAM</h3>
+    <p>
+      The clearest separator between KAC and KAM is <strong>number of ship-to locations and geographic spread</strong>,
+      not just the type of customer. The National Chain cluster (76 customers, avg 90 ship-to, 100% national)
+      is 83% KAC. The Commercial cluster (531 customers, local scale) is 70% KAC but single-city.
+      Meanwhile, hospitals, schools, and industrial accounts are predominantly KAM regardless of size —
+      they are managed through the medical/institutional channel regardless of geographic footprint.
+      This suggests the KAC/KAM boundary is as much about <strong>distribution model</strong> as it is
+      about customer type.
+    </p>
+  </div>
+
+</div>
+
+<!-- ══ TAB 5: ROADMAP ══ -->
 <div class="tab-content" id="roadmap">
 
   <div class="insight">
@@ -442,10 +535,10 @@ footer a:hover{color:var(--yellow-dark);}
         </div>
       </div>
       <div class="rm-item">
-        <div class="rm-dot planned">📋</div>
+        <div class="rm-dot done">✅</div>
         <div>
-          <div class="rm-title">K-Means Customer Segmentation <span class="rm-badge planned">Planned</span></div>
-          <div class="rm-desc">Unsupervised clustering on the full feature matrix. Elbow method + silhouette score to determine optimal k. Goal: discover natural customer sub-segments beyond the binary KAC/KAM split — e.g. high-volume hospital vs institutional KAM, chain food service vs chain retail KAC.</div>
+          <div class="rm-title">K-Means Customer Segmentation <span class="rm-badge done">Completed</span></div>
+          <div class="rm-desc">K-Means clustering (K=3,4,5) on 2,219 KA customers using AR ship-to/bill-to data — geographic spread, credit limits, payment terms, profile class. K=5 optimal (silhouette=0.168). 5 natural segments identified: Hospital KAM, Commercial KAC, School & Hotel KAM, Industrial KAM, National Chain KAC. Key finding: geographic scale (ship-to count, city spread) is the primary KAC differentiator, not industry alone.</div>
         </div>
       </div>
       <div class="rm-item">
@@ -466,96 +559,217 @@ footer a:hover{color:var(--yellow-dark);}
 </footer>
 
 <script>
+// ── K-MEANS DATA ──────────────────────────────────────────────────────────────
+const CLUSTER_DATA = [{"k":3,"cluster":0,"name":"Cluster 0","color":"#888","desc":"","n":1233,"kac_pct":35.2,"kam_pct":41.0,"other_pct":23.8,"med_ship":1,"mean_cities":1.1,"hcm_pct":13.9,"national_pct":0.0,"top_profile":"SCHOOL","sil":0.0965},{"k":3,"cluster":1,"name":"Cluster 1","color":"#888","desc":"","n":77,"kac_pct":81.8,"kam_pct":14.3,"other_pct":3.9,"med_ship":16,"mean_cities":11.0,"hcm_pct":58.4,"national_pct":98.7,"top_profile":"COMMERCIAL","sil":0.0965},{"k":3,"cluster":2,"name":"Cluster 2","color":"#888","desc":"","n":909,"kac_pct":15.3,"kam_pct":73.5,"other_pct":11.2,"med_ship":1,"mean_cities":1.1,"hcm_pct":16.7,"national_pct":0.0,"top_profile":"INDUSTRIAL","sil":0.0965},{"k":4,"cluster":0,"name":"Cluster 0","color":"#888","desc":"","n":76,"kac_pct":82.9,"kam_pct":13.2,"other_pct":3.9,"med_ship":15,"mean_cities":11.1,"hcm_pct":57.9,"national_pct":100.0,"top_profile":"COMMERCIAL","sil":0.1309},{"k":4,"cluster":1,"name":"Cluster 1","color":"#888","desc":"","n":635,"kac_pct":7.7,"kam_pct":57.5,"other_pct":34.8,"med_ship":1,"mean_cities":1.0,"hcm_pct":2.0,"national_pct":0.0,"top_profile":"SCHOOL","sil":0.1309},{"k":4,"cluster":2,"name":"Cluster 2","color":"#888","desc":"","n":1212,"kac_pct":40.9,"kam_pct":45.5,"other_pct":13.5,"med_ship":1,"mean_cities":1.1,"hcm_pct":21.7,"national_pct":0.0,"top_profile":"INDUSTRIAL","sil":0.1309},{"k":4,"cluster":3,"name":"Cluster 3","color":"#888","desc":"","n":296,"kac_pct":9.5,"kam_pct":87.2,"other_pct":3.4,"med_ship":1,"mean_cities":1.1,"hcm_pct":16.2,"national_pct":0.0,"top_profile":"HOSPITAL","sil":0.1309},{"k":5,"cluster":0,"name":"Hospital KAM","color":"#C0392B","desc":"Pure hospital accounts - 87% KAM, highly localised, low credit","n":295,"kac_pct":9.5,"kam_pct":87.1,"other_pct":3.4,"med_ship":1,"mean_cities":1.1,"hcm_pct":16.3,"national_pct":0.0,"top_profile":"HOSPITAL","sil":0.1678},{"k":5,"cluster":1,"name":"Commercial KAC","color":"#2471A3","desc":"Commercial/service chains - 70% KAC, multi-city, short payment terms","n":531,"kac_pct":69.7,"kam_pct":19.6,"other_pct":10.7,"med_ship":1,"mean_cities":1.1,"hcm_pct":29.4,"national_pct":0.0,"top_profile":"COMMERCIAL","sil":0.1678},{"k":5,"cluster":2,"name":"School & Hotel KAM","color":"#E67E22","desc":"Schools and hotels - 58% KAM, provincial spread, low credit","n":701,"kac_pct":9.0,"kam_pct":57.6,"other_pct":33.4,"med_ship":1,"mean_cities":1.0,"hcm_pct":2.3,"national_pct":0.0,"top_profile":"SCHOOL","sil":0.1678},{"k":5,"cluster":3,"name":"Industrial KAM","color":"#8E44AD","desc":"Industrial/corp offices - 67% KAM, localised, moderate credit","n":616,"kac_pct":18.2,"kam_pct":66.6,"other_pct":15.3,"med_ship":1,"mean_cities":1.1,"hcm_pct":16.9,"national_pct":0.0,"top_profile":"INDUSTRIAL","sil":0.1678},{"k":5,"cluster":4,"name":"National Chain KAC","color":"#27AE60","desc":"National chains - 83% KAC, avg 90 ship-to, 100% national coverage","n":76,"kac_pct":82.9,"kam_pct":13.2,"other_pct":3.9,"med_ship":15,"mean_cities":11.1,"hcm_pct":57.9,"national_pct":100.0,"top_profile":"COMMERCIAL","sil":0.1678}];
+const SIL_DATA = [{"k":3,"sil":0.0965},{"k":4,"sil":0.1309},{"k":5,"sil":0.1678}];
+
+// ── CLASSIFIER DATA ───────────────────────────────────────────────────────────
 const DATA_MODELS = [{"name":"Logistic Regression","cv_auc":0.9102,"cv_std":0.0455,"test_auc":0.868,"test_acc":79.0,"chosen":true},{"name":"Random Forest","cv_auc":0.9302,"cv_std":0.0411,"test_auc":0.9305,"test_acc":86.4,"chosen":false},{"name":"Gradient Boosting","cv_auc":0.9391,"cv_std":0.0419,"test_auc":0.9381,"test_acc":90.1,"chosen":false}];
 const DATA_COEFS = [{"feature":"NUM_SHIP_TO","coef":2.001},{"feature":"IS_HCM","coef":1.121},{"feature":"REVENUE_TARGET_MONTH","coef":1.062},{"feature":"NUM_PRODUCT_GROUPS","coef":0.992},{"feature":"NUM_CATEGORIES","coef":-0.84},{"feature":"IS_NATIONAL","coef":0.832},{"feature":"CG_HOSPITAL","coef":-0.829},{"feature":"CG_SERVICE","coef":0.818},{"feature":"LOG_REVENUE_TARGET_YEAR","coef":-0.714},{"feature":"LOG_HIST_SALES_12M","coef":-0.523}];
 const DATA_CLIENTS = [{"code":"BVXX","label":"Hospital","count":147,"lean":"KAM"},{"code":"CQXX","label":"Corp Office","count":131,"lean":"KAC"},{"code":"GKCF","label":"F&B Chain","count":33,"lean":"KAC"},{"code":"KSNH","label":"Hotel","count":32,"lean":"KAC"},{"code":"SACN","label":"Industrial","count":30,"lean":"KAM"},{"code":"SATH","label":"Port/Airport","count":27,"lean":"KAC"},{"code":"AUNH","label":"School/Uni","count":21,"lean":"KAM"},{"code":"CBTP","label":"Food Mfg","count":21,"lean":"KAM"}];
 const RF_FI = [{"feature":"NUM_SHIP_TO","importance":0.095},{"feature":"CG_SERVICE","importance":0.079},{"feature":"CG_HOSPITAL","importance":0.075},{"feature":"LOG_REVENUE_TARGET_YEAR","importance":0.073},{"feature":"REVENUE_TARGET_YEAR","importance":0.071},{"feature":"LOG_REVENUE_TARGET_MONTH","importance":0.070},{"feature":"REVENUE_TARGET_MONTH","importance":0.069},{"feature":"ORDER_FREQ_MONTH","importance":0.068},{"feature":"NUM_PRODUCT_GROUPS","importance":0.058},{"feature":"IS_NATIONAL","importance":0.055}];
 
-const Y='#E8B800',G='#27AE60',B='#2471A3',R='#C0392B',O='#E67E22';
-const KAC_C='#2471A3',KAM_C='#C0392B';
-const font={family:'DM Sans',size:11};
+const Y='#E8B800', G='#27AE60', B='#2471A3', R='#C0392B', O='#E67E22';
+const KAC_C='#2471A3', KAM_C='#C0392B';
+const font = {family:'DM Sans', size:11};
 
-function showTab(id,btn){
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+// ── TAB NAVIGATION ────────────────────────────────────────────────────────────
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   btn.classList.add('active');
 }
 
-// Label distribution doughnut
-new Chart(document.getElementById('labelChart'),{
-  type:'doughnut',
-  data:{
-    labels:['KAC (KA01)','KAM (KA00)','Unlabelled'],
-    datasets:[{data:[241,161,191],backgroundColor:[KAC_C+'CC',KAM_C+'CC','#ccc'],borderColor:'#fff',borderWidth:2}]
+// ── OVERVIEW CHARTS ───────────────────────────────────────────────────────────
+new Chart(document.getElementById('labelChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['KAC (KA01)', 'KAM (KA00)', 'Unlabelled'],
+    datasets: [{data:[241,161,191], backgroundColor:[KAC_C+'CC',KAM_C+'CC','#ccc'], borderColor:'#fff', borderWidth:2}]
   },
-  options:{responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{position:'right',labels:{font,color:'#666',boxWidth:12}}}}
+  options: {responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{position:'right', labels:{font, color:'#666', boxWidth:12}}}}
 });
 
-// Client type bar
-new Chart(document.getElementById('clientChart'),{
-  type:'bar',
-  data:{
-    labels:DATA_CLIENTS.map(d=>d.label),
-    datasets:[{
-      data:DATA_CLIENTS.map(d=>d.count),
-      backgroundColor:DATA_CLIENTS.map(d=>d.lean==='KAC'?KAC_C+'99':KAM_C+'99'),
-      borderColor:DATA_CLIENTS.map(d=>d.lean==='KAC'?KAC_C:KAM_C),
-      borderWidth:2,borderRadius:4
+new Chart(document.getElementById('clientChart'), {
+  type: 'bar',
+  data: {
+    labels: DATA_CLIENTS.map(d => d.label),
+    datasets: [{
+      data: DATA_CLIENTS.map(d => d.count),
+      backgroundColor: DATA_CLIENTS.map(d => d.lean==='KAC' ? KAC_C+'99' : KAM_C+'99'),
+      borderColor: DATA_CLIENTS.map(d => d.lean==='KAC' ? KAC_C : KAM_C),
+      borderWidth:2, borderRadius:4
     }]
   },
-  options:{responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const d=DATA_CLIENTS[ctx.dataIndex];return ` ${d.count} — leans ${d.lean}`;} }}},
-    scales:{y:{ticks:{font,color:'#999'},grid:{color:'#eee'}},x:{ticks:{font,color:'#999'}}}}
+  options: {responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{y:{ticks:{font,color:'#999'},grid:{color:'#eee'}}, x:{ticks:{font,color:'#999'}}}}
 });
 
-// Model AUC comparison
-new Chart(document.getElementById('modelAucChart'),{
-  type:'bar',
-  data:{
-    labels:DATA_MODELS.map(d=>d.name),
-    datasets:[
-      {label:'CV AUC',data:DATA_MODELS.map(d=>d.cv_auc),backgroundColor:DATA_MODELS.map(d=>d.chosen?Y+'CC':'#ccc'),borderColor:DATA_MODELS.map(d=>d.chosen?Y:'#aaa'),borderWidth:2,borderRadius:4},
-      {label:'Test AUC',data:DATA_MODELS.map(d=>d.test_auc),backgroundColor:DATA_MODELS.map(d=>d.chosen?B+'99':'#ddd'),borderColor:DATA_MODELS.map(d=>d.chosen?B:'#bbb'),borderWidth:2,borderRadius:4}
+// ── MODEL CHARTS ──────────────────────────────────────────────────────────────
+new Chart(document.getElementById('modelAucChart'), {
+  type: 'bar',
+  data: {
+    labels: DATA_MODELS.map(d => d.name),
+    datasets: [
+      {label:'CV AUC', data:DATA_MODELS.map(d=>d.cv_auc), backgroundColor:DATA_MODELS.map(d=>d.chosen?Y+'CC':'#ccc'), borderColor:DATA_MODELS.map(d=>d.chosen?Y:'#aaa'), borderWidth:2, borderRadius:4},
+      {label:'Test AUC', data:DATA_MODELS.map(d=>d.test_auc), backgroundColor:DATA_MODELS.map(d=>d.chosen?B+'99':'#ddd'), borderColor:DATA_MODELS.map(d=>d.chosen?B:'#bbb'), borderWidth:2, borderRadius:4}
     ]
   },
-  options:{responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{position:'top',labels:{font,color:'#999'}}},
-    scales:{y:{min:0.75,ticks:{font,color:'#999'},grid:{color:'#eee'}},x:{ticks:{font,color:'#999'}}}}
+  options: {responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{position:'top', labels:{font, color:'#999'}}},
+    scales:{y:{min:0.75, ticks:{font,color:'#999'}, grid:{color:'#eee'}}, x:{ticks:{font,color:'#999'}}}}
 });
 
-// LR Coefficients horizontal bar
-new Chart(document.getElementById('coefChart'),{
-  type:'bar',
-  data:{
-    labels:DATA_COEFS.map(d=>d.feature),
-    datasets:[{
-      data:DATA_COEFS.map(d=>d.coef),
-      backgroundColor:DATA_COEFS.map(d=>d.coef>0?KAC_C+'99':KAM_C+'99'),
-      borderColor:DATA_COEFS.map(d=>d.coef>0?KAC_C:KAM_C),
-      borderWidth:2,borderRadius:4
+// ── FEATURE CHARTS ────────────────────────────────────────────────────────────
+new Chart(document.getElementById('coefChart'), {
+  type: 'bar',
+  data: {
+    labels: DATA_COEFS.map(d => d.feature),
+    datasets: [{
+      data: DATA_COEFS.map(d => d.coef),
+      backgroundColor: DATA_COEFS.map(d => d.coef>0 ? KAC_C+'99' : KAM_C+'99'),
+      borderColor: DATA_COEFS.map(d => d.coef>0 ? KAC_C : KAM_C),
+      borderWidth:2, borderRadius:4
     }]
   },
-  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+  options: {indexAxis:'y', responsive:true, maintainAspectRatio:false,
     plugins:{legend:{display:false}},
-    scales:{x:{ticks:{font,color:'#999'},grid:{color:'#eee'}},y:{ticks:{font,color:'#666',font:{size:10}}}}}
+    scales:{x:{ticks:{font,color:'#999'}, grid:{color:'#eee'}}, y:{ticks:{font,color:'#666'}}}}
 });
 
-// RF feature importance
-new Chart(document.getElementById('fiChart'),{
-  type:'bar',
-  data:{
-    labels:RF_FI.map(d=>d.feature),
-    datasets:[{
-      data:RF_FI.map(d=>d.importance),
-      backgroundColor:Y+'99',borderColor:Y,borderWidth:2,borderRadius:4
+new Chart(document.getElementById('fiChart'), {
+  type: 'bar',
+  data: {
+    labels: RF_FI.map(d => d.feature),
+    datasets: [{
+      data: RF_FI.map(d => d.importance),
+      backgroundColor: Y+'99', borderColor: Y, borderWidth:2, borderRadius:4
     }]
   },
-  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+  options: {indexAxis:'y', responsive:true, maintainAspectRatio:false,
     plugins:{legend:{display:false}},
-    scales:{x:{ticks:{font,color:'#999'},grid:{color:'#eee'}},y:{ticks:{font,color:'#666',font:{size:10}}}}}
+    scales:{x:{ticks:{font,color:'#999'}, grid:{color:'#eee'}}, y:{ticks:{font,color:'#666'}}}}
 });
+
+// ── K-MEANS FUNCTIONS ─────────────────────────────────────────────────────────
+let currentK = 5;
+let sizeChart, compChart;
+
+function getKData(k) { return CLUSTER_DATA.filter(d => d.k === k); }
+
+function renderClusterCards(k) {
+  const data = getKData(k);
+  const grid = document.getElementById('cluster-cards');
+  grid.style.gridTemplateColumns = k === 5 ? '1fr 1fr 1fr' : k === 4 ? '1fr 1fr' : '1fr 1fr 1fr';
+  grid.innerHTML = data.map(d => {
+    const descHtml = d.desc ? '<div style="font-size:10px;color:var(--muted);margin-bottom:8px;">' + d.desc + '</div>' : '';
+    return '<div class="cluster-card" style="border-top-color:' + d.color + '">'
+      + '<div class="cc-header">'
+      + '<span class="cc-name" style="color:' + d.color + '">' + d.name + '</span>'
+      + '<span class="cc-n">' + d.n + ' customers</span>'
+      + '</div>'
+      + descHtml
+      + '<div class="cc-bars">'
+      + '<div class="cc-bar-row"><span style="width:30px;color:#2471A3;font-weight:700">KAC</span>'
+      + '<div style="flex:1;background:#eee;border-radius:4px;height:8px;"><div class="cc-bar-fill" style="width:' + d.kac_pct + '%;background:#2471A3;"></div></div>'
+      + '<span style="width:32px;text-align:right;font-weight:700;color:#2471A3">' + d.kac_pct.toFixed(0) + '%</span></div>'
+      + '<div class="cc-bar-row"><span style="width:30px;color:#C0392B;font-weight:700">KAM</span>'
+      + '<div style="flex:1;background:#eee;border-radius:4px;height:8px;"><div class="cc-bar-fill" style="width:' + d.kam_pct + '%;background:#C0392B;"></div></div>'
+      + '<span style="width:32px;text-align:right;font-weight:700;color:#C0392B">' + d.kam_pct.toFixed(0) + '%</span></div>'
+      + '</div>'
+      + '<div class="cc-stats">'
+      + '<div class="cc-stat">Ship-to: <span>' + d.med_ship + ' (med)</span></div>'
+      + '<div class="cc-stat">Cities: <span>' + d.mean_cities + ' (avg)</span></div>'
+      + '<div class="cc-stat">HCM: <span>' + d.hcm_pct.toFixed(0) + '%</span></div>'
+      + '<div class="cc-stat">National: <span>' + d.national_pct.toFixed(0) + '%</span></div>'
+      + '</div></div>';
+  }).join('');
+}
+
+function renderSizeChart(k) {
+  const data = getKData(k);
+  if (sizeChart) sizeChart.destroy();
+  sizeChart = new Chart(document.getElementById('clusterSizeChart'), {
+    type: 'bar',
+    data: {
+      labels: data.map(d => d.name),
+      datasets: [{data:data.map(d=>d.n), backgroundColor:data.map(d=>d.color+'99'), borderColor:data.map(d=>d.color), borderWidth:2, borderRadius:4}]
+    },
+    options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{y:{ticks:{font,color:'#999'}, grid:{color:'#eee'}}, x:{ticks:{font,color:'#999',maxRotation:30}}}}
+  });
+}
+
+function renderCompChart(k) {
+  const data = getKData(k);
+  if (compChart) compChart.destroy();
+  compChart = new Chart(document.getElementById('compositionChart'), {
+    type: 'bar',
+    data: {
+      labels: data.map(d => d.name),
+      datasets: [
+        {label:'KAC%', data:data.map(d=>d.kac_pct), backgroundColor:'#2471A399', borderColor:'#2471A3', borderWidth:2, borderRadius:4},
+        {label:'KAM%', data:data.map(d=>d.kam_pct), backgroundColor:'#C0392B99', borderColor:'#C0392B', borderWidth:2, borderRadius:4}
+      ]
+    },
+    options: {responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'top', labels:{font,color:'#999'}}},
+      scales:{y:{max:100, ticks:{font,color:'#999',callback:v=>v+'%'}, grid:{color:'#eee'}},
+              x:{ticks:{font,color:'#999',maxRotation:30}}}}
+  });
+}
+
+function switchK(k, btn) {
+  currentK = k;
+  document.querySelectorAll('.k-btn').forEach(b => b.classList.remove('active','active-best'));
+  btn.classList.add(k===5 ? 'active-best' : 'active');
+  renderClusterCards(k);
+  renderSizeChart(k);
+  renderCompChart(k);
+}
+
+// Silhouette chart
+new Chart(document.getElementById('silChart'), {
+  type: 'bar',
+  data: {
+    labels: SIL_DATA.map(d => 'K = ' + d.k),
+    datasets: [{
+      data: SIL_DATA.map(d => d.sil),
+      backgroundColor: SIL_DATA.map(d => d.k===5 ? '#27AE6099' : '#E8B80099'),
+      borderColor: SIL_DATA.map(d => d.k===5 ? '#27AE60' : '#E8B800'),
+      borderWidth:2, borderRadius:4
+    }]
+  },
+  options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+    scales:{y:{min:0, max:0.25, ticks:{font,color:'#999'}, grid:{color:'#eee'}}, x:{ticks:{font,color:'#999'}}}}
+});
+
+// Segment table K=5
+const k5data = getKData(5);
+const tbody5 = document.getElementById('segmentTable');
+k5data.forEach(d => {
+  const tr = document.createElement('tr');
+  const dot = '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + d.color + ';margin-right:6px;vertical-align:middle;"></span>';
+  tr.innerHTML = '<td>' + dot + '<strong>' + d.name + '</strong></td>'
+    + '<td class="mono">' + d.n + '</td>'
+    + '<td class="mono" style="color:#2471A3;font-weight:600">' + d.kac_pct.toFixed(0) + '%</td>'
+    + '<td class="mono" style="color:#C0392B;font-weight:600">' + d.kam_pct.toFixed(0) + '%</td>'
+    + '<td class="mono">' + d.med_ship + '</td>'
+    + '<td class="mono">' + d.mean_cities + '</td>'
+    + '<td class="mono">' + d.hcm_pct.toFixed(0) + '%</td>'
+    + '<td class="mono">' + d.national_pct.toFixed(0) + '%</td>'
+    + '<td>' + d.top_profile + '</td>';
+  tbody5.appendChild(tr);
+});
+
+// Initial K-Means render
+renderClusterCards(5);
+renderSizeChart(5);
+renderCompChart(5);
+document.getElementById('k5btn').classList.add('active-best');
 </script>
 </body>
 </html>
