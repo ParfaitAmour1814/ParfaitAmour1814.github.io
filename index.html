@@ -793,15 +793,15 @@
       <div class="project-status status-wip">In Progress</div>
       <div class="project-title">KA Customer Classification — KAC vs KAM</div>
       <div class="project-desc">
-        ETL pipeline extracting 15 structured fields from 676 F1 pricing approval PDFs using pdftotext + regex. Built Logistic Regression classifier (CV AUC=0.910) to predict KAC vs KAM customer tier — chosen over Random Forest and Gradient Boosting for interpretability and generalisation robustness on 402 labelled records. Number of ship-to locations is the strongest predictor. Expanding to K-Means clustering to discover natural sub-segments beyond the binary classification.
+        ETL pipeline extracting 15 structured fields from 676 F1 pricing approval PDFs using pdftotext + regex. Built Logistic Regression classifier (CV AUC=0.910) to predict KAC vs KAM customer tier — chosen over Random Forest and Gradient Boosting for interpretability and generalisation robustness on 402 labelled records. Extended to K-Means clustering (K=3,4,5) on 2,219 KA customers from AR ship-to/billing data — K=5 optimal (silhouette=0.168), revealing 5 natural segments: Hospital KAM, Commercial KAC, School &amp; Hotel KAM, Industrial KAM, and National Chain KAC. Key finding: geographic scale (ship-to count, city spread) is the primary KAC differentiator, not industry type alone.
       </div>
       <div class="project-tags">
         <span class="project-tag">Python</span>
         <span class="project-tag">PDF ETL</span>
         <span class="project-tag">Logistic Regression</span>
-        <span class="project-tag">scikit-learn</span>
         <span class="project-tag">K-Means</span>
-        <span class="project-tag">NLP</span>
+        <span class="project-tag">scikit-learn</span>
+        <span class="project-tag">Unsupervised ML</span>
       </div>
       <div class="project-links">
         <a href="https://ParfaitAmour1814.github.io/projects/kac-classification/" class="project-link" target="_blank">Live Page →</a>
