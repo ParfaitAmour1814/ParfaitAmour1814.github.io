@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Macro Variable Regression — Executive Summary</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow: #E8B800;
+    --yellow-light: #FDF3CC;
+    --yellow-dark: #A07800;
+    --black: #0D0D0D;
+    --dark: #1A1A1A;
+    --mid: #3D3D3D;
+    --muted: #666666;
+    --light: #F0EFE8;
+    --lighter: #F8F7F2;
+    --white: #FFFFFF;
+    --border: #CCCCBF;
+    --red: #C0392B;
+    --red-light: #FDECEA;
+    --orange: #E67E22;
+    --orange-light: #FEF0E6;
+    --green: #27AE60;
+    --green-light: #E9F7EF;
+    --blue: #2980B9;
+    --blue-light: #EBF5FB;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--dark);
+    background: var(--lighter);
+    line-height: 1.6;
+  }
+
+  /* ── PAGE LAYOUT ─────────────────────────────────────────────────── */
+  .page {
+    width: 100%;
+    min-height: 100vh;
+    padding: 40px;
+    max-width: 960px;
+    margin: 0 auto;
+    display: none;
+  }
+  .page.active { display: block; }
+
+  /* ── NAV TABS ────────────────────────────────────────────────────── */
+  .tab-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    padding: 0;
+  }
+  .tab-btn {
+    padding: 14px 32px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .tab-btn:hover { color: var(--black); }
+  .tab-btn.active {
+    color: var(--black);
+    border-bottom-color: var(--yellow);
+  }
+  .tab-label {
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    color: var(--yellow-dark);
+    display: block;
+    margin-bottom: 1px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .page-content { padding-top: 64px; }
+
+  /* ── HEADER ──────────────────────────────────────────────────────── */
+  .header {
+    background: var(--black);
+    color: var(--white);
+    padding: 28px 36px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--yellow);
+  }
+  .header-tag {
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--yellow);
+    margin-bottom: 8px; font-family: 'DM Mono', monospace;
+  }
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px; font-weight: 400; line-height: 1.2; margin-bottom: 8px;
+  }
+  .header p { font-size: 11px; color: #999; font-family: 'DM Mono', monospace; }
+
+  /* ── SECTION ─────────────────────────────────────────────────────── */
+  .section {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    padding: 22px 26px;
+    margin-bottom: 18px;
+  }
+  .section-title {
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--yellow-dark);
+    margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── CONCLUSION ──────────────────────────────────────────────────── */
+  .conclusion {
+    background: var(--black); color: var(--white);
+    border-radius: 6px; padding: 22px 26px;
+    margin-bottom: 18px; border-left: 4px solid var(--yellow);
+  }
+  .conclusion h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px; margin-bottom: 10px; color: var(--yellow);
+  }
+  .conclusion p { font-size: 12px; color: #ccc; line-height: 1.8; }
+  .conclusion strong { color: var(--white); }
+
+  /* ── VAR CARDS ───────────────────────────────────────────────────── */
+  .var-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 18px; }
+  .var-card {
+    border-radius: 6px; padding: 16px;
+    border: 1.5px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .var-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+  }
+  .var-card.exclude::before { background: var(--red); }
+  .var-card.weak::before { background: var(--orange); }
+  .var-name { font-size: 11px; font-weight: 700; color: var(--black); margin-bottom: 12px; }
+  .stat-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 11px; }
+  .stat-label { color: var(--muted); }
+  .stat-val { font-weight: 600; font-family: 'DM Mono', monospace; color: var(--dark); }
+  .stat-val.bad { color: var(--red); }
+  .stat-val.ok { color: var(--orange); }
+  .verdict-badge {
+    display: inline-block; font-size: 9px; font-weight: 700;
+    letter-spacing: 0.8px; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 3px; margin-top: 10px;
+  }
+  .badge-exclude { background: var(--red-light); color: var(--red); border: 1px solid #f5c6c2; }
+  .badge-weak { background: var(--orange-light); color: var(--orange); border: 1px solid #f9d5b3; }
+
+  /* ── TABLE ───────────────────────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th {
+    background: var(--light); padding: 9px 12px; text-align: left;
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--muted);
+    border-bottom: 2px solid var(--border);
+  }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--mid); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--lighter); }
+  .highlight { font-weight: 600; color: var(--black); }
+  .sig-yes { color: var(--green); font-weight: 600; }
+  .sig-no { color: var(--muted); }
+  .r2-high { color: var(--orange); font-weight: 600; }
+
+  /* ── ROADMAP ─────────────────────────────────────────────────────── */
+  .roadmap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .roadmap-item {
+    border: 1.5px solid var(--border);
+    border-radius: 6px; padding: 14px;
+  }
+  .roadmap-item.done { border-color: var(--green); }
+  .roadmap-item.planned { border-color: var(--yellow); }
+  .roadmap-item.future { opacity: 0.75; }
+  .roadmap-badge {
+    display: inline-block; font-size: 9px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 3px; margin-bottom: 7px;
+    font-family: 'DM Mono', monospace;
+  }
+  .badge-done { background: var(--green-light); color: var(--green); border: 1px solid #a9dfbf; }
+  .badge-planned { background: var(--yellow-light); color: var(--yellow-dark); border: 1px solid var(--yellow); }
+  .badge-future { background: var(--light); color: var(--muted); border: 1px solid var(--border); }
+  .roadmap-title { font-size: 12px; font-weight: 700; color: var(--black); margin-bottom: 5px; }
+  .roadmap-desc { font-size: 11px; color: var(--mid); line-height: 1.6; }
+
+  /* ── METHOD GRID ─────────────────────────────────────────────────── */
+  .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .method-item {
+    background: var(--lighter); border: 1px solid var(--border);
+    border-radius: 4px; padding: 13px;
+  }
+  .method-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--yellow-dark);
+    margin-bottom: 5px; font-family: 'DM Mono', monospace;
+  }
+  .method-val { font-size: 12px; color: var(--mid); line-height: 1.6; }
+
+  /* ── PRODUCT GROUP PAGE ──────────────────────────────────────────── */
+  .insight-box {
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--yellow);
+    border-radius: 0 4px 4px 0;
+    padding: 14px 16px;
+    font-size: 12px; color: var(--mid); line-height: 1.8;
+    margin-bottom: 18px;
+  }
+  .insight-box strong { color: var(--black); }
+
+  .sensitivity-legend {
+    display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--mid);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%; flex-shrink: 0;
+  }
+
+  .pg-section-title {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted);
+    margin: 18px 0 10px; padding-bottom: 6px;
+    border-bottom: 1px dashed var(--border);
+    font-family: 'DM Mono', monospace;
+  }
+
+  code {
+    font-family: 'DM Mono', monospace;
+    background: var(--light); padding: 1px 5px;
+    border-radius: 3px; font-size: 11px;
+  }
+
+  /* ── FOOTER ──────────────────────────────────────────────────────── */
+  .footer {
+    text-align: center; font-size: 10px; color: var(--muted);
+    font-family: 'DM Mono', monospace; margin-top: 24px;
+    padding-top: 14px; border-top: 1px solid var(--border);
+  }
+  .footer span { color: var(--yellow-dark); }
+</style>
+</head>
+<body>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showPage('page1', this)">
+    <span class="tab-label">Page 1</span>
+    Overall Findings
+  </button>
+  <button class="tab-btn" onclick="showPage('page2', this)">
+    <span class="tab-label">Page 2</span>
+    Product Group Deep Dive
+  </button>
+  <button class="tab-btn" onclick="showPage('page3', this)">
+    <span class="tab-label">Page 3</span>
+    EDA & Linearity Checks
+  </button>
+  <button class="tab-btn" onclick="showPage('page4', this)">
+    <span class="tab-label">Page 4</span>
+    Limitations &amp; Future Work
+  </button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE 1 — OVERALL FINDINGS
+══════════════════════════════════════════════════════════════════════ -->
+<div class="page active" id="page1">
+<div class="page-content">
+
+  <!-- ⚠️ DATA REMINDER BANNER -->
+  <div style="background:#1A1A1A;border-left:4px solid #E8B800;border-radius:6px;padding:14px 20px;margin-bottom:18px;display:flex;gap:16px;align-items:flex-start;">
+    <span style="font-size:18px;flex-shrink:0;">⚠️</span>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:#E8B800;letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:6px;">DATA COMPLETENESS REMINDER</div>
+      <div style="font-size:12px;color:#ccc;line-height:1.8;">
+        <strong style="color:#fff;">Aug–Dec 2025 data is incomplete</strong> — Power BI Service export limit of 150,000 rows/month was reached for these 5 months
+        (Aug: 149,998 · Sep: 149,998 · Oct: 149,999 · Nov: 149,998 · Dec: 149,999 rows).
+        Actual transaction count exceeds this cap. Re-export with date filters (e.g. split by region or channel) to get full data.
+        <br><strong style="color:#fff;">Q1 2026 validation data</strong> not yet uploaded — pending input. All 2026 figures have been removed from this analysis.
+      </div>
+    </div>
+  </div>
+
+  <div class="header">
+    <div class="header-tag">Research Output · Sales Forecasting Model · Updated Mar 2026</div>
+    <h1>Sales Volume Regression<br><em>Full Model — All Variables Tested</em></h1>
+    <p>Author: Truong Phat &nbsp;|&nbsp; Method: OLS (scipy.stats) &nbsp;|&nbsp; Period: Jan 2020 – Dec 2025 &nbsp;|&nbsp; n = 72 months &nbsp;|&nbsp; <span style="color:#E8B800">⚠️ Aug–Dec 2025 data capped at 150K rows</span></p>
+  </div>
+
+  <!-- Conclusion -->
+  <div class="conclusion">
+    <h3>Updated: ASP is #2 driver after seasonality — macro variables remain excluded, model now complete</h3>
+    <p>
+      With transaction-level data across all 72 months (9.5M rows, 2020–2025), <strong>Average Selling Price (ASP)</strong>
+      has been computed and confirmed as the key demand driver. ASP achieves <strong>R²=29.5%, p&lt;0.0001</strong>
+      in simple regression — far stronger than any macro variable. Price elasticity = <strong>−0.97</strong> (near-unitary elastic):
+      a 1% price increase reduces quantity sold by ~0.97%. In the full multiple regression, ASP standardised beta = <strong>−0.346</strong>
+      — second only to seasonality (COS_12 = −0.455). <strong>Marketing spend (641)</strong> adds incremental lift (beta = +0.259).
+      Macro variables (CPI, Interest Rate, GDP) remain excluded — GDP's marginal beta (+0.065) is insufficient to justify inclusion.
+      Internal business levers — price, marketing, seasonality — explain FMCG sales volume far better than external macro conditions.
+    </p>
+  </div>
+
+  <!-- NEW: ASP Results Section -->
+  <div class="section">
+    <div class="section-title">NEW — Average Selling Price (ASP) Analysis</div>
+    <div class="var-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;">
+      <div class="var-card strong">
+        <div class="var-name">ASP — Simple Regression</div>
+        <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val good">0.2947 (29.5%)</span></div>
+        <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val good">&lt;0.0001</span></div>
+        <div class="stat-row"><span class="stat-label">Elasticity</span><span class="stat-val bad">−0.966</span></div>
+        <div class="stat-row"><span class="stat-label">Direction</span><span class="stat-val bad">↑ Price → ↓ Qty</span></div>
+        <span class="verdict-badge badge-include">✅ Include</span>
+      </div>
+      <div class="var-card strong">
+        <div class="var-name">Price Elasticity</div>
+        <div class="stat-row"><span class="stat-label">Elasticity</span><span class="stat-val">−0.97</span></div>
+        <div class="stat-row"><span class="stat-label">Type</span><span class="stat-val ok">Inelastic (|e|&lt;1)</span></div>
+        <div class="stat-row"><span class="stat-label">+5% price</span><span class="stat-val bad">−3.1% qty</span></div>
+        <div class="stat-row"><span class="stat-label">+10% price</span><span class="stat-val bad">−6.1% qty</span></div>
+        <span class="verdict-badge badge-include">✅ Near-unitary</span>
+      </div>
+      <div class="var-card strong">
+        <div class="var-name">ASP Trend 2020–2025</div>
+        <div class="stat-row"><span class="stat-label">2020 avg</span><span class="stat-val">7,800 VND/unit</span></div>
+        <div class="stat-row"><span class="stat-label">2022 avg</span><span class="stat-val">8,200 VND/unit</span></div>
+        <div class="stat-row"><span class="stat-label">2024 avg</span><span class="stat-val">8,800 VND/unit</span></div>
+        <div class="stat-row"><span class="stat-label">2025 avg</span><span class="stat-val good">9,800 VND/unit</span></div>
+        <span class="verdict-badge badge-include">+25% in 5 years</span>
+      </div>
+      <div class="var-card strong">
+        <div class="var-name">Marketing Spend (641)</div>
+        <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val ok">0.1948 (19.5%)</span></div>
+        <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val good">0.0001</span></div>
+        <div class="stat-row"><span class="stat-label">+20% spend</span><span class="stat-val good">+6.5% qty</span></div>
+        <div class="stat-row"><span class="stat-label">+50% spend</span><span class="stat-val good">+15.1% qty</span></div>
+        <span class="verdict-badge badge-include">✅ Include</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Model comparison table -->
+  <div class="section">
+    <div class="section-title">Multiple Regression Model Comparison — Log Quantity</div>
+    <table style="width:100%;border-collapse:collapse;font-size:11px;">
+      <thead><tr style="background:var(--light);">
+        <th style="padding:8px;border-bottom:2px solid var(--border);text-align:left;">Model</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">R²</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">MAPE</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">ASP coef</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">MKT coef</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">Decision</th>
+      </tr></thead>
+      <tbody>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">A — Trend + Seasonality only</td><td style="padding:8px;text-align:center;">0.622</td><td style="padding:8px;text-align:center;">7.04%</td><td style="padding:8px;text-align:center;">—</td><td style="padding:8px;text-align:center;">—</td><td style="padding:8px;text-align:center;color:var(--red);">Baseline</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">B — + ASP</td><td style="padding:8px;text-align:center;">0.626</td><td style="padding:8px;text-align:center;">7.03%</td><td style="padding:8px;text-align:center;color:var(--red);">−0.253</td><td style="padding:8px;text-align:center;">—</td><td style="padding:8px;text-align:center;">+0.4pp R²</td></tr>
+        <tr style="background:#e9f7ef;font-weight:600;"><td style="padding:8px;border-bottom:1px solid var(--border);">C — + ASP + Marketing ★</td><td style="padding:8px;text-align:center;color:var(--green);">0.666</td><td style="padding:8px;text-align:center;color:var(--green);">6.68%</td><td style="padding:8px;text-align:center;color:var(--red);">−0.630</td><td style="padding:8px;text-align:center;color:var(--green);">+0.346</td><td style="padding:8px;text-align:center;color:var(--green);">★ Selected</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">D — + GDP Growth</td><td style="padding:8px;text-align:center;">0.667</td><td style="padding:8px;text-align:center;">6.63%</td><td style="padding:8px;text-align:center;color:var(--red);">−0.616</td><td style="padding:8px;text-align:center;color:var(--green);">+0.349</td><td style="padding:8px;text-align:center;color:var(--muted);">+0.1pp only</td></tr>
+        <tr><td style="padding:8px;">E — + Lag QTY</td><td style="padding:8px;text-align:center;">0.689</td><td style="padding:8px;text-align:center;">6.41%</td><td style="padding:8px;text-align:center;color:var(--red);">−0.650</td><td style="padding:8px;text-align:center;color:var(--green);">+0.351</td><td style="padding:8px;text-align:center;color:var(--muted);">Overfitting risk</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Beta coefficients chart section -->
+  <div class="section">
+    <div class="section-title">Standardised Beta Coefficients — Impact Ranking (Model C)</div>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">Comparable impact: 1 std dev change in X → β std devs change in log-quantity. Largest |β| = strongest driver.</p>
+    <div id="betaChartWrap" style="height:240px;position:relative;"><canvas id="betaChart"></canvas></div>
+    <div style="margin-top:14px;font-size:11px;color:var(--mid);line-height:1.8;padding:12px;background:var(--light);border-radius:4px;">
+      <strong>Reading guide:</strong> COS_12 (seasonality) has the largest absolute impact (−0.455) but is uncontrollable.
+      Among <em>controllable</em> variables, <strong>ASP (price) is #1 (β=−0.346)</strong> followed by
+      <strong>Marketing Spend (β=+0.259)</strong>. GDP Growth (β=+0.065) is statistically marginal.
+      <br><strong>Key insight:</strong> A 1 std dev price increase (~1,000 VND/unit) reduces quantity by 0.35 std devs (~40M units/month).
+      A 1 std dev increase in marketing spend increases quantity by 0.26 std devs (~30M units/month).
+    </div>
+  </div>
+
+  <!-- Simple Regression -->
+  <div class="section">
+    <div class="section-title">Simple Regression — One Variable at a Time</div>
+    <div class="var-grid">
+      <div class="var-card exclude">
+        <div class="var-name">CPI YoY %</div>
+        <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val bad">0.0170 (1.7%)</span></div>
+        <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val bad">0.2745</span></div>
+        <div class="stat-row"><span class="stat-label">F-stat</span><span class="stat-val">1.2131</span></div>
+        <div class="stat-row"><span class="stat-label">95% CI</span><span class="stat-val">[-22.6M, +6.5M]</span></div>
+        <div class="stat-row"><span class="stat-label">MAE</span><span class="stat-val">53.3M VND</span></div>
+        <div class="stat-row"><span class="stat-label">Significant?</span><span class="stat-val bad">No (p=0.27)</span></div>
+        <span class="verdict-badge badge-exclude">❌ Exclude</span>
+      </div>
+      <div class="var-card weak">
+        <div class="var-name">Interest Rate %</div>
+        <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val ok">0.0523 (5.2%)</span></div>
+        <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val ok">0.0532</span></div>
+        <div class="stat-row"><span class="stat-label">F-stat</span><span class="stat-val">3.8665</span></div>
+        <div class="stat-row"><span class="stat-label">95% CI</span><span class="stat-val">[-53.7M, +0.4M]</span></div>
+        <div class="stat-row"><span class="stat-label">MAE</span><span class="stat-val">53.0M VND</span></div>
+        <div class="stat-row"><span class="stat-label">Significant?</span><span class="stat-val ok">Borderline (p=0.053)</span></div>
+        <span class="verdict-badge badge-weak">⚠️ Exclude</span>
+      </div>
+      <div class="var-card weak">
+        <div class="var-name">GDP Growth % (Quarterly)</div>
+        <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val ok">0.0888 (8.9%)</span></div>
+        <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val ok">0.0110</span></div>
+        <div class="stat-row"><span class="stat-label">F-stat</span><span class="stat-val">6.8230</span></div>
+        <div class="stat-row"><span class="stat-label">95% CI</span><span class="stat-val">[-10.2M, -1.4M]</span></div>
+        <div class="stat-row"><span class="stat-label">MAE</span><span class="stat-val">49.9M VND</span></div>
+        <div class="stat-row"><span class="stat-label">Significant?</span><span class="stat-val ok">Marginally (p=0.011)</span></div>
+        <span class="verdict-badge badge-weak">⚠️ Exclude</span>
+      </div>
+    </div>
+
+    <!-- Multiple regression -->
+    <table>
+      <thead>
+        <tr><th>Model</th><th>R²</th><th>Adj. R²</th><th>F-stat (p)</th><th>MAE</th><th>Decision</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="highlight">All 3 Combined</td>
+          <td class="highlight">16.1%</td>
+          <td>12.4%</td>
+          <td>4.34 (p=0.007)</td>
+          <td>48.6M VND</td>
+          <td class="sig-no">EXCLUDE — multicollinearity, CPI sign reversal</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Model Roadmap -->
+  <div class="section">
+    <div class="section-title">Model Roadmap</div>
+    <div class="roadmap-grid">
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
+        <div class="roadmap-title">Base Regression Model</div>
+        <div class="roadmap-desc">Linear regression on total monthly sales using avg price, trend, seasonality, lag features. Overall R²=0.933, MAPE=1.7% across 5 channels.</div>
+      </div>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
+        <div class="roadmap-title">Macro Variable Testing</div>
+        <div class="roadmap-desc">Tested CPI, interest rate, GDP at total and product group level with full statistical evidence. All excluded from primary model.</div>
+      </div>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
+        <div class="roadmap-title">Product Group Deep Dive</div>
+        <div class="roadmap-desc">Sales aggregated by NHÓM (92.1% item match rate). Macro regression per group reveals Powdered Milk as most macro-sensitive (R²=18.4%). See Page 2.</div>
+      </div>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
+        <div class="roadmap-title">Marketing Spend Variable (641)</div>
+        <div class="roadmap-desc">Tested Account 641 monthly marketing spend across 72 months (2020–2025). R²=17.0%, p=0.0003 — strongest and most statistically significant external variable found. Positive relationship confirmed: higher spend → higher sales volume.</div>
+      </div>
+      <div class="roadmap-item planned">
+        <span class="roadmap-badge badge-planned">✅ Completed</span>
+        <div class="roadmap-title">Average Selling Price Variable</div>
+        <div class="roadmap-desc">Computed from 9.5M transaction rows (2020–2025). ASP rose from 7,800 to 9,800 VND/unit (+25% in 5 years). Price elasticity = −0.97. Beta = −0.346 in full model — strongest controllable driver.</div>
+      </div>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
+        <div class="roadmap-title">Marketing Spend (641) — Full Model</div>
+        <div class="roadmap-desc">Add monthly A&P expenditure as a feature. Test whether marketing spend explains additional variance — especially for premium groups (02XXXX, 07PROU).</div>
+      </div>
+      <div class="roadmap-item planned">
+        <span class="roadmap-badge badge-planned">🔄 Pending</span>
+        <div class="roadmap-title">Q1 2026 Out-of-Sample Validation</div>
+        <div class="roadmap-desc">Q1 2026 transaction data pending upload and validation. Will test Jan–Mar 2026 actuals against model predictions as a true out-of-sample test beyond the 2020–2025 training period.</div>
+      </div>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
+        <div class="roadmap-title">Full Model Refit + Comparison</div>
+        <div class="roadmap-desc">Once price and A&P data available: refit full multiple regression, compare Adj. R² and AIC vs current model, select final feature set.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Methodology -->
+  <div class="section">
+    <div class="section-title">Methodology</div>
+    <div class="method-grid">
+      <div class="method-item">
+        <div class="method-label">Model</div>
+        <div class="method-val">OLS via <code>scipy.stats.linregress</code> (simple) and <code>sklearn.linear_model.LinearRegression</code> (multiple regression)</div>
+      </div>
+      <div class="method-item">
+        <div class="method-label">Data</div>
+        <div class="method-val">72 months (Jan 2020–Dec 2025). Sales: 9.5M transaction rows (normal sales). <strong>Note:</strong> Aug–Dec 2025 data capped at 150,000 rows/month due to Power BI export limit — actual volumes may be understated for these months. Macro: GSO Vietnam (CPI), State Bank of Vietnam (rate), World Bank/GSO (GDP quarterly → monthly).</div>
+      </div>
+      <div class="method-item">
+        <div class="method-label">Evaluation Metrics</div>
+        <div class="method-val">R², Adjusted R², p-value, F-statistic, 95% Confidence Interval, MAE — at both total and product group level</div>
+      </div>
+      <div class="method-item">
+        <div class="method-label">Exclusion Criteria</div>
+        <div class="method-val">Excluded if: R² &lt; 0.15 individually, OR p-value &gt; 0.05, OR combined Adj. R² does not meaningfully improve the primary model</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Truong Phat</span> · Sales Channel Forecasting Model · OLS Regression Analysis · March 2026
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE 2 — PRODUCT GROUP DEEP DIVE
+══════════════════════════════════════════════════════════════════════ -->
+<div class="page" id="page2">
+<div class="page-content">
+
+  <div class="header">
+    <div class="header-tag">Deep Dive Analysis · Product Group Level</div>
+    <h1>Macro Sensitivity<br><em>by Product Group</em></h1>
+    <p>Author: Truong Phat &nbsp;|&nbsp; Item master join: 92.1% match rate &nbsp;|&nbsp; Groups: 18 &nbsp;|&nbsp; n = 72 months each</p>
+  </div>
+
+  <!-- Key Insight -->
+  <div class="insight-box">
+    <strong>Why this matters:</strong> Total-level analysis masks important product-level behaviour.
+    Disaggregating by NHÓM (product group from Oracle ERP item master) reveals that macro sensitivity
+    correlates directly with product premiumness and purchase involvement.
+    <strong>Powdered Milk (02XXXX)</strong> — often used for infant formula, a high-involvement category —
+    shows significant sensitivity to all 3 macro variables (best R²=18.4%).
+    Meanwhile <strong>Condensed Milk (01XXXX)</strong>, a low-cost daily staple, is virtually immune (R²&lt;1%).
+    <strong>GDP Growth</strong> is the most consistent macro driver, significant in 8 of 18 groups — suggesting
+    that consumer confidence and income levels matter more than price inflation or borrowing costs for FMCG dairy.
+  </div>
+
+  <!-- Legend -->
+  <div class="sensitivity-legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> Macro sensitive (≥1 variable p&lt;0.05)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Highly sensitive (all 3 significant)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--border)"></div> Not sensitive (all p&gt;0.05)</div>
+  </div>
+
+  <!-- Core Dairy -->
+  <div class="pg-section-title">Core Dairy — Staple Products (Low Macro Sensitivity Expected)</div>
+  <div class="section" style="padding:0;overflow:hidden;margin-bottom:18px;">
+    <table>
+      <thead>
+        <tr>
+          <th>Product Group</th>
+          <th>CPI R² (p)</th>
+          <th>Interest Rate R² (p)</th>
+          <th>GDP R² (p)</th>
+          <th>Best R²</th>
+          <th>Verdict</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>01XXXX</strong> — Condensed Milk</td>
+          <td class="sig-no">0.000 (0.935)</td>
+          <td class="sig-no">0.013 (0.337)</td>
+          <td class="sig-no">0.000 (0.956)</td>
+          <td>1.3%</td>
+          <td class="sig-no">❌ Fully inelastic — daily staple</td>
+        </tr>
+        <tr>
+          <td><strong>03XXXX</strong> — Cream Products</td>
+          <td class="sig-no">0.020 (0.240)</td>
+          <td class="sig-no">0.000 (0.870)</td>
+          <td class="sig-no">0.044 (0.078)</td>
+          <td>4.4%</td>
+          <td class="sig-no">❌ No sensitivity</td>
+        </tr>
+        <tr>
+          <td><strong>07XXXX</strong> — Other Dairy</td>
+          <td class="sig-no">0.052 (0.054)</td>
+          <td class="sig-no">0.005 (0.538)</td>
+          <td class="sig-no">0.035 (0.116)</td>
+          <td>5.2%</td>
+          <td class="sig-no">❌ No sensitivity</td>
+        </tr>
+        <tr>
+          <td><strong>09XXXX</strong> — Cheese</td>
+          <td class="sig-no">0.001 (0.813)</td>
+          <td class="sig-no">0.042 (0.083)</td>
+          <td class="sig-no">0.004 (0.590)</td>
+          <td>4.2%</td>
+          <td class="sig-no">❌ No sensitivity</td>
+        </tr>
+        <tr>
+          <td><strong>12XXXX</strong> — Other SKUs</td>
+          <td class="sig-no">0.000 (0.918)</td>
+          <td class="sig-no">0.020 (0.235)</td>
+          <td class="sig-no">0.024 (0.193)</td>
+          <td>2.4%</td>
+          <td class="sig-no">❌ No sensitivity</td>
+        </tr>
+        <tr>
+          <td><strong>15BN03</strong></td>
+          <td class="sig-no">0.006 (0.533)</td>
+          <td class="sig-no">0.026 (0.174)</td>
+          <td class="sig-no">0.007 (0.482)</td>
+          <td>2.6%</td>
+          <td class="sig-no">❌ No sensitivity</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Premium / Discretionary -->
+  <div class="pg-section-title">Premium & Discretionary — Higher Macro Sensitivity</div>
+  <div class="section" style="padding:0;overflow:hidden;margin-bottom:18px;">
+    <table>
+      <thead>
+        <tr>
+          <th>Product Group</th>
+          <th>CPI R² (p)</th>
+          <th>Interest Rate R² (p)</th>
+          <th>GDP R² (p)</th>
+          <th>Best R²</th>
+          <th>Verdict</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background:var(--orange-light)">
+          <td><strong>02XXXX</strong> — Powdered Milk</td>
+          <td class="sig-yes">0.100 (0.007) ✅</td>
+          <td class="sig-yes">0.110 (0.004) ✅</td>
+          <td class="sig-yes">0.184 (0.000) ✅</td>
+          <td class="r2-high">18.4%</td>
+          <td class="sig-yes">✅ All 3 significant — most sensitive</td>
+        </tr>
+        <tr style="background:var(--yellow-light)">
+          <td><strong>04XXXX</strong> — UHT Liquid Milk</td>
+          <td class="sig-no">0.049 (0.060)</td>
+          <td class="sig-no">0.038 (0.100)</td>
+          <td class="sig-yes">0.122 (0.003) ✅</td>
+          <td class="r2-high">12.2%</td>
+          <td class="sig-yes">⚠️ GDP only — volume driver</td>
+        </tr>
+        <tr style="background:var(--yellow-light)">
+          <td><strong>05XXXX</strong> — Flavored Milk</td>
+          <td class="sig-yes">0.072 (0.023) ✅</td>
+          <td class="sig-no">0.001 (0.786)</td>
+          <td class="sig-yes">0.164 (0.000) ✅</td>
+          <td class="r2-high">16.4%</td>
+          <td class="sig-yes">⚠️ CPI + GDP — discretionary beverage</td>
+        </tr>
+        <tr style="background:var(--yellow-light)">
+          <td><strong>06XXXX</strong> — Yogurt</td>
+          <td class="sig-no">0.053 (0.051)</td>
+          <td class="sig-no">0.050 (0.058)</td>
+          <td class="sig-yes">0.087 (0.012) ✅</td>
+          <td>8.7%</td>
+          <td class="sig-yes">⚠️ GDP only</td>
+        </tr>
+        <tr style="background:var(--yellow-light)">
+          <td><strong>07PROU</strong> — Probiotic Range</td>
+          <td class="sig-yes">0.073 (0.021) ✅</td>
+          <td class="sig-no">0.008 (0.448)</td>
+          <td class="sig-yes">0.070 (0.025) ✅</td>
+          <td>7.3%</td>
+          <td class="sig-yes">⚠️ CPI + GDP — premium health segment</td>
+        </tr>
+        <tr style="background:var(--yellow-light)">
+          <td><strong>08XXXX</strong> — Beverages</td>
+          <td class="sig-yes">0.095 (0.008) ✅</td>
+          <td class="sig-yes">0.066 (0.029) ✅</td>
+          <td class="sig-no">0.034 (0.123)</td>
+          <td class="r2-high">9.5%</td>
+          <td class="sig-yes">⚠️ CPI + Rate — price sensitive</td>
+        </tr>
+        <tr style="background:var(--orange-light)">
+          <td><strong>16XXXX</strong></td>
+          <td class="sig-yes">0.139 (0.001) ✅</td>
+          <td class="sig-yes">0.076 (0.019) ✅</td>
+          <td class="sig-yes">0.089 (0.011) ✅</td>
+          <td class="r2-high">13.9%</td>
+          <td class="sig-yes">✅ All 3 significant</td>
+        </tr>
+        <tr style="background:var(--yellow-light)">
+          <td><strong>10XXXX</strong></td>
+          <td class="sig-no">0.006 (0.523)</td>
+          <td class="sig-no">0.013 (0.343)</td>
+          <td class="sig-yes">0.148 (0.001) ✅</td>
+          <td class="r2-high">14.8%</td>
+          <td class="sig-yes">⚠️ GDP only</td>
+        </tr>
+        <tr style="background:var(--yellow-light)">
+          <td><strong>14XXXX</strong></td>
+          <td class="sig-no">0.034 (0.122)</td>
+          <td class="sig-yes">0.068 (0.027) ✅</td>
+          <td class="sig-yes">0.069 (0.026) ✅</td>
+          <td>6.9%</td>
+          <td class="sig-yes">⚠️ Rate + GDP</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Small / Niche -->
+  <div class="pg-section-title">Small / Niche Groups (Low Volume, Limited Inference)</div>
+  <div class="section" style="padding:0;overflow:hidden;margin-bottom:18px;">
+    <table>
+      <thead>
+        <tr>
+          <th>Product Group</th>
+          <th>n (months)</th>
+          <th>Best R²</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>07SCUS</strong></td>
+          <td>13</td>
+          <td class="sig-no">22.4% (p=0.103)</td>
+          <td class="sig-no">Too few months — not significant</td>
+        </tr>
+        <tr>
+          <td><strong>15GC30</strong></td>
+          <td>18</td>
+          <td class="sig-no">8.3% (p=0.245)</td>
+          <td class="sig-no">Limited data — inconclusive</td>
+        </tr>
+        <tr>
+          <td><strong>15XXXX</strong></td>
+          <td>72</td>
+          <td class="sig-no">1.4%</td>
+          <td class="sig-no">Negligible volume</td>
+        </tr>
+        <tr>
+          <td><strong>18XXXX</strong></td>
+          <td>13</td>
+          <td class="r2-high">37.1% (p=0.027) ✅</td>
+          <td class="sig-yes">GDP significant but only 13 months — interpret with caution</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Summary insight -->
+  <div class="section">
+    <div class="section-title">Strategic Implication</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div style="background:var(--lighter);border:1px solid var(--border);border-radius:4px;padding:14px;">
+        <div class="method-label">Most Macro-Sensitive Groups</div>
+        <div class="method-val">
+          <strong>02XXXX Powdered Milk</strong> — all 3 variables significant (GDP R²=18.4%). High-involvement purchase, infant formula segment. Consumer income and price levels directly drive brand/volume switching.<br><br>
+          <strong>05XXXX Flavored Milk</strong> — CPI + GDP (R²=16.4%). Discretionary beverage, first to be cut in tighter economic conditions.
+        </div>
+      </div>
+      <div style="background:var(--lighter);border:1px solid var(--border);border-radius:4px;padding:14px;">
+        <div class="method-label">Most Inelastic Groups</div>
+        <div class="method-val">
+          <strong>01XXXX Condensed Milk</strong> — near-zero macro sensitivity (R²&lt;1%). Low-cost daily staple consumed regardless of economic conditions. Price point and brand loyalty dominate.<br><br>
+          <strong>07XXXX Other Dairy</strong> — similarly inelastic. Core household consumption category with predictable demand regardless of GDP or rate environment.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Truong Phat</span> · Sales Channel Forecasting Model · Product Group Deep Dive · March 2026
+  </div>
+
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js">
+  // ── BETA COEFFICIENT CHART (Page 1) ──────────────────────────────────────
+  const betaCtx = document.getElementById('betaChart');
+  if (betaCtx) {
+    const betaLabels = ['COS_12\n(Seasonality)','LOG_ASP\n(Price)','LOG_MKT\n(Marketing)','SIN_12\n(Seasonality)','TREND','YEAREND','COVID_DIP','SIN_6','GDP_Growth'];
+    const betaValues = [-0.4547, -0.3461, 0.2585, -0.1885, -0.1812, 0.1765, 0.1318, -0.0901, 0.0650];
+    const betaColors = betaValues.map(v => v < 0 ? 'rgba(192,57,43,0.8)' : 'rgba(39,174,96,0.8)');
+    const betaBorders = betaValues.map(v => v < 0 ? '#C0392B' : '#27AE60');
+    new Chart(betaCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Seasonality (cos)','ASP (Price)','Marketing Spend','Seasonality (sin)','Trend','Year-end','COVID Dip','Seasonality (6m)','GDP Growth'],
+        datasets: [{
+          data: betaValues,
+          backgroundColor: betaColors,
+          borderColor: betaBorders,
+          borderWidth: 2,
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ' β = ' + ctx.raw.toFixed(4) + (ctx.dataIndex===1?' (Price: 1σ price ↑ → 0.35σ qty ↓)':ctx.dataIndex===2?' (Mkt: 1σ spend ↑ → 0.26σ qty ↑)':'') }}
+        },
+        scales: {
+          x: { ticks: { font: { family:'DM Mono', size:10 }, color:'#666' }, grid: { color:'#eee' },
+               title: { display:true, text:'Standardised Beta Coefficient', font:{size:10}, color:'#999' }},
+          y: { ticks: { font: { family:'DM Sans', size:11 }, color:'#444' }}
+        }
+      }
+    });
+  }
+
+</script>
+<style>
+  .charts-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:18px; }
+  .chart-card { background:var(--white); border:1.5px solid var(--border); border-radius:6px; padding:18px; }
+  .chart-title-sm { font-size:11px; font-weight:700; color:var(--black); margin-bottom:3px; }
+  .chart-sub-sm { font-size:10px; color:var(--muted); margin-bottom:14px; font-family:'DM Mono',monospace; }
+  .chart-wrap { position:relative; height:200px; }
+  .chart-wrap.tall { height:250px; }
+  .corr-grid-p3 { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px; }
+  .corr-card-p3 { text-align:center; padding:14px; border-radius:6px; border:1.5px solid var(--border); }
+  .corr-val-p3 { font-family:'DM Serif Display',serif; font-size:22px; line-height:1; margin-bottom:4px; }
+  .corr-val-p3.pos { color:var(--green-dark,#1e8449); }
+  .corr-val-p3.neg { color:var(--muted); }
+  .corr-lbl-p3 { font-size:10px; color:var(--muted); font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:0.8px; }
+  .corr-sig-p3 { font-size:9px; margin-top:3px; font-family:'DM Mono',monospace; }
+</style>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE 3 — EDA & LINEARITY CHECKS
+══════════════════════════════════════════════════════════════════════ -->
+<div class="page" id="page3">
+<div class="page-content">
+
+  <div class="header">
+    <div class="header-tag">Page 3 · Exploratory Data Analysis</div>
+    <h1>EDA & Variable<br><em>Linearity Checks</em></h1>
+    <p>Author: Truong Phat &nbsp;|&nbsp; n = 72 months &nbsp;|&nbsp; Jan 2020 – Dec 2025 &nbsp;|&nbsp; Variables: Sales, Marketing Spend, CPI, GDP, Interest Rate</p>
+  </div>
+
+  <!-- SUB-PAGE TAB BAR — same style as main tab bar -->
+  <div style="position:sticky;top:49px;z-index:90;background:rgba(248,247,242,0.97);backdrop-filter:blur(8px);border-bottom:2px solid var(--border);display:flex;margin:0 -40px 24px;padding:0 40px;">
+    <button class="tab-btn active" id="sp1btn" onclick="showSub('sp1',this)">
+      <span class="tab-label">3A</span>Sales EDA
+    </button>
+    <button class="tab-btn" id="sp2btn" onclick="showSub('sp2',this)">
+      <span class="tab-label">3B</span>Linearity Checks
+    </button>
+    <button class="tab-btn" id="sp3btn" onclick="showSub('sp3',this)">
+      <span class="tab-label">3C</span>Marketing Deep Dive
+    </button>
+  </div>
+
+  <!-- ── SUB-PAGE 3A: SALES EDA ──────────────────────────────────── -->
+  <div id="sp1">
+
+    <div class="conclusion">
+      <h3>EDA Finding: Sales is trended + seasonal. Marketing spend has the only clear linear signal.</h3>
+      <p>
+        Monthly sales shows a clear <strong>upward trend 2020–2022</strong>, softer in 2023, partial recovery 2024–2025.
+        Strong seasonal pattern — Q1 (Jan–Feb) consistently lower, Q2 and Q4 peaks.
+        <strong>Marketing Spend (r=+0.41, p=0.0003)</strong> is the only variable with meaningful correlation to sales volume.
+        All macro variables (CPI, GDP, Interest Rate) show weak or no linear signal — see 3B for scatter plots.
+      </p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Sales Volume Over Time — Jan 2020 to Dec 2025</div>
+      <div class="chart-card">
+        <div class="chart-title-sm">Monthly Total Sales Volume (M units)</div>
+        <div class="chart-sub-sm">72 months · trend + seasonality clearly visible</div>
+        <div class="chart-wrap tall"><canvas id="p3salesTime"></canvas></div>
+      </div>
+    </div>
+
+    <div class="charts-grid-2">
+      <div class="chart-card">
+        <div class="chart-title-sm">Average Sales by Month (Seasonality)</div>
+        <div class="chart-sub-sm">Average across all years — Q1 dip, Q4 peak</div>
+        <div class="chart-wrap"><canvas id="p3season"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title-sm">Sales vs Marketing Spend — Time Overlay</div>
+        <div class="chart-sub-sm">Dual axis — visual co-movement</div>
+        <div class="chart-wrap"><canvas id="p3overlay"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Pearson Correlation with Sales Volume</div>
+      <div class="corr-grid-p3">
+        <div class="corr-card-p3">
+          <div class="corr-val-p3 pos">+0.41</div>
+          <div class="corr-lbl-p3">Marketing Spend</div>
+          <div class="corr-sig-p3" style="color:var(--green)">✅ p=0.0003</div>
+        </div>
+        <div class="corr-card-p3">
+          <div class="corr-val-p3 neg">-0.30</div>
+          <div class="corr-lbl-p3">GDP Growth</div>
+          <div class="corr-sig-p3" style="color:var(--orange)">⚠️ p=0.011</div>
+        </div>
+        <div class="corr-card-p3">
+          <div class="corr-val-p3 neg">-0.23</div>
+          <div class="corr-lbl-p3">Interest Rate</div>
+          <div class="corr-sig-p3" style="color:var(--muted)">❌ p=0.053</div>
+        </div>
+        <div class="corr-card-p3">
+          <div class="corr-val-p3 neg">-0.13</div>
+          <div class="corr-lbl-p3">CPI YoY</div>
+          <div class="corr-sig-p3" style="color:var(--muted)">❌ p=0.275</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── SUB-PAGE 3B: LINEARITY CHECKS ──────────────────────────── -->
+  <div id="sp2" style="display:none">
+
+    <div class="conclusion">
+      <h3>Scatter plots confirm: only marketing spend shows a linear signal with sales</h3>
+      <p>
+        Scatter plots of each variable against sales volume visually confirm the regression findings.
+        <strong>Marketing Spend</strong> shows an upward trend — points cluster along a positive slope.
+        <strong>GDP, Interest Rate, and CPI</strong> show random scatter with no clear direction.
+        The negative GDP slope is an artifact of the <strong>Covid-19 outlier</strong> (2021 Q3: GDP=-6.17% while FMCG sales remained near normal — dairy is an essential good).
+      </p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Linearity Checks — Scatter Plots vs Sales Volume</div>
+      <div class="charts-grid-2">
+        <div class="chart-card">
+          <div class="chart-title-sm">Sales vs Marketing Spend</div>
+          <div class="chart-sub-sm">r=+0.41 · Moderate positive linear trend ✅</div>
+          <div class="chart-wrap"><canvas id="p3scMkt"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title-sm">Sales vs GDP Growth %</div>
+          <div class="chart-sub-sm">r=-0.30 · Negative slope — Covid outlier distorts ⚠️</div>
+          <div class="chart-wrap"><canvas id="p3scGdp"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title-sm">Sales vs Interest Rate %</div>
+          <div class="chart-sub-sm">r=-0.23 · No clear linear pattern ❌</div>
+          <div class="chart-wrap"><canvas id="p3scRate"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title-sm">Sales vs CPI YoY %</div>
+          <div class="chart-sub-sm">r=-0.13 · Random scatter — no relationship ❌</div>
+          <div class="chart-wrap"><canvas id="p3scCpi"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Descriptive Statistics — All Variables (n=72 months)</div>
+      <table>
+        <thead><tr><th>Variable</th><th>Mean</th><th>Min</th><th>Max</th><th>Std Dev</th><th>r with Sales</th><th>p-value</th></tr></thead>
+        <tbody>
+          <tr><td class="highlight">Sales Volume (M units)</td><td>498.7</td><td>317.4</td><td>618.6</td><td>62.0</td><td>—</td><td>—</td></tr>
+          <tr style="background:var(--green-light)"><td class="highlight">Marketing Spend (B VND)</td><td>1,070</td><td>856</td><td>1,433</td><td>116</td><td style="color:var(--green);font-weight:600">+0.412</td><td style="color:var(--green);font-weight:600">0.0003 ✅</td></tr>
+          <tr><td class="highlight">GDP Growth (%)</td><td>5.4</td><td>-6.2</td><td>13.7</td><td>3.5</td><td style="color:var(--orange);font-weight:600">-0.298</td><td style="color:var(--orange)">0.011 ⚠️</td></tr>
+          <tr><td class="highlight">Interest Rate (%)</td><td>4.8</td><td>2.5</td><td>6.25</td><td>1.0</td><td style="color:var(--muted)">-0.229</td><td style="color:var(--muted)">0.053 ❌</td></tr>
+          <tr><td class="highlight">CPI YoY (%)</td><td>2.9</td><td>0.06</td><td>6.43</td><td>1.1</td><td style="color:var(--muted)">-0.131</td><td style="color:var(--muted)">0.275 ❌</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ── SUB-PAGE 3C: MARKETING DEEP DIVE ───────────────────────── -->
+  <div id="sp3" style="display:none">
+
+    <div class="conclusion">
+      <h3>Powdered Milk (02) receives 37% of marketing investment — and is the most macro-sensitive group</h3>
+      <p>
+        Account 641 marketing spend across 72 months shows <strong>Powdered Milk (02) and UHT Liquid Milk (04)</strong> receiving the largest share.
+        This aligns with the product group deep dive (Page 2) finding that <strong>02XXXX is the most macro-sensitive group (R²=18.4%)</strong> —
+        high marketing investment targets consumers most sensitive to economic conditions.
+        <strong>Condensed Milk (01)</strong> receives the smallest share — consistent with its inelastic, staple nature.
+      </p>
+    </div>
+
+    <div class="charts-grid-2">
+      <div class="chart-card">
+        <div class="chart-title-sm">Total Marketing Spend by Product Group (2020–2025)</div>
+        <div class="chart-sub-sm">Cumulative 641 spend in B VND over 6 years</div>
+        <div class="chart-wrap tall"><canvas id="p3nhomBar"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title-sm">Marketing Spend Share by Group</div>
+        <div class="chart-sub-sm">% of classified spend (excl. unclassified)</div>
+        <div class="chart-wrap tall"><canvas id="p3nhomPie"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Monthly Marketing Spend Trend — Top 4 Product Groups (B VND)</div>
+      <div class="chart-card">
+        <div class="chart-title-sm">641 Monthly Spend — 2020 to 2025</div>
+        <div class="chart-sub-sm">Line chart — Powdered Milk dominates but shows highest volatility</div>
+        <div class="chart-wrap tall"><canvas id="p3nhomLine"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Marketing Spend vs Macro Sensitivity — Product Group Summary</div>
+      <table>
+        <thead><tr><th>Group</th><th>Total Spend 6Y</th><th>Share</th><th>GDP R²</th><th>Interpretation</th></tr></thead>
+        <tbody>
+          <tr style="background:var(--orange-light)"><td class="highlight">02 — Powdered Milk</td><td>23,442B VND</td><td>37%</td><td style="color:var(--orange);font-weight:600">18.4%</td><td>Premium/infant formula — highest sensitivity + highest spend</td></tr>
+          <tr style="background:var(--yellow-light)"><td class="highlight">04 — UHT Liquid Milk</td><td>16,509B VND</td><td>26%</td><td style="color:var(--orange);font-weight:600">12.2%</td><td>Largest volume — core category, moderate sensitivity</td></tr>
+          <tr><td class="highlight">07 — Other Dairy</td><td>8,186B VND</td><td>13%</td><td style="color:var(--muted)">3.5%</td><td>Moderate spend, low sensitivity</td></tr>
+          <tr><td class="highlight">01 — Condensed Milk</td><td>3,590B VND</td><td>6%</td><td style="color:var(--muted)">0%</td><td>Inelastic staple — low spend, marketing less effective</td></tr>
+          <tr><td class="highlight">06 — Yogurt</td><td>2,096B VND</td><td>3%</td><td style="color:var(--orange);font-weight:600">8.7%</td><td>Discretionary — some macro sensitivity</td></tr>
+          <tr><td class="highlight">03 — Cream</td><td>1,177B VND</td><td>2%</td><td style="color:var(--muted)">4.4%</td><td>Niche, low spend</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <span>Truong Phat</span> · Sales Channel Forecasting Model · EDA & Variable Analysis · March 2026
+  </div>
+
+</div>
+</div>
+
+<script>
+  function showPage(pageId, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function showSub(id, btn) {
+    ['sp1','sp2','sp3'].forEach(s => {
+      const el = document.getElementById(s);
+      if (el) el.style.display = 'none';
+    });
+    ['sp1btn','sp2btn','sp3btn'].forEach(b => {
+      const el = document.getElementById(b);
+      if (el) el.classList.remove('active');
+    });
+    document.getElementById(id).style.display = 'block';
+    btn.classList.add('active');
+  }
+
+  // ── DATA ───────────────────────────────────────────────────────────────────
+  const P3_MONTHS = ["2020-01","2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08","2020-09","2020-10","2020-11","2020-12","2021-01","2021-02","2021-03","2021-04","2021-05","2021-06","2021-07","2021-08","2021-09","2021-10","2021-11","2021-12","2022-01","2022-02","2022-03","2022-04","2022-05","2022-06","2022-07","2022-08","2022-09","2022-10","2022-11","2022-12","2023-01","2023-02","2023-03","2023-04","2023-05","2023-06","2023-07","2023-08","2023-09","2023-10","2023-11","2023-12","2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12","2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12"];
+  const P3_SALES = [442.8,508.1,580.6,556.5,571.2,613.4,535.7,592.0,592.0,451.7,558.1,539.7,480.7,401.9,521.5,554.2,587.4,618.6,574.6,609.3,586.7,525.1,534.2,546.3,493.3,373.9,538.2,504.1,448.1,604.0,563.2,538.3,526.1,496.1,471.1,524.2,321.8,478.5,530.0,454.0,511.4,545.1,473.4,552.2,491.1,506.3,458.8,512.0,427.8,395.9,470.6,481.0,517.9,523.4,478.8,559.4,433.4,481.6,451.6,430.8,359.8,317.4,391.3,482.2,513.1,486.6,430.7,463.5,451.3,460.4,374.0,523.4];
+  const P3_MKT = [908.5,874.7,1147.4,1117.6,1137.6,1238.8,1182.2,1135.1,1221.2,1070.0,1321.4,1433.4,1075.8,981.3,1090.6,1283.9,1234.8,890.6,1291.1,1172.5,884.1,1215.1,1343.4,1407.9,923.8,932.4,1000.7,1142.9,1041.2,1024.3,1107.3,1060.2,970.1,975.7,982.1,1233.5,856.2,949.7,1067.3,1044.3,1053.7,1051.7,1021.6,1117.5,1143.7,1093.0,1044.9,1219.0,997.5,975.0,1003.0,1144.5,1134.1,1155.1,1071.5,1164.0,1015.7,1105.1,1033.8,1149.9,1110.9,905.1,1141.7,1208.6,1149.3,1146.8,1183.0,1186.1,1060.5,1066.1,1024.3,962.0];
+  const P3_CPI = [6.43,5.91,4.86,2.93,2.4,3.17,3.39,3.18,3.18,1.99,1.48,0.19,0.06,1.52,1.31,2.7,2.9,2.41,2.62,2.82,1.88,1.67,1.84,1.81,1.94,1.42,2.41,2.64,2.86,3.18,3.14,2.89,3.94,4.32,4.37,4.55,4.89,4.31,3.35,2.81,2.43,2.0,2.06,2.96,3.66,3.59,3.45,3.58,3.37,3.98,3.97,4.4,4.44,4.34,4.36,3.45,2.63,2.89,2.77,3.48,2.53,3.35,3.13,3.2,3.18,3.15,3.1,3.05,3.0,3.25,3.28,3.31];
+  const P3_RATE = [6.0,6.0,5.0,5.0,4.5,4.5,4.5,4.5,4.5,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,5.0,6.0,6.0,6.0,6.0,6.0,5.5,5.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5];
+  const P3_GDP = [3.68,3.68,3.68,0.39,0.39,0.39,2.69,2.69,2.69,4.48,4.48,4.48,4.72,4.72,4.72,6.61,6.61,6.61,-6.17,-6.17,-6.17,5.22,5.22,5.22,5.05,5.05,5.05,7.83,7.83,7.83,13.71,13.71,13.71,5.92,5.92,5.92,3.28,3.28,3.28,4.05,4.05,4.05,5.33,5.33,5.33,6.72,6.72,6.72,5.66,5.66,5.66,6.93,6.93,6.93,7.4,7.4,7.4,7.55,7.55,7.55,6.93,6.93,6.93,7.26,7.26,7.26,7.9,7.9,7.9,8.5,8.5,8.5];
+  const NHOM01=[83.5,64.5,88.6,87.7,88.1,86.2,86.2,77.6,88.1,73.1,79.8,73.4,70.5,57.8,78.1,97.6,98.7,58.0,95.2,79.0,60.3,75.3,80.4,76.3,55.5,49.8,63.5,73.2,59.5,59.6,70.3,62.2,60.4,57.6,57.7,63.8,48.9,60.0,67.1,60.6,55.1,55.4,52.7,60.7,62.5,60.8,55.0,62.1,51.7,45.2,50.7,61.7,60.4,60.0,52.4,59.7,45.4,57.8,47.4,52.0,55.9,38.4,52.2,61.2,62.4,57.0,52.0,57.3,52.8,54.0,44.2,50.8];
+  const NHOM02=[289.6,300.6,354.9,342.1,372.6,398.9,367.3,399.4,427.1,394.4,444.7,480.0,357.3,260.0,360.8,455.8,357.4,295.2,391.3,355.8,310.2,454.2,482.9,459.4,210.3,284.6,399.8,317.2,299.9,289.8,297.6,277.9,271.4,288.6,278.4,301.3,221.9,274.3,295.8,305.7,273.2,261.2,228.1,328.6,307.3,313.9,283.8,333.9,304.3,275.3,294.1,395.5,347.5,327.3,301.1,288.9,226.2,332.8,249.8,254.7,357.1,246.1,338.9,385.2,312.1,372.7,416.7,348.8,289.0,286.9,227.4,206.8];
+  const NHOM04=[228.6,200.0,321.2,316.0,305.8,368.1,365.5,291.4,340.0,257.7,406.7,475.8,329.8,290.2,313.7,393.4,392.4,268.4,396.5,349.1,286.1,368.3,442.0,484.5,303.0,284.6,299.0,369.0,326.0,305.5,352.2,356.3,295.0,291.6,295.9,414.5,256.2,283.5,331.3,309.0,339.0,335.8,330.0,367.3,385.8,355.1,323.6,401.5,302.7,294.9,300.9,352.7,382.7,399.4,358.5,451.5,340.4,360.8,365.0,380.5,358.2,298.7,345.1,388.1,380.0,343.4,339.7,404.1,377.9,368.4,330.4,301.0];
+  const NHOM07=[135.0,109.6,162.8,143.8,148.3,175.0,154.2,138.1,160.0,120.8,167.0,170.8,120.5,91.3,131.4,153.9,165.3,115.2,160.8,142.5,110.3,159.8,180.4,189.4,103.8,98.2,110.3,135.6,120.5,117.8,134.7,123.8,108.0,105.0,106.5,149.3,92.2,104.2,122.2,112.6,120.8,116.5,105.0,132.8,125.3,122.0,109.1,143.9,107.3,96.2,107.4,135.6,131.6,137.1,117.6,143.3,96.5,127.2,104.8,121.3,126.4,92.5,117.3,144.5,140.6,133.2,131.2,155.8,142.8,137.0,115.5,102.1];
+
+  const Y='#E8B800',G='#27AE60',B='#2471A3',O='#E67E22',R='#C0392B',P='#8E44AD';
+  const font={family:'DM Sans',size:10};
+  const grid={color:'#eee'};
+
+  // ── 3A CHARTS ──────────────────────────────────────────────────────────────
+  new Chart(document.getElementById('p3salesTime'),{type:'line',data:{labels:P3_MONTHS,datasets:[{data:P3_SALES,borderColor:Y,backgroundColor:Y+'22',borderWidth:2,pointRadius:2,fill:true,tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font,color:'#999',callback:v=>v+'M'},grid},x:{ticks:{font,color:'#999',maxTicksLimit:12}}}}});
+
+  const mNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const avgByMo=mNames.map((_,mi)=>{const v=P3_SALES.filter((_,i)=>i%12===mi);return Math.round(v.reduce((a,b)=>a+b,0)/v.length*10)/10;});
+  new Chart(document.getElementById('p3season'),{type:'bar',data:{labels:mNames,datasets:[{data:avgByMo,backgroundColor:avgByMo.map(v=>v>500?Y+'CC':Y+'66'),borderColor:Y,borderWidth:2,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:380,ticks:{font,color:'#999',callback:v=>v+'M'},grid},x:{ticks:{font,color:'#999'}}}}});
+
+  new Chart(document.getElementById('p3overlay'),{type:'line',data:{labels:P3_MONTHS,datasets:[{label:'Sales (M)',data:P3_SALES,borderColor:Y,borderWidth:2,pointRadius:1,tension:0.3,yAxisID:'y'},{label:'Mkt (B)',data:P3_MKT,borderColor:B,borderWidth:1.5,pointRadius:1,tension:0.3,borderDash:[4,3],yAxisID:'y2'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font,color:'#999'}}},scales:{y:{ticks:{font,color:Y,callback:v=>v+'M'},grid},y2:{position:'right',ticks:{font,color:B,callback:v=>v+'B'},grid:{display:false}},x:{ticks:{font,color:'#999',maxTicksLimit:8}}}}});
+
+  function scatter(id,xData,yData,xLabel,col){
+    new Chart(document.getElementById(id),{type:'scatter',data:{datasets:[{data:xData.map((x,i)=>({x,y:yData[i]})),backgroundColor:col+'88',borderColor:col,borderWidth:1.5,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font,color:'#999',callback:v=>v+'M'},grid},x:{ticks:{font,color:'#999'},grid,title:{display:true,text:xLabel,font,color:'#999'}}}}});
+  }
+  scatter('p3scMkt',P3_MKT,P3_SALES,'Marketing Spend (B VND)',Y);
+  scatter('p3scGdp',P3_GDP,P3_SALES,'GDP Growth (%)',O);
+  scatter('p3scRate',P3_RATE,P3_SALES,'Interest Rate (%)',R);
+  scatter('p3scCpi',P3_CPI,P3_SALES,'CPI YoY (%)',B);
+
+  // ── 3B CHARTS ──────────────────────────────────────────────────────────────
+  const nhomLabels=['Powdered\n02','UHT Liquid\n04','Other Dairy\n07','Condensed\n01','Yogurt\n06','Cream\n03','Flavored\n05','Cheese\n09'];
+  const nhomVals=[23441.6,16508.7,8185.5,3589.5,2096.1,1176.9,559.2,496.2];
+  const nhomColors=[Y+'CC',B+'CC',G+'CC',O+'CC',P+'CC',R+'CC',Y+'88',B+'88'];
+
+  new Chart(document.getElementById('p3nhomBar'),{type:'bar',data:{labels:nhomLabels,datasets:[{data:nhomVals,backgroundColor:nhomColors,borderColor:nhomColors.map(c=>c.slice(0,7)),borderWidth:2,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font,color:'#999',callback:v=>(v/1000).toFixed(0)+'T'},grid},x:{ticks:{font,color:'#999'}}}}});
+
+  new Chart(document.getElementById('p3nhomPie'),{type:'doughnut',data:{labels:['02 Powdered','04 UHT','07 Other','01 Condensed','06 Yogurt','03 Cream','05 Flavored','09 Cheese'],datasets:[{data:nhomVals,backgroundColor:nhomColors,borderColor:'#fff',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{family:'DM Sans',size:10},color:'#666',boxWidth:12}}}}});
+
+  new Chart(document.getElementById('p3nhomLine'),{type:'line',data:{labels:P3_MONTHS,datasets:[{label:'02 Powdered',data:NHOM02,borderColor:Y,borderWidth:2,pointRadius:1,tension:0.3},{label:'04 UHT',data:NHOM04,borderColor:B,borderWidth:2,pointRadius:1,tension:0.3},{label:'07 Other',data:NHOM07,borderColor:G,borderWidth:2,pointRadius:1,tension:0.3},{label:'01 Condensed',data:NHOM01,borderColor:O,borderWidth:1.5,pointRadius:1,tension:0.3,borderDash:[4,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font,color:'#999'}}},scales:{y:{ticks:{font,color:'#999',callback:v=>v+'B'},grid},x:{ticks:{font,color:'#999',maxTicksLimit:12}}}}});
+
+function showPage(pageId, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+
+  // ── BETA COEFFICIENT CHART (Page 1) ──────────────────────────────────────
+  (function() {
+    var betaCtx = document.getElementById('betaChart');
+    if (!betaCtx) return;
+    new Chart(betaCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Seasonality (COS)','ASP — Price','Marketing Spend','Seasonality (SIN)','Trend','Year-end','COVID Dip','Seasonality 6m','GDP Growth'],
+        datasets: [{
+          data: [-0.4547, -0.3461, 0.2585, -0.1885, -0.1812, 0.1765, 0.1318, -0.0901, 0.0650],
+          backgroundColor: ['rgba(192,57,43,0.8)','rgba(192,57,43,0.8)','rgba(39,174,96,0.8)',
+                             'rgba(192,57,43,0.8)','rgba(192,57,43,0.8)','rgba(39,174,96,0.8)',
+                             'rgba(39,174,96,0.8)','rgba(192,57,43,0.8)','rgba(39,174,96,0.8)'],
+          borderColor: ['#C0392B','#C0392B','#27AE60','#C0392B','#C0392B','#27AE60','#27AE60','#C0392B','#27AE60'],
+          borderWidth: 2,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: function(ctx) { return ' β = ' + ctx.raw.toFixed(4); }}}
+        },
+        scales: {
+          x: { ticks: { font: {family:'DM Mono',size:10}, color:'#666' }, grid: {color:'#eee'},
+               title: { display:true, text:'Standardised Beta Coefficient', font:{size:10}, color:'#999' }},
+          y: { ticks: { font: {family:'DM Sans',size:11}, color:'#444' }}
+        }
+      }
+    });
+  })();
+</script>
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE 4 — LIMITATIONS & FUTURE IMPROVEMENTS
+══════════════════════════════════════════════════════════════════════ -->
+<div class="page" id="page4">
+<div class="page-content">
+
+  <div class="header">
+    <div class="header-tag">Page 4 · Model Critique &amp; Roadmap</div>
+    <h1>Limitations &amp;<br><em>Future Improvements</em></h1>
+    <p>Author: Truong Phat &nbsp;|&nbsp; Honest assessment of what the model does and does not explain</p>
+  </div>
+
+  <!-- REMINDER BANNER -->
+  <div style="background:#1A1A1A;border-left:4px solid #E8B800;border-radius:6px;padding:14px 20px;margin-bottom:22px;display:flex;gap:16px;align-items:flex-start;">
+    <span style="font-size:18px;flex-shrink:0;">📋</span>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:#E8B800;letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:4px;">TO-DO REMINDER</div>
+      <div style="font-size:12px;color:#ccc;line-height:1.8;">
+        This page is a <strong style="color:#fff;">work in progress</strong>. Still pending:
+        <strong style="color:#fff;">Aug–Dec 2025 full data</strong> (currently capped at 150K rows/month — re-export by region/channel) ·
+        <strong style="color:#fff;">Q1 2026 validation data</strong> (upload actuals to run true out-of-sample test) ·
+        <strong style="color:#fff;">Product-group level ASP</strong> (currently using blended ASP — decompose by group 01/02/04/07 for more precise elasticity estimates).
+      </div>
+    </div>
+  </div>
+
+  <!-- UNEXPLAINED VARIANCE CALLOUT -->
+  <div class="conclusion" style="border-left-color:#C0392B;">
+    <h3>The model explains ~66% of quantity variance — 34% remains unexplained</h3>
+    <p>
+      The best-performing model (Model C: ASP + Marketing + Seasonality) achieves R²=0.666, meaning
+      <strong>approximately 34% of the month-to-month variation in quantity sold is not yet accounted for</strong>.
+      Even including a lagged quantity variable (Model E), R² only reaches 0.689 — still leaving ~31% unexplained.
+      This is a deliberate trade-off: the model prioritises interpretability and generalisability over
+      overfitting to the training data. The sections below document the known sources of this unexplained variance
+      and the planned steps to address them.
+    </p>
+  </div>
+
+  <!-- LIMITATIONS SECTION -->
+  <div class="section">
+    <div class="section-title">Known Limitations</div>
+
+    <!-- Limitation 1 -->
+    <div style="border:1.5px solid #e8b80044;border-left:4px solid #E8B800;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#A07800;margin-bottom:6px;">1 · Data Quality — User-Forced Manual Entries</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        The transaction dataset contains rows where <strong>quantity = 0 but amount &gt; 0</strong> (349 rows identified
+        across 72 months). These are ERP entries forced manually by users — likely to record service fees,
+        promotional adjustments, or system corrections without a corresponding physical shipment.
+        While the absolute value is negligible (27.5M VND total, &lt;0.001% of revenue), they indicate
+        the data is <strong>not a pure reflection of physical product movement</strong> and requires
+        judgement in interpretation. Quantity-based metrics (units sold, ASP) are computed excluding these rows.
+      </p>
+    </div>
+
+    <!-- Limitation 2 -->
+    <div style="border:1.5px solid #c0392b44;border-left:4px solid #C0392B;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#C0392B;margin-bottom:6px;">2 · Unexplained Variance — 34% of Quantity Change Not Captured</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        The current model (R²=0.666) leaves approximately <strong>34% of month-to-month quantity variation unexplained</strong>.
+        Known missing variables include: <strong>competitor pricing and promotions</strong> (not observable from internal data);
+        <strong>distribution expansion</strong> (new customers, new regions — captured only indirectly via trend);
+        <strong>product mix shift</strong> (changing sales composition within each month affects blended ASP and volume);
+        <strong>trade promotion mechanics</strong> (volume discounts, free goods, end-of-quarter push — not separated from
+        standard revenue); and <strong>weather and seasonality interactions</strong> beyond the simple sine/cosine approximation
+        (e.g. heat waves driving beverage demand).
+      </p>
+    </div>
+
+    <!-- Limitation 3 -->
+    <div style="border:1.5px solid #2471a344;border-left:4px solid #2471A3;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#2471A3;margin-bottom:6px;">3 · Blended ASP — Masks Product Mix Effects</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        The current ASP is computed as total revenue ÷ total units across all products and channels.
+        This means the ASP can rise not just because prices increased, but because the
+        <strong>product mix shifted toward higher-value SKUs</strong> (e.g. more powdered infant formula 02XXXX,
+        less condensed milk 01XXXX). True price elasticity measurement requires
+        <strong>holding product mix constant</strong> — or decomposing ASP by product group.
+        The elasticity estimate of −0.97 should be interpreted cautiously as it conflates
+        genuine price effects with mix effects.
+      </p>
+    </div>
+
+    <!-- Limitation 4 -->
+    <div style="border:1.5px solid #8e44ad44;border-left:4px solid #8E44AD;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#8E44AD;margin-bottom:6px;">4 · Data Cap — Aug–Dec 2025 Understated</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        Five months in 2025 hit the <strong>150,000-row Power BI export limit</strong>
+        (Aug: 149,998 · Sep: 149,998 · Oct: 149,999 · Nov: 149,998 · Dec: 149,999).
+        These months are truncated — actual transaction volume exceeds what was captured.
+        As a result, <strong>revenue and quantity figures for Aug–Dec 2025 are likely understated</strong>,
+        potentially distorting ASP calculations and model training for the most recent period.
+        This also means the model's 2025 parameters are trained on incomplete data.
+      </p>
+    </div>
+
+    <!-- Limitation 5 -->
+    <div style="border:1.5px solid #27ae6044;border-left:4px solid #27AE60;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#1E8449;margin-bottom:6px;">5 · Marketing Spend Endogeneity</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        Account 641 marketing spend is treated as an exogenous predictor of quantity, but in practice
+        <strong>marketing budgets are often set in response to sales forecasts or past performance</strong>
+        — creating reverse causality. High sales months may drive higher marketing spend (rewarding success),
+        or low-sales months may trigger compensatory spend (defensive investment). This endogeneity means
+        the marketing coefficient (+0.346 beta) may <strong>overstate the causal impact</strong> of
+        marketing on volume. An instrumental variable or lagged spend approach would be needed to
+        establish true causal direction.
+      </p>
+    </div>
+  </div>
+
+  <!-- FUTURE IMPROVEMENTS -->
+  <div class="section">
+    <div class="section-title">Future Improvements</div>
+    <div class="roadmap-grid">
+
+      <div class="roadmap-item planned">
+        <span class="roadmap-badge badge-planned">🔄 Next</span>
+        <div class="roadmap-title">Re-export Aug–Dec 2025 Full Data</div>
+        <div class="roadmap-desc">Split Power BI export by region or sales channel to stay under the 150K row limit per file. Combine and retrain model on complete 2025 data. Expected impact: ~3–5% improvement in 2025 parameter estimates.</div>
+      </div>
+
+      <div class="roadmap-item planned">
+        <span class="roadmap-badge badge-planned">🔄 Next</span>
+        <div class="roadmap-title">Q1 2026 Out-of-Sample Validation</div>
+        <div class="roadmap-desc">Upload Jan–Mar 2026 actuals. Compute MAPE per month vs model predictions. This is the true test of generalisation — model has never seen 2026 data. Target: MAPE &lt;8% per month.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Product-Group Level ASP &amp; Elasticity</div>
+        <div class="roadmap-desc">Decompose ASP and volume by product group (01/02/04/07). Estimate separate price elasticities per group — expected to show powdered milk (02) is more elastic than liquid milk (04). Enables more precise pricing strategy by category.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Channel-Level Model</div>
+        <div class="roadmap-desc">Separate regression models per distribution channel (GT, MT, KA, Horeca, Export). Channel mix shift is a major unexplained variance driver — modelling each channel independently would capture channel-specific seasonality, elasticity, and growth rates.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Lagged Marketing Spend</div>
+        <div class="roadmap-desc">Test 1–3 month lagged marketing spend instead of contemporaneous spend — addressing endogeneity and capturing delayed consumer response to advertising. Expected to produce a cleaner, more causally interpretable marketing coefficient.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Trade Promotion Separation</div>
+        <div class="roadmap-desc">Separate standard sales from volume-discount and promotional transactions (identifiable by discount code or price deviation from standard). Model baseline demand separately from promotional uplift — common practice in FMCG revenue management.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">ARIMA / Prophet Time Series Benchmark</div>
+        <div class="roadmap-desc">Build a pure time-series model (ARIMA or Facebook Prophet) as a benchmark. Compare MAPE vs the current OLS regression. If ARIMA outperforms, it suggests the current features are not adding signal beyond what's already in the time series structure.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Competitor &amp; External Price Data</div>
+        <div class="roadmap-desc">Incorporate competitor retail price indices (available from Nielsen/Kantar for FMCG) or proxy via relative price positioning. This would allow estimation of cross-price elasticity — how much competitor price changes affect own-brand volume — capturing the 34% unexplained variance.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WHAT GOOD LOOKS LIKE -->
+  <div class="section">
+    <div class="section-title">What "Good" Looks Like — Realistic R² Targets</div>
+    <table style="width:100%;border-collapse:collapse;font-size:11px;">
+      <thead><tr style="background:var(--light);">
+        <th style="padding:8px;border-bottom:2px solid var(--border);text-align:left;">Improvement</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">Expected R² gain</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">Effort</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">Priority</th>
+      </tr></thead>
+      <tbody>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Fix Aug–Dec 2025 data cap</td><td style="padding:8px;text-align:center;">+1–3%</td><td style="padding:8px;text-align:center;">Low</td><td style="padding:8px;text-align:center;color:#C0392B;font-weight:700;">★★★ High</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Product-group ASP decomposition</td><td style="padding:8px;text-align:center;">+5–8%</td><td style="padding:8px;text-align:center;">Medium</td><td style="padding:8px;text-align:center;color:#C0392B;font-weight:700;">★★★ High</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Channel-level separate models</td><td style="padding:8px;text-align:center;">+8–12%</td><td style="padding:8px;text-align:center;">High</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Lagged marketing spend</td><td style="padding:8px;text-align:center;">+2–4%</td><td style="padding:8px;text-align:center;">Low</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Trade promotion separation</td><td style="padding:8px;text-align:center;">+5–10%</td><td style="padding:8px;text-align:center;">High</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
+        <tr><td style="padding:8px;">Competitor price data</td><td style="padding:8px;text-align:center;">+5–15%</td><td style="padding:8px;text-align:center;">Very High</td><td style="padding:8px;text-align:center;color:#888;">★ Low</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:10px;font-family:'DM Mono',monospace;">
+      Combined realistic target: R² = 0.80–0.85 with full data and channel-level models.
+      R² = 0.90+ would require competitor data or highly granular promotion tracking.
+    </p>
+  </div>
+
+  <div class="footer">
+    <span>Truong Phat</span> · Sales Channel Forecasting Model · Limitations &amp; Future Work · March 2026
+  </div>
+
+</div>
+</div>
+
+</body>
+</html>
+
+  <div class="header">
+    <div class="header-tag">Page 3 · Exploratory Data Analysis</div>
+    <h1>EDA & Variable<br><em>Linearity Checks</em></h1>
+    <p>Author: Truong Phat &nbsp;|&nbsp; n = 72 months &nbsp;|&nbsp; Jan 2020 – Dec 2025 &nbsp;|&nbsp; Variables: Sales, Marketing Spend, CPI, GDP, Interest Rate</p>
+  </div>
+
+  <!-- Key insight -->
+  <div class="conclusion">
+    <h3>EDA Finding: Sales is trended + seasonal. Marketing spend has the only clear linear signal.</h3>
+    <p>
+      Monthly sales shows a clear <strong>upward trend 2020–2022</strong>, softer in 2023, partial recovery 2024–2025.
+      Strong seasonal pattern — Q1 (Jan–Feb) consistently lower, Q2 and Q4 peaks.
+      Scatter plots confirm <strong>Marketing Spend (r=+0.41)</strong> has a positive linear relationship with sales while
+      macro variables show <strong>no discernible linear pattern</strong> — consistent with regression R² findings.
+      The negative GDP correlation is misleading — driven by the Covid-19 outlier (2021 Q3: GDP=-6.17% yet FMCG sales remained normal).
+    </p>
+  </div>
+
+  <!-- Sales over time -->
+  <div class="section">
+    <div class="section-title">Sales Volume Over Time — Jan 2020 to Dec 2025</div>
+    <div class="chart-card">
+      <div class="chart-title-sm">Monthly Total Sales Volume (M units)</div>
+      <div class="chart-sub-sm">72 months · trend + seasonality clearly visible</div>
+      <div class="chart-wrap tall"><canvas id="p3salesTime"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Seasonality + distribution -->
+  <div class="charts-grid-2">
+    <div class="chart-card">
+      <div class="chart-title-sm">Average Sales by Month (Seasonality)</div>
+      <div class="chart-sub-sm">Average across all years — Q1 dip, Q4 peak</div>
+      <div class="chart-wrap"><canvas id="p3season"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title-sm">Sales vs Marketing Spend — Time Overlay</div>
+      <div class="chart-sub-sm">Dual axis — visual co-movement</div>
+      <div class="chart-wrap"><canvas id="p3overlay"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Correlations -->
+  <div class="section">
+    <div class="section-title">Pearson Correlation with Sales Volume</div>
+    <div class="corr-grid-p3">
+      <div class="corr-card-p3">
+        <div class="corr-val-p3 pos">+0.41</div>
+        <div class="corr-lbl-p3">Marketing Spend</div>
+        <div class="corr-sig-p3" style="color:var(--green)">✅ p=0.0003</div>
+      </div>
+      <div class="corr-card-p3">
+        <div class="corr-val-p3 neg">-0.30</div>
+        <div class="corr-lbl-p3">GDP Growth</div>
+        <div class="corr-sig-p3" style="color:var(--orange)">⚠️ p=0.011</div>
+      </div>
+      <div class="corr-card-p3">
+        <div class="corr-val-p3 neg">-0.23</div>
+        <div class="corr-lbl-p3">Interest Rate</div>
+        <div class="corr-sig-p3" style="color:var(--muted)">❌ p=0.053</div>
+      </div>
+      <div class="corr-card-p3">
+        <div class="corr-val-p3 neg">-0.13</div>
+        <div class="corr-lbl-p3">CPI YoY</div>
+        <div class="corr-sig-p3" style="color:var(--muted)">❌ p=0.275</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scatter plots -->
+  <div class="section">
+    <div class="section-title">Linearity Checks — Scatter Plots</div>
+    <div class="charts-grid-2">
+      <div class="chart-card">
+        <div class="chart-title-sm">Sales vs Marketing Spend</div>
+        <div class="chart-sub-sm">r=+0.41 · Moderate positive linear trend ✅</div>
+        <div class="chart-wrap"><canvas id="p3scMkt"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title-sm">Sales vs GDP Growth %</div>
+        <div class="chart-sub-sm">r=-0.30 · Negative slope — Covid outlier distorts ⚠️</div>
+        <div class="chart-wrap"><canvas id="p3scGdp"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title-sm">Sales vs Interest Rate %</div>
+        <div class="chart-sub-sm">r=-0.23 · No clear linear pattern ❌</div>
+        <div class="chart-wrap"><canvas id="p3scRate"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title-sm">Sales vs CPI YoY %</div>
+        <div class="chart-sub-sm">r=-0.13 · Random scatter — no relationship ❌</div>
+        <div class="chart-wrap"><canvas id="p3scCpi"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Truong Phat</span> · Sales Channel Forecasting Model · EDA & Linearity Checks · March 2026
+  </div>
+
+</div>
+</div>
+
+
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE 4 — LIMITATIONS & FUTURE IMPROVEMENTS
+══════════════════════════════════════════════════════════════════════ -->
+<div class="page" id="page4">
+<div class="page-content">
+
+  <div class="header">
+    <div class="header-tag">Page 4 · Model Critique &amp; Roadmap</div>
+    <h1>Limitations &amp;<br><em>Future Improvements</em></h1>
+    <p>Author: Truong Phat &nbsp;|&nbsp; Honest assessment of what the model does and does not explain</p>
+  </div>
+
+  <!-- REMINDER BANNER -->
+  <div style="background:#1A1A1A;border-left:4px solid #E8B800;border-radius:6px;padding:14px 20px;margin-bottom:22px;display:flex;gap:16px;align-items:flex-start;">
+    <span style="font-size:18px;flex-shrink:0;">📋</span>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:#E8B800;letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:4px;">TO-DO REMINDER</div>
+      <div style="font-size:12px;color:#ccc;line-height:1.8;">
+        This page is a <strong style="color:#fff;">work in progress</strong>. Still pending:
+        <strong style="color:#fff;">Aug–Dec 2025 full data</strong> (currently capped at 150K rows/month — re-export by region/channel) ·
+        <strong style="color:#fff;">Q1 2026 validation data</strong> (upload actuals to run true out-of-sample test) ·
+        <strong style="color:#fff;">Product-group level ASP</strong> (currently using blended ASP — decompose by group 01/02/04/07 for more precise elasticity estimates).
+      </div>
+    </div>
+  </div>
+
+  <!-- UNEXPLAINED VARIANCE CALLOUT -->
+  <div class="conclusion" style="border-left-color:#C0392B;">
+    <h3>The model explains ~66% of quantity variance — 34% remains unexplained</h3>
+    <p>
+      The best-performing model (Model C: ASP + Marketing + Seasonality) achieves R²=0.666, meaning
+      <strong>approximately 34% of the month-to-month variation in quantity sold is not yet accounted for</strong>.
+      Even including a lagged quantity variable (Model E), R² only reaches 0.689 — still leaving ~31% unexplained.
+      This is a deliberate trade-off: the model prioritises interpretability and generalisability over
+      overfitting to the training data. The sections below document the known sources of this unexplained variance
+      and the planned steps to address them.
+    </p>
+  </div>
+
+  <!-- LIMITATIONS SECTION -->
+  <div class="section">
+    <div class="section-title">Known Limitations</div>
+
+    <!-- Limitation 1 -->
+    <div style="border:1.5px solid #e8b80044;border-left:4px solid #E8B800;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#A07800;margin-bottom:6px;">1 · Data Quality — User-Forced Manual Entries</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        The transaction dataset contains rows where <strong>quantity = 0 but amount &gt; 0</strong> (349 rows identified
+        across 72 months). These are ERP entries forced manually by users — likely to record service fees,
+        promotional adjustments, or system corrections without a corresponding physical shipment.
+        While the absolute value is negligible (27.5M VND total, &lt;0.001% of revenue), they indicate
+        the data is <strong>not a pure reflection of physical product movement</strong> and requires
+        judgement in interpretation. Quantity-based metrics (units sold, ASP) are computed excluding these rows.
+      </p>
+    </div>
+
+    <!-- Limitation 2 -->
+    <div style="border:1.5px solid #c0392b44;border-left:4px solid #C0392B;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#C0392B;margin-bottom:6px;">2 · Unexplained Variance — 34% of Quantity Change Not Captured</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        The current model (R²=0.666) leaves approximately <strong>34% of month-to-month quantity variation unexplained</strong>.
+        Known missing variables include: <strong>competitor pricing and promotions</strong> (not observable from internal data);
+        <strong>distribution expansion</strong> (new customers, new regions — captured only indirectly via trend);
+        <strong>product mix shift</strong> (changing sales composition within each month affects blended ASP and volume);
+        <strong>trade promotion mechanics</strong> (volume discounts, free goods, end-of-quarter push — not separated from
+        standard revenue); and <strong>weather and seasonality interactions</strong> beyond the simple sine/cosine approximation
+        (e.g. heat waves driving beverage demand).
+      </p>
+    </div>
+
+    <!-- Limitation 3 -->
+    <div style="border:1.5px solid #2471a344;border-left:4px solid #2471A3;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#2471A3;margin-bottom:6px;">3 · Blended ASP — Masks Product Mix Effects</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        The current ASP is computed as total revenue ÷ total units across all products and channels.
+        This means the ASP can rise not just because prices increased, but because the
+        <strong>product mix shifted toward higher-value SKUs</strong> (e.g. more powdered infant formula 02XXXX,
+        less condensed milk 01XXXX). True price elasticity measurement requires
+        <strong>holding product mix constant</strong> — or decomposing ASP by product group.
+        The elasticity estimate of −0.97 should be interpreted cautiously as it conflates
+        genuine price effects with mix effects.
+      </p>
+    </div>
+
+    <!-- Limitation 4 -->
+    <div style="border:1.5px solid #8e44ad44;border-left:4px solid #8E44AD;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#8E44AD;margin-bottom:6px;">4 · Data Cap — Aug–Dec 2025 Understated</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        Five months in 2025 hit the <strong>150,000-row Power BI export limit</strong>
+        (Aug: 149,998 · Sep: 149,998 · Oct: 149,999 · Nov: 149,998 · Dec: 149,999).
+        These months are truncated — actual transaction volume exceeds what was captured.
+        As a result, <strong>revenue and quantity figures for Aug–Dec 2025 are likely understated</strong>,
+        potentially distorting ASP calculations and model training for the most recent period.
+        This also means the model's 2025 parameters are trained on incomplete data.
+      </p>
+    </div>
+
+    <!-- Limitation 5 -->
+    <div style="border:1.5px solid #27ae6044;border-left:4px solid #27AE60;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#1E8449;margin-bottom:6px;">5 · Marketing Spend Endogeneity</div>
+      <p style="font-size:12px;color:var(--mid);line-height:1.8;">
+        Account 641 marketing spend is treated as an exogenous predictor of quantity, but in practice
+        <strong>marketing budgets are often set in response to sales forecasts or past performance</strong>
+        — creating reverse causality. High sales months may drive higher marketing spend (rewarding success),
+        or low-sales months may trigger compensatory spend (defensive investment). This endogeneity means
+        the marketing coefficient (+0.346 beta) may <strong>overstate the causal impact</strong> of
+        marketing on volume. An instrumental variable or lagged spend approach would be needed to
+        establish true causal direction.
+      </p>
+    </div>
+  </div>
+
+  <!-- FUTURE IMPROVEMENTS -->
+  <div class="section">
+    <div class="section-title">Future Improvements</div>
+    <div class="roadmap-grid">
+
+      <div class="roadmap-item planned">
+        <span class="roadmap-badge badge-planned">🔄 Next</span>
+        <div class="roadmap-title">Re-export Aug–Dec 2025 Full Data</div>
+        <div class="roadmap-desc">Split Power BI export by region or sales channel to stay under the 150K row limit per file. Combine and retrain model on complete 2025 data. Expected impact: ~3–5% improvement in 2025 parameter estimates.</div>
+      </div>
+
+      <div class="roadmap-item planned">
+        <span class="roadmap-badge badge-planned">🔄 Next</span>
+        <div class="roadmap-title">Q1 2026 Out-of-Sample Validation</div>
+        <div class="roadmap-desc">Upload Jan–Mar 2026 actuals. Compute MAPE per month vs model predictions. This is the true test of generalisation — model has never seen 2026 data. Target: MAPE &lt;8% per month.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Product-Group Level ASP &amp; Elasticity</div>
+        <div class="roadmap-desc">Decompose ASP and volume by product group (01/02/04/07). Estimate separate price elasticities per group — expected to show powdered milk (02) is more elastic than liquid milk (04). Enables more precise pricing strategy by category.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Channel-Level Model</div>
+        <div class="roadmap-desc">Separate regression models per distribution channel (GT, MT, KA, Horeca, Export). Channel mix shift is a major unexplained variance driver — modelling each channel independently would capture channel-specific seasonality, elasticity, and growth rates.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Lagged Marketing Spend</div>
+        <div class="roadmap-desc">Test 1–3 month lagged marketing spend instead of contemporaneous spend — addressing endogeneity and capturing delayed consumer response to advertising. Expected to produce a cleaner, more causally interpretable marketing coefficient.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Trade Promotion Separation</div>
+        <div class="roadmap-desc">Separate standard sales from volume-discount and promotional transactions (identifiable by discount code or price deviation from standard). Model baseline demand separately from promotional uplift — common practice in FMCG revenue management.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">ARIMA / Prophet Time Series Benchmark</div>
+        <div class="roadmap-desc">Build a pure time-series model (ARIMA or Facebook Prophet) as a benchmark. Compare MAPE vs the current OLS regression. If ARIMA outperforms, it suggests the current features are not adding signal beyond what's already in the time series structure.</div>
+      </div>
+
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Planned</span>
+        <div class="roadmap-title">Competitor &amp; External Price Data</div>
+        <div class="roadmap-desc">Incorporate competitor retail price indices (available from Nielsen/Kantar for FMCG) or proxy via relative price positioning. This would allow estimation of cross-price elasticity — how much competitor price changes affect own-brand volume — capturing the 34% unexplained variance.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WHAT GOOD LOOKS LIKE -->
+  <div class="section">
+    <div class="section-title">What "Good" Looks Like — Realistic R² Targets</div>
+    <table style="width:100%;border-collapse:collapse;font-size:11px;">
+      <thead><tr style="background:var(--light);">
+        <th style="padding:8px;border-bottom:2px solid var(--border);text-align:left;">Improvement</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">Expected R² gain</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">Effort</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">Priority</th>
+      </tr></thead>
+      <tbody>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Fix Aug–Dec 2025 data cap</td><td style="padding:8px;text-align:center;">+1–3%</td><td style="padding:8px;text-align:center;">Low</td><td style="padding:8px;text-align:center;color:#C0392B;font-weight:700;">★★★ High</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Product-group ASP decomposition</td><td style="padding:8px;text-align:center;">+5–8%</td><td style="padding:8px;text-align:center;">Medium</td><td style="padding:8px;text-align:center;color:#C0392B;font-weight:700;">★★★ High</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Channel-level separate models</td><td style="padding:8px;text-align:center;">+8–12%</td><td style="padding:8px;text-align:center;">High</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Lagged marketing spend</td><td style="padding:8px;text-align:center;">+2–4%</td><td style="padding:8px;text-align:center;">Low</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Trade promotion separation</td><td style="padding:8px;text-align:center;">+5–10%</td><td style="padding:8px;text-align:center;">High</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
+        <tr><td style="padding:8px;">Competitor price data</td><td style="padding:8px;text-align:center;">+5–15%</td><td style="padding:8px;text-align:center;">Very High</td><td style="padding:8px;text-align:center;color:#888;">★ Low</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:10px;font-family:'DM Mono',monospace;">
+      Combined realistic target: R² = 0.80–0.85 with full data and channel-level models.
+      R² = 0.90+ would require competitor data or highly granular promotion tracking.
+    </p>
+  </div>
+
+  <div class="footer">
+    <span>Truong Phat</span> · Sales Channel Forecasting Model · Limitations &amp; Future Work · March 2026
+  </div>
+
+</div>
+</div>
+
+</body>
+</html>
