@@ -706,16 +706,23 @@
     <!-- Project 1 -->
     <div class="project-card">
       <div class="project-status status-live">Live</div>
-      <div class="project-title">Loan Portfolio Provision Variance Analysis</div>
-      <div class="project-desc">Production Oracle SQL pipeline for MoM IFRS 9 provision movement analysis across 8 product segments (CD, TW, CLX, REL, RM) — full outer join CTE pattern classifying movements as New Write-Down, Recovery, or Additional Write-Off. Built on 30M-row enterprise data warehouse at Home Credit Vietnam.</div>
-      <div class="project-tags">
-        <span class="project-tag">Oracle SQL</span>
-        <span class="project-tag">IFRS 9</span>
-        <span class="project-tag">CTE</span>
-        <span class="project-tag">ETL</span>
-        <span class="project-tag">Finance</span>
+      <div class="project-title">Loan Portfolio Provision Variance &amp; ECL Model</div>
+      <div class="project-desc">
+        End-to-end IFRS 9 credit risk analytics on 3 consumer loan products (CD, TW, CLW) across 27 months (May 2020–Jul 2022), including the COVID stress period. Built a 6-state Markov chain transition model (Current → DPD1-30 → DPD31-90 → DPD91-180 → WD New → WD Aged) using balance-weighted roll-rate matrices averaged across 26 consecutive month pairs. T¹² raised to the 12th power for 12-month forward projection and cumulative PD estimation. ECL computed as PD × LGD × EAD on full outstanding (Principal + Interest + Penalty) — adding I+P increases total ECL by +137B VND (+6.8%) vs principal-only. Interest and penalty ratios validated as early warning signals: CLW penalty ratio is 33.9% higher in migration months vs stable months, and interest ratio +36.1% — the strongest combined signal across all products.
       </div>
-      <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/loan-provision-variance" class="project-link" target="_blank">View on GitHub →</a>
+      <div class="project-tags">
+        <span class="project-tag">Python</span>
+        <span class="project-tag">Markov Chain</span>
+        <span class="project-tag">IFRS 9 ECL</span>
+        <span class="project-tag">NumPy</span>
+        <span class="project-tag">pandas</span>
+        <span class="project-tag">Credit Risk</span>
+        <span class="project-tag">Oracle SQL</span>
+      </div>
+      <div class="project-links">
+        <a href="https://ParfaitAmour1814.github.io/projects/loan-portfolio/" class="project-link" target="_blank">Live Page →</a>
+        <a href="https://github.com/ParfaitAmour1814/ParfaitAmour1814.github.io/tree/main/projects/loan-portfolio" class="project-link secondary" target="_blank">GitHub</a>
+      </div>
     </div>
 
     <!-- Project 2 -->
