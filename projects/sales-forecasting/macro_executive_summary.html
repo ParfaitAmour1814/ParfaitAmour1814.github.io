@@ -323,15 +323,17 @@
 
   <!-- Conclusion -->
   <div class="conclusion">
-    <h3>Updated: ASP is #2 driver after seasonality — macro variables remain excluded, model now complete</h3>
+    <h3>Revised: ASP is the primary controllable driver — marketing variable corrected, endogeneity identified</h3>
     <p>
-      With transaction-level data across all 72 months (9.5M rows, 2020–2025), <strong>Average Selling Price (ASP)</strong>
-      has been computed and confirmed as the key demand driver. ASP achieves <strong>R²=29.5%, p&lt;0.0001</strong>
-      in simple regression — far stronger than any macro variable. Price elasticity = <strong>−0.97</strong> (near-unitary elastic):
-      a 1% price increase reduces quantity sold by ~0.97%. In the full multiple regression, ASP standardised beta = <strong>−0.346</strong>
-      — second only to seasonality (COS_12 = −0.455). <strong>Marketing spend (641)</strong> adds incremental lift (beta = +0.259).
-      Macro variables (CPI, Interest Rate, GDP) remain excluded — GDP's marginal beta (+0.065) is insufficient to justify inclusion.
-      Internal business levers — price, marketing, seasonality — explain FMCG sales volume far better than external macro conditions.
+      With 9.5M transaction rows across 72 months (2020–2025), <strong>ASP</strong> is confirmed as the key demand lever
+      (simple R²=29.5%, p&lt;0.0001; price elasticity = −0.97). However, a material data quality issue was identified in the
+      marketing variable: the original 641 spend series captured the <em>entire</em> GL account (~1,095B/month) rather than
+      true A&amp;P activity codes (MK01–MK11, ~97B/month). The old variable was <strong>endogenous</strong> — larger business
+      months naturally produce both higher sales and higher 641 costs, creating spurious correlation (R²=18.5%, p=0.0002).
+      The <strong>correct narrow MK** spend is statistically insignificant</strong> at monthly aggregate level (R²=2.0%, p=0.23).
+      Both models are presented: Model C-OLD (ASP + proxy 641, R²=0.658) and Model B-NEW (ASP + Seasonality only, R²=0.625).
+      Macro variables remain excluded. Marketing effect is flagged as a <strong>limitation requiring further investigation</strong>
+      — lagged spend or campaign-level data needed to establish causal relationship.
     </p>
   </div>
 
@@ -363,13 +365,13 @@
         <div class="stat-row"><span class="stat-label">2025 avg</span><span class="stat-val good">9,800 VND/unit</span></div>
         <span class="verdict-badge badge-include">+25% in 5 years</span>
       </div>
-      <div class="var-card strong">
-        <div class="var-name">Marketing Spend (641)</div>
-        <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val ok">0.1948 (19.5%)</span></div>
-        <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val good">0.0001</span></div>
-        <div class="stat-row"><span class="stat-label">+20% spend</span><span class="stat-val good">+6.5% qty</span></div>
-        <div class="stat-row"><span class="stat-label">+50% spend</span><span class="stat-val good">+15.1% qty</span></div>
-        <span class="verdict-badge badge-include">✅ Include</span>
+      <div class="var-card exclude">
+        <div class="var-name">Marketing Spend (641) ⚠️ Revised</div>
+        <div class="stat-row"><span class="stat-label">OLD R² (proxy)</span><span class="stat-val ok">0.185 — endogenous</span></div>
+        <div class="stat-row"><span class="stat-label">NEW R² (MK**)</span><span class="stat-val bad">0.020 — not sig.</span></div>
+        <div class="stat-row"><span class="stat-label">OLD scope</span><span class="stat-val bad">Full 641 ~1,095B/mo</span></div>
+        <div class="stat-row"><span class="stat-label">CORRECT scope</span><span class="stat-val">MK** codes ~97B/mo</span></div>
+        <span class="verdict-badge badge-weak">⚠️ Endogenous</span>
       </div>
     </div>
   </div>
@@ -402,11 +404,12 @@
     <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">Comparable impact: 1 std dev change in X → β std devs change in log-quantity. Largest |β| = strongest driver.</p>
     <div id="betaChartWrap" style="height:240px;position:relative;"><canvas id="betaChart"></canvas></div>
     <div style="margin-top:14px;font-size:11px;color:var(--mid);line-height:1.8;padding:12px;background:var(--light);border-radius:4px;">
-      <strong>Reading guide:</strong> COS_12 (seasonality) has the largest absolute impact (−0.455) but is uncontrollable.
-      Among <em>controllable</em> variables, <strong>ASP (price) is #1 (β=−0.346)</strong> followed by
-      <strong>Marketing Spend (β=+0.259)</strong>. GDP Growth (β=+0.065) is statistically marginal.
-      <br><strong>Key insight:</strong> A 1 std dev price increase (~1,000 VND/unit) reduces quantity by 0.35 std devs (~40M units/month).
-      A 1 std dev increase in marketing spend increases quantity by 0.26 std devs (~30M units/month).
+      <strong>Reading guide (Model C-OLD with proxy 641):</strong> COS_12 (seasonality) has the largest absolute impact (−0.456) but is uncontrollable.
+      <strong>ASP (price) is #1 controllable lever (β=−0.301)</strong>.
+      Marketing β=+0.263 shown here but is from the <strong style="color:#E67E22;">endogenous 641 proxy variable</strong> — treat with caution.
+      <br><strong>⚠️ Revised finding:</strong> With the correct MK** spend (~97B/month), marketing beta = −0.064 (not significant, p=0.23).
+      ASP remains the only statistically validated controllable driver.
+      A 1 std dev price increase (~1,000 VND/unit) reduces quantity by ~0.30 std devs (~35M units/month).
     </div>
   </div>
 
@@ -548,8 +551,8 @@
 <div class="page-content">
 
   <div class="header">
-    <div class="header-tag">Deep Dive Analysis · Product Group Level</div>
-    <h1>Macro Sensitivity<br><em>by Product Group</em></h1>
+    <div class="header-tag">Deep Dive · Product Group · ASP Regression · Corrected Marketing Variable</div>
+    <h1>Product Group Analysis<br><em>Macro · ASP · Regression</em></h1>
     <p>Author: Truong Phat &nbsp;|&nbsp; Item master join: 92.1% match rate &nbsp;|&nbsp; Groups: 18 &nbsp;|&nbsp; n = 72 months each</p>
   </div>
 
@@ -792,7 +795,139 @@
     </div>
   </div>
 
-  <div class="footer">
+  
+  <!-- ── NEW: PRODUCT GROUP REGRESSION SECTION ── -->
+  <div class="section" style="margin-top:28px;">
+    <div class="section-title">Product Group Regression — ASP + Seasonality Model (Corrected)</div>
+    <p style="font-size:11px;color:var(--mid);margin-bottom:14px;line-height:1.8;">
+      Full OLS regression run per product group (01/02/04/07) matching the overall model structure.
+      <strong>Marketing variable corrected:</strong> MK** activity codes (~97B/month) used — found not significant in any group.
+      Model B (ASP + Seasonality) selected as honest baseline. Old proxy results shown in parentheses for comparison.
+    </p>
+
+    <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:18px;">
+      <thead>
+        <tr style="background:var(--light);">
+          <th style="padding:8px;border-bottom:2px solid var(--border);text-align:left;" rowspan="2">Group</th>
+          <th style="padding:8px;border-bottom:1px solid var(--border);text-align:center;" colspan="2">Simple R² (vs log-qty)</th>
+          <th style="padding:8px;border-bottom:1px solid var(--border);text-align:center;" colspan="2">Multiple Regression R²</th>
+          <th style="padding:8px;border-bottom:2px solid var(--border);" rowspan="2">MAPE</th>
+          <th style="padding:8px;border-bottom:2px solid var(--border);" rowspan="2">ASP coef</th>
+          <th style="padding:8px;border-bottom:2px solid var(--border);" rowspan="2">ASP +5%→qty</th>
+          <th style="padding:8px;border-bottom:2px solid var(--border);" rowspan="2">Key driver</th>
+        </tr>
+        <tr style="background:var(--light);">
+          <th style="padding:6px 8px;border-bottom:2px solid var(--border);font-size:10px;">ASP R²</th>
+          <th style="padding:6px 8px;border-bottom:2px solid var(--border);font-size:10px;">Mkt R² (OLD proxy)</th>
+          <th style="padding:6px 8px;border-bottom:2px solid var(--border);font-size:10px;">Model B (ASP)</th>
+          <th style="padding:6px 8px;border-bottom:2px solid var(--border);font-size:10px;">Model C (OLD mkt)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:8px;border-bottom:1px solid var(--border);font-weight:700;">01 Condensed Milk</td>
+          <td style="padding:8px;text-align:center;color:var(--red);">0.002 ❌</td>
+          <td style="padding:8px;text-align:center;color:var(--green);">0.068 ✅</td>
+          <td style="padding:8px;text-align:center;">0.347</td>
+          <td style="padding:8px;text-align:center;color:var(--muted);">(0.355)</td>
+          <td style="padding:8px;text-align:center;">13.97%</td>
+          <td style="padding:8px;text-align:center;color:var(--red);">−0.649</td>
+          <td style="padding:8px;text-align:center;color:var(--red);">−3.2%</td>
+          <td style="padding:8px;">Structural <strong>Trend</strong> (β=+0.47)</td>
+        </tr>
+        <tr style="background:#f9f9f6;">
+          <td style="padding:8px;border-bottom:1px solid var(--border);font-weight:700;">02 Powdered/Infant Formula</td>
+          <td style="padding:8px;text-align:center;color:var(--green);font-weight:700;">0.611 ✅</td>
+          <td style="padding:8px;text-align:center;color:var(--green);">0.134 ✅</td>
+          <td style="padding:8px;text-align:center;">0.772</td>
+          <td style="padding:8px;text-align:center;color:var(--muted);">(0.830)</td>
+          <td style="padding:8px;text-align:center;">10.61%</td>
+          <td style="padding:8px;text-align:center;color:var(--red);">−0.376</td>
+          <td style="padding:8px;text-align:center;color:var(--red);">−1.9%</td>
+          <td style="padding:8px;"><strong>Trend</strong> decline (β=−0.66)</td>
+        </tr>
+        <tr>
+          <td style="padding:8px;border-bottom:1px solid var(--border);font-weight:700;">04 UHT Liquid Milk</td>
+          <td style="padding:8px;text-align:center;color:var(--green);font-weight:700;">0.380 ✅</td>
+          <td style="padding:8px;text-align:center;color:var(--green);">0.122 ✅</td>
+          <td style="padding:8px;text-align:center;">0.624</td>
+          <td style="padding:8px;text-align:center;color:var(--muted);">(0.631)</td>
+          <td style="padding:8px;text-align:center;">9.79%</td>
+          <td style="padding:8px;text-align:center;color:var(--red);font-weight:700;">−0.823</td>
+          <td style="padding:8px;text-align:center;color:var(--red);font-weight:700;">−4.0%</td>
+          <td style="padding:8px;"><strong>ASP most price-sensitive</strong> of all groups</td>
+        </tr>
+        <tr style="background:#f9f9f6;">
+          <td style="padding:8px;font-weight:700;">07 Cultured / Yogurt</td>
+          <td style="padding:8px;text-align:center;color:var(--green);">0.336 ✅</td>
+          <td style="padding:8px;text-align:center;color:var(--red);">0.020 ❌</td>
+          <td style="padding:8px;text-align:center;">0.773</td>
+          <td style="padding:8px;text-align:center;color:var(--muted);">(0.779)</td>
+          <td style="padding:8px;text-align:center;">6.46%</td>
+          <td style="padding:8px;text-align:center;color:var(--muted);">−0.052</td>
+          <td style="padding:8px;text-align:center;color:var(--muted);">−0.3%</td>
+          <td style="padding:8px;"><strong>Seasonality</strong> dominates (COS_12 β=−0.76)</td>
+        </tr>
+        <tr style="border-top:2px solid var(--border);background:#f5f5f0;">
+          <td style="padding:8px;font-weight:700;font-style:italic;">TOTAL (blended)</td>
+          <td style="padding:8px;text-align:center;color:var(--green);font-weight:700;">0.278 ✅</td>
+          <td style="padding:8px;text-align:center;color:var(--green);">0.185 ✅⚠️</td>
+          <td style="padding:8px;text-align:center;font-weight:700;">0.625</td>
+          <td style="padding:8px;text-align:center;color:var(--muted);">(0.658)</td>
+          <td style="padding:8px;text-align:center;font-weight:700;">6.99%</td>
+          <td style="padding:8px;text-align:center;color:var(--red);font-weight:700;">−0.212</td>
+          <td style="padding:8px;text-align:center;color:var(--red);font-weight:700;">−1.1%</td>
+          <td style="padding:8px;">ASP + Seasonality + Trend</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin:-10px 0 18px;font-family:'DM Mono',monospace;">
+      ✅ p&lt;0.05 significant · ❌ not significant · ⚠️ OLD proxy endogenous · Mkt NEW (MK** correct) not significant in any group (all p&gt;0.20)
+    </p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div style="background:var(--light);border-radius:6px;padding:14px 18px;border-left:3px solid #C0392B;">
+        <div style="font-size:10px;font-weight:700;color:#C0392B;letter-spacing:1px;margin-bottom:8px;font-family:'DM Mono',monospace;">04 UHT — MOST PRICE SENSITIVE</div>
+        <div style="font-size:11px;color:var(--mid);line-height:1.8;">
+          UHT liquid milk is the volume workhorse (242M units/month avg, ASP ~6,285 VND).
+          Price elasticity = −0.823 — the most responsive group to pricing changes.
+          A 5% price increase reduces volume by 4.0%, a 10% increase by 7.9%.
+          Promotions on UHT have the highest volume leverage of any group.
+        </div>
+      </div>
+      <div style="background:var(--light);border-radius:6px;padding:14px 18px;border-left:3px solid #2471A3;">
+        <div style="font-size:10px;font-weight:700;color:#2471A3;letter-spacing:1px;margin-bottom:8px;font-family:'DM Mono',monospace;">07 YOGURT — SEASONALITY, NOT PRICE</div>
+        <div style="font-size:11px;color:var(--mid);line-height:1.8;">
+          Cultured/yogurt volume is driven almost entirely by seasonality (COS_12 β=−0.76)
+          and growth trend (TREND β=+0.50). ASP coefficient is near-zero (−0.052) with correct marketing variable —
+          the positive Veblen effect seen with old variable was a confounding artefact.
+          Pricing strategy has minimal volume impact on yogurt.
+        </div>
+      </div>
+      <div style="background:var(--light);border-radius:6px;padding:14px 18px;border-left:3px solid #E8B800;">
+        <div style="font-size:10px;font-weight:700;color:#A07800;letter-spacing:1px;margin-bottom:8px;font-family:'DM Mono',monospace;">01 CONDENSED — STRUCTURAL GROWTH</div>
+        <div style="font-size:11px;color:var(--mid);line-height:1.8;">
+          Condensed milk is hardest to model (R²=0.347, MAPE=14.0%) — seasonality explains little
+          and the dominant driver is a positive structural trend (β=+0.47): the category grows
+          regardless of price or macro conditions. Classic commodity staple behaviour.
+          Low R² suggests strong distribution expansion or channel effects not captured.
+        </div>
+      </div>
+      <div style="background:var(--light);border-radius:6px;padding:14px 18px;border-left:3px solid #27AE60;">
+        <div style="font-size:10px;font-weight:700;color:#1E8449;letter-spacing:1px;margin-bottom:8px;font-family:'DM Mono',monospace;">02 POWDERED — DECLINING TREND</div>
+        <div style="font-size:11px;color:var(--mid);line-height:1.8;">
+          Powdered/infant formula (02) has the highest R² (0.772) but a negative trend coefficient
+          (β=−0.66) — the category is contracting structurally over the 72-month period,
+          likely due to demographic trends and fresh/UHT substitution.
+          Elasticity = −0.376: least price-sensitive group — infant formula demand is relatively inelastic.
+          The R² drop from OLD (0.830) to NEW (0.773) reveals the old marketing proxy was
+          absorbing significant variance in this group specifically.
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="footer">
     <span>Truong Phat</span> · Sales Channel Forecasting Model · Product Group Deep Dive · March 2026
   </div>
 
@@ -917,9 +1052,19 @@
       <div class="section-title">Pearson Correlation with Sales Volume</div>
       <div class="corr-grid-p3">
         <div class="corr-card-p3">
-          <div class="corr-val-p3 pos">+0.41</div>
-          <div class="corr-lbl-p3">Marketing Spend</div>
-          <div class="corr-sig-p3" style="color:var(--green)">✅ p=0.0003</div>
+          <div class="corr-val-p3 neg" style="font-size:14px;">-0.54</div>
+          <div class="corr-lbl-p3">ASP (Price)</div>
+          <div class="corr-sig-p3" style="color:var(--green)">✅ p&lt;0.0001</div>
+        </div>
+        <div class="corr-card-p3" style="border:1px dashed var(--orange);">
+          <div class="corr-val-p3 pos" style="font-size:14px;">+0.42 ⚠️</div>
+          <div class="corr-lbl-p3">Mkt OLD (endogenous)</div>
+          <div class="corr-sig-p3" style="color:var(--orange)">p=0.0002 but spurious</div>
+        </div>
+        <div class="corr-card-p3">
+          <div class="corr-val-p3 pos" style="color:var(--muted);font-size:14px;">+0.12</div>
+          <div class="corr-lbl-p3">Mkt NEW (MK**)</div>
+          <div class="corr-sig-p3" style="color:var(--muted)">❌ p=0.31 not sig.</div>
         </div>
         <div class="corr-card-p3">
           <div class="corr-val-p3 neg">-0.30</div>
@@ -944,37 +1089,50 @@
   <!-- ── SUB-PAGE 3B: LINEARITY CHECKS ──────────────────────────── -->
   <div id="sp2" style="display:none">
 
-    <div class="conclusion">
-      <h3>Scatter plots confirm: only marketing spend shows a linear signal with sales</h3>
+    <div class="conclusion" style="border-left-color:var(--orange);">
+      <h3>⚠️ Revised: ASP is the only valid linear signal — Old MKT was endogenous, New MKT is not significant</h3>
       <p>
-        Scatter plots of each variable against sales volume visually confirm the regression findings.
-        <strong>Marketing Spend</strong> shows an upward trend — points cluster along a positive slope.
-        <strong>GDP, Interest Rate, and CPI</strong> show random scatter with no clear direction.
-        The negative GDP slope is an artifact of the <strong>Covid-19 outlier</strong> (2021 Q3: GDP=-6.17% while FMCG sales remained near normal — dairy is an essential good).
+        Scatter plots updated with two additional variables: <strong>ASP (average selling price)</strong>
+        — confirmed negative linear relationship (r=−0.540, p&lt;0.0001) — and the corrected
+        <strong>MK** marketing spend</strong> (~97B/month, r=+0.121, p=0.31 ❌ not significant).
+        The old 641 proxy (r=+0.420, p=0.0002 ✅) showed apparent correlation because it co-moves with
+        overall business scale — a spurious endogeneity artifact, not a causal relationship.
+        <strong>GDP, Interest Rate, and CPI</strong> remain excluded. The negative GDP slope
+        is driven by the <strong>Covid-19 outlier</strong> (2021 Q3: GDP=−6.17%).
       </p>
     </div>
 
     <div class="section">
-      <div class="section-title">Linearity Checks — Scatter Plots vs Sales Volume</div>
+      <div class="section-title">Linearity Checks — Scatter Plots vs Sales Volume (updated)</div>
       <div class="charts-grid-2">
-        <div class="chart-card">
-          <div class="chart-title-sm">Sales vs Marketing Spend</div>
-          <div class="chart-sub-sm">r=+0.41 · Moderate positive linear trend ✅</div>
+        <div class="chart-card" style="border-top:3px solid #C0392B;">
+          <div class="chart-title-sm">Sales vs ASP ★ Primary driver</div>
+          <div class="chart-sub-sm">r=−0.540 · Strong negative linear — confirmed ✅ p&lt;0.0001</div>
+          <div class="chart-wrap"><canvas id="p3scAsp"></canvas></div>
+        </div>
+        <div class="chart-card" style="border-top:3px solid #E67E22;opacity:0.85;">
+          <div class="chart-title-sm">Sales vs Marketing OLD (641 proxy) ⚠️</div>
+          <div class="chart-sub-sm">r=+0.420 · Appears significant but ENDOGENOUS — spurious correlation</div>
           <div class="chart-wrap"><canvas id="p3scMkt"></canvas></div>
+        </div>
+        <div class="chart-card" style="border-top:3px solid #999;">
+          <div class="chart-title-sm">Sales vs Marketing NEW (MK** correct)</div>
+          <div class="chart-sub-sm">r=+0.121 · No significant linear relationship ❌ p=0.31</div>
+          <div class="chart-wrap"><canvas id="p3scMktNew"></canvas></div>
         </div>
         <div class="chart-card">
           <div class="chart-title-sm">Sales vs GDP Growth %</div>
-          <div class="chart-sub-sm">r=-0.30 · Negative slope — Covid outlier distorts ⚠️</div>
+          <div class="chart-sub-sm">r=−0.307 · Negative slope — Covid outlier distorts ⚠️</div>
           <div class="chart-wrap"><canvas id="p3scGdp"></canvas></div>
         </div>
         <div class="chart-card">
           <div class="chart-title-sm">Sales vs Interest Rate %</div>
-          <div class="chart-sub-sm">r=-0.23 · No clear linear pattern ❌</div>
+          <div class="chart-sub-sm">r=−0.226 · No clear linear pattern ❌</div>
           <div class="chart-wrap"><canvas id="p3scRate"></canvas></div>
         </div>
         <div class="chart-card">
           <div class="chart-title-sm">Sales vs CPI YoY %</div>
-          <div class="chart-sub-sm">r=-0.13 · Random scatter — no relationship ❌</div>
+          <div class="chart-sub-sm">r=−0.131 · Random scatter — no relationship ❌</div>
           <div class="chart-wrap"><canvas id="p3scCpi"></canvas></div>
         </div>
       </div>
@@ -986,10 +1144,12 @@
         <thead><tr><th>Variable</th><th>Mean</th><th>Min</th><th>Max</th><th>Std Dev</th><th>r with Sales</th><th>p-value</th></tr></thead>
         <tbody>
           <tr><td class="highlight">Sales Volume (M units)</td><td>498.7</td><td>317.4</td><td>618.6</td><td>62.0</td><td>—</td><td>—</td></tr>
-          <tr style="background:var(--green-light)"><td class="highlight">Marketing Spend (B VND)</td><td>1,070</td><td>856</td><td>1,433</td><td>116</td><td style="color:var(--green);font-weight:600">+0.412</td><td style="color:var(--green);font-weight:600">0.0003 ✅</td></tr>
-          <tr><td class="highlight">GDP Growth (%)</td><td>5.4</td><td>-6.2</td><td>13.7</td><td>3.5</td><td style="color:var(--orange);font-weight:600">-0.298</td><td style="color:var(--orange)">0.011 ⚠️</td></tr>
-          <tr><td class="highlight">Interest Rate (%)</td><td>4.8</td><td>2.5</td><td>6.25</td><td>1.0</td><td style="color:var(--muted)">-0.229</td><td style="color:var(--muted)">0.053 ❌</td></tr>
-          <tr><td class="highlight">CPI YoY (%)</td><td>2.9</td><td>0.06</td><td>6.43</td><td>1.1</td><td style="color:var(--muted)">-0.131</td><td style="color:var(--muted)">0.275 ❌</td></tr>
+          <tr style="background:#fce8e8;"><td class="highlight">ASP (VND/unit) ★</td><td>8,487</td><td>7,343</td><td>10,314</td><td>716</td><td style="color:var(--red);font-weight:600">−0.540</td><td style="color:var(--red);font-weight:600">&lt;0.0001 ✅</td></tr>
+          <tr style="background:#fff3cd;"><td class="highlight">Mkt OLD — 641 proxy ⚠️ endogenous</td><td>1,095</td><td>856</td><td>1,433</td><td>123</td><td style="color:var(--orange);font-weight:600">+0.420</td><td style="color:var(--orange)">0.0002 ⚠️ spurious</td></tr>
+          <tr><td class="highlight">Mkt NEW — MK** correct (B VND)</td><td>97</td><td>0</td><td>209</td><td>42</td><td style="color:var(--muted)">+0.121</td><td style="color:var(--muted)">0.312 ❌</td></tr>
+          <tr><td class="highlight">GDP Growth (%)</td><td>5.5</td><td>−6.2</td><td>13.7</td><td>3.5</td><td style="color:var(--orange);font-weight:600">−0.307</td><td style="color:var(--orange)">0.009 ⚠️</td></tr>
+          <tr><td class="highlight">Interest Rate (%)</td><td>4.5</td><td>4.0</td><td>6.0</td><td>0.6</td><td style="color:var(--muted)">−0.226</td><td style="color:var(--muted)">0.057 ❌</td></tr>
+          <tr><td class="highlight">CPI YoY (%)</td><td>3.1</td><td>0.1</td><td>6.4</td><td>1.1</td><td style="color:var(--muted)">−0.131</td><td style="color:var(--muted)">0.273 ❌</td></tr>
         </tbody>
       </table>
     </div>
@@ -1105,7 +1265,40 @@
   function scatter(id,xData,yData,xLabel,col){
     new Chart(document.getElementById(id),{type:'scatter',data:{datasets:[{data:xData.map((x,i)=>({x,y:yData[i]})),backgroundColor:col+'88',borderColor:col,borderWidth:1.5,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font,color:'#999',callback:v=>v+'M'},grid},x:{ticks:{font,color:'#999'},grid,title:{display:true,text:xLabel,font,color:'#999'}}}}});
   }
-  scatter('p3scMkt',P3_MKT,P3_SALES,'Marketing Spend (B VND)',Y);
+  const P3_ASP     = [{"x": 7848.0, "y": 442.6}, {"x": 7870.0, "y": 506.6}, {"x": 7726.0, "y": 580.9}, {"x": 7836.0, "y": 556.2}, {"x": 8038.0, "y": 568.3}, {"x": 7497.0, "y": 610.0}, {"x": 7870.0, "y": 533.8}, {"x": 7801.0, "y": 591.0}, {"x": 7797.0, "y": 589.7}, {"x": 7731.0, "y": 450.4}, {"x": 7991.0, "y": 556.1}, {"x": 8140.0, "y": 537.7}, {"x": 8059.0, "y": 480.6}, {"x": 7828.0, "y": 400.8}, {"x": 7712.0, "y": 518.4}, {"x": 8034.0, "y": 552.5}, {"x": 7343.0, "y": 585.8}, {"x": 7492.0, "y": 616.2}, {"x": 7712.0, "y": 572.4}, {"x": 7804.0, "y": 607.4}, {"x": 8067.0, "y": 584.6}, {"x": 8374.0, "y": 523.2}, {"x": 8040.0, "y": 532.2}, {"x": 8551.0, "y": 543.8}, {"x": 7648.0, "y": 491.5}, {"x": 8232.0, "y": 371.9}, {"x": 8293.0, "y": 535.2}, {"x": 7972.0, "y": 502.0}, {"x": 8012.0, "y": 447.0}, {"x": 7769.0, "y": 600.9}, {"x": 8220.0, "y": 560.6}, {"x": 8506.0, "y": 536.2}, {"x": 8042.0, "y": 522.9}, {"x": 8235.0, "y": 495.5}, {"x": 8208.0, "y": 469.2}, {"x": 8353.0, "y": 521.8}, {"x": 8510.0, "y": 320.6}, {"x": 8223.0, "y": 477.7}, {"x": 8254.0, "y": 528.1}, {"x": 8364.0, "y": 451.9}, {"x": 8262.0, "y": 510.3}, {"x": 8209.0, "y": 542.9}, {"x": 8416.0, "y": 471.7}, {"x": 8638.0, "y": 548.5}, {"x": 8491.0, "y": 489.5}, {"x": 8386.0, "y": 504.8}, {"x": 8388.0, "y": 457.5}, {"x": 8695.0, "y": 509.8}, {"x": 8737.0, "y": 426.4}, {"x": 8689.0, "y": 394.5}, {"x": 8747.0, "y": 467.9}, {"x": 9039.0, "y": 479.2}, {"x": 8618.0, "y": 515.8}, {"x": 8839.0, "y": 520.4}, {"x": 8958.0, "y": 476.5}, {"x": 8638.0, "y": 557.7}, {"x": 8444.0, "y": 431.6}, {"x": 8994.0, "y": 480.8}, {"x": 8897.0, "y": 449.8}, {"x": 9488.0, "y": 428.0}, {"x": 9609.0, "y": 359.3}, {"x": 9631.0, "y": 316.4}, {"x": 9598.0, "y": 388.6}, {"x": 9759.0, "y": 482.0}, {"x": 9666.0, "y": 511.8}, {"x": 10069.0, "y": 484.3}, {"x": 10314.0, "y": 430.1}, {"x": 10073.0, "y": 461.8}, {"x": 9671.0, "y": 444.8}, {"x": 9724.0, "y": 455.8}, {"x": 9366.0, "y": 370.3}, {"x": 9984.0, "y": 487.9}];
+  const P3_MKT_NEW = [{"x": 120.4, "y": 442.6}, {"x": 103.2, "y": 506.6}, {"x": 104.5, "y": 580.9}, {"x": 82.5, "y": 556.2}, {"x": 85.3, "y": 568.3}, {"x": 81.8, "y": 610.0}, {"x": 92.3, "y": 533.8}, {"x": 129.2, "y": 591.0}, {"x": 66.5, "y": 589.7}, {"x": 183.4, "y": 450.4}, {"x": 194.6, "y": 556.1}, {"x": 146.6, "y": 537.7}, {"x": 123.9, "y": 480.6}, {"x": 98.4, "y": 400.8}, {"x": 0.0, "y": 518.4}, {"x": 200.4, "y": 552.5}, {"x": 168.1, "y": 585.8}, {"x": 0.0, "y": 616.2}, {"x": 78.7, "y": 572.4}, {"x": 104.1, "y": 607.4}, {"x": 66.0, "y": 584.6}, {"x": 142.8, "y": 523.2}, {"x": 141.0, "y": 532.2}, {"x": 90.8, "y": 543.8}, {"x": 96.5, "y": 491.5}, {"x": 81.7, "y": 371.9}, {"x": 6.8, "y": 535.2}, {"x": 77.1, "y": 502.0}, {"x": 99.7, "y": 447.0}, {"x": 97.5, "y": 600.9}, {"x": 148.6, "y": 560.6}, {"x": 82.4, "y": 536.2}, {"x": 79.5, "y": 522.9}, {"x": 77.5, "y": 495.5}, {"x": 121.5, "y": 469.2}, {"x": 188.8, "y": 521.8}, {"x": 28.4, "y": 320.6}, {"x": 34.7, "y": 477.7}, {"x": 70.9, "y": 528.1}, {"x": 102.9, "y": 451.9}, {"x": 94.5, "y": 510.3}, {"x": 85.0, "y": 542.9}, {"x": 112.8, "y": 471.7}, {"x": 107.2, "y": 548.5}, {"x": 137.8, "y": 489.5}, {"x": 139.5, "y": 504.8}, {"x": 145.5, "y": 457.5}, {"x": 208.8, "y": 509.8}, {"x": 66.6, "y": 426.4}, {"x": 60.5, "y": 394.5}, {"x": 60.1, "y": 467.9}, {"x": 63.2, "y": 479.2}, {"x": 66.5, "y": 515.8}, {"x": 94.2, "y": 520.4}, {"x": 92.8, "y": 476.5}, {"x": 83.9, "y": 557.7}, {"x": 85.6, "y": 431.6}, {"x": 85.0, "y": 480.8}, {"x": 92.3, "y": 449.8}, {"x": 161.2, "y": 428.0}, {"x": 75.8, "y": 359.3}, {"x": 65.7, "y": 316.4}, {"x": 90.7, "y": 388.6}, {"x": 103.1, "y": 482.0}, {"x": 78.7, "y": 511.8}, {"x": 63.7, "y": 484.3}, {"x": 102.0, "y": 430.1}, {"x": 88.7, "y": 461.8}, {"x": 73.3, "y": 444.8}, {"x": 80.7, "y": 455.8}, {"x": 96.2, "y": 370.3}, {"x": 88.1, "y": 487.9}];
+
+  // ASP scatter — new primary variable
+  (function(){
+    const ctx = document.getElementById('p3scAsp');
+    if(!ctx) return;
+    new Chart(ctx, {
+      type:'scatter',
+      data:{datasets:[{data:P3_ASP,backgroundColor:'rgba(192,57,43,0.6)',pointRadius:4,
+        borderColor:'#C0392B',borderWidth:1}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw.x.toFixed(0)+' VND → '+c.raw.y+'M'}}},
+        scales:{x:{ticks:{font,color:'#999'},grid,title:{display:true,text:'ASP (VND/unit)',font,color:'#999'}},
+                 y:{ticks:{font,color:'#999'},grid,title:{display:true,text:'Sales (M units)',font,color:'#999'}}}}
+    });
+  })();
+
+  // MKT_NEW scatter — correct marketing variable
+  (function(){
+    const ctx = document.getElementById('p3scMktNew');
+    if(!ctx) return;
+    new Chart(ctx, {
+      type:'scatter',
+      data:{datasets:[{data:P3_MKT_NEW,backgroundColor:'rgba(128,128,128,0.5)',pointRadius:4,
+        borderColor:'#888',borderWidth:1}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw.x.toFixed(1)+'B → '+c.raw.y+'M'}}},
+        scales:{x:{ticks:{font,color:'#999'},grid,title:{display:true,text:'MK** Spend (B VND)',font,color:'#999'}},
+                 y:{ticks:{font,color:'#999'},grid,title:{display:true,text:'Sales (M units)',font,color:'#999'}}}}
+    });
+  })();
+
+  scatter('p3scMkt',P3_MKT,P3_SALES,'Mkt OLD proxy (B VND)',Y);
   scatter('p3scGdp',P3_GDP,P3_SALES,'GDP Growth (%)',O);
   scatter('p3scRate',P3_RATE,P3_SALES,'Interest Rate (%)',R);
   scatter('p3scCpi',P3_CPI,P3_SALES,'CPI YoY (%)',B);
@@ -1265,16 +1458,21 @@ function showPage(pageId, btn) {
     </div>
 
     <!-- Limitation 5 -->
-    <div style="border:1.5px solid #27ae6044;border-left:4px solid #27AE60;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
-      <div style="font-size:12px;font-weight:700;color:#1E8449;margin-bottom:6px;">5 · Marketing Spend Endogeneity</div>
+    <div style="border:1.5px solid #e67e2244;border-left:4px solid #E67E22;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#E67E22;margin-bottom:6px;">5 · Marketing Variable — Data Quality Error &amp; Endogeneity <span style="background:#E67E22;color:#fff;font-size:9px;padding:2px 6px;border-radius:3px;margin-left:6px;">CORRECTED</span></div>
       <p style="font-size:12px;color:var(--mid);line-height:1.8;">
-        Account 641 marketing spend is treated as an exogenous predictor of quantity, but in practice
-        <strong>marketing budgets are often set in response to sales forecasts or past performance</strong>
-        — creating reverse causality. High sales months may drive higher marketing spend (rewarding success),
-        or low-sales months may trigger compensatory spend (defensive investment). This endogeneity means
-        the marketing coefficient (+0.346 beta) may <strong>overstate the causal impact</strong> of
-        marketing on volume. An instrumental variable or lagged spend approach would be needed to
-        establish true causal direction.
+        A material data quality issue was identified and corrected. The original marketing variable used
+        <strong>SEGMENT3='20MK' from the 641 GL file (~1,095B/month)</strong>, which captured the <em>entire</em>
+        marketing department cost centre — including headcount (MH**), agency fees (MA**), and non-A&P lines.
+        This created <strong>spurious correlation</strong>: larger business months naturally produce both higher sales volume
+        and higher 641 department costs, regardless of actual advertising spend. Simple R²=18.5% (p=0.0002)
+        was an artefact of this endogeneity, not a causal marketing-sales relationship.
+        <br><br>
+        The <strong>correct variable uses MK01–MK11 activity codes</strong> across all departments (~97B/month, 7,007B total).
+        This genuine A&P spend is <strong>statistically insignificant</strong> at monthly aggregate level (R²=2.0%, p=0.23).
+        Model C with correct spend barely improves on the baseline (R²=0.625→0.628, +0.3pp vs the spurious +3.7pp).
+        Both models are documented. Marketing causal effect cannot be validated with current data
+        — lagged spend or campaign-level attribution required.
       </p>
     </div>
   </div>
@@ -1308,10 +1506,10 @@ function showPage(pageId, btn) {
         <div class="roadmap-desc">Separate regression models per distribution channel (GT, MT, KA, Horeca, Export). Channel mix shift is a major unexplained variance driver — modelling each channel independently would capture channel-specific seasonality, elasticity, and growth rates.</div>
       </div>
 
-      <div class="roadmap-item future">
-        <span class="roadmap-badge badge-future">📋 Planned</span>
-        <div class="roadmap-title">Lagged Marketing Spend</div>
-        <div class="roadmap-desc">Test 1–3 month lagged marketing spend instead of contemporaneous spend — addressing endogeneity and capturing delayed consumer response to advertising. Expected to produce a cleaner, more causally interpretable marketing coefficient.</div>
+      <div class="roadmap-item planned">
+        <span class="roadmap-badge badge-planned">🔄 Priority</span>
+        <div class="roadmap-title">Lagged Marketing Spend + Correct Variable</div>
+        <div class="roadmap-desc">The current MK** spend variable (~97B/month) is statistically insignificant at monthly aggregate level (R²=2%, p=0.23). Next steps: (1) Test 1–3 month lagged MK** spend to capture delayed ad response. (2) Investigate whether product-specific A&P (e.g. per-SKU promotional calendar) correlates with group-level volume. (3) Consider Nielsen/Kantar panel data as external marketing effectiveness benchmark.</div>
       </div>
 
       <div class="roadmap-item future">
@@ -1574,16 +1772,21 @@ function showPage(pageId, btn) {
     </div>
 
     <!-- Limitation 5 -->
-    <div style="border:1.5px solid #27ae6044;border-left:4px solid #27AE60;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
-      <div style="font-size:12px;font-weight:700;color:#1E8449;margin-bottom:6px;">5 · Marketing Spend Endogeneity</div>
+    <div style="border:1.5px solid #e67e2244;border-left:4px solid #E67E22;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#E67E22;margin-bottom:6px;">5 · Marketing Variable — Data Quality Error &amp; Endogeneity <span style="background:#E67E22;color:#fff;font-size:9px;padding:2px 6px;border-radius:3px;margin-left:6px;">CORRECTED</span></div>
       <p style="font-size:12px;color:var(--mid);line-height:1.8;">
-        Account 641 marketing spend is treated as an exogenous predictor of quantity, but in practice
-        <strong>marketing budgets are often set in response to sales forecasts or past performance</strong>
-        — creating reverse causality. High sales months may drive higher marketing spend (rewarding success),
-        or low-sales months may trigger compensatory spend (defensive investment). This endogeneity means
-        the marketing coefficient (+0.346 beta) may <strong>overstate the causal impact</strong> of
-        marketing on volume. An instrumental variable or lagged spend approach would be needed to
-        establish true causal direction.
+        A material data quality issue was identified and corrected. The original marketing variable used
+        <strong>SEGMENT3='20MK' from the 641 GL file (~1,095B/month)</strong>, which captured the <em>entire</em>
+        marketing department cost centre — including headcount (MH**), agency fees (MA**), and non-A&P lines.
+        This created <strong>spurious correlation</strong>: larger business months naturally produce both higher sales volume
+        and higher 641 department costs, regardless of actual advertising spend. Simple R²=18.5% (p=0.0002)
+        was an artefact of this endogeneity, not a causal marketing-sales relationship.
+        <br><br>
+        The <strong>correct variable uses MK01–MK11 activity codes</strong> across all departments (~97B/month, 7,007B total).
+        This genuine A&P spend is <strong>statistically insignificant</strong> at monthly aggregate level (R²=2.0%, p=0.23).
+        Model C with correct spend barely improves on the baseline (R²=0.625→0.628, +0.3pp vs the spurious +3.7pp).
+        Both models are documented. Marketing causal effect cannot be validated with current data
+        — lagged spend or campaign-level attribution required.
       </p>
     </div>
   </div>
@@ -1617,10 +1820,10 @@ function showPage(pageId, btn) {
         <div class="roadmap-desc">Separate regression models per distribution channel (GT, MT, KA, Horeca, Export). Channel mix shift is a major unexplained variance driver — modelling each channel independently would capture channel-specific seasonality, elasticity, and growth rates.</div>
       </div>
 
-      <div class="roadmap-item future">
-        <span class="roadmap-badge badge-future">📋 Planned</span>
-        <div class="roadmap-title">Lagged Marketing Spend</div>
-        <div class="roadmap-desc">Test 1–3 month lagged marketing spend instead of contemporaneous spend — addressing endogeneity and capturing delayed consumer response to advertising. Expected to produce a cleaner, more causally interpretable marketing coefficient.</div>
+      <div class="roadmap-item planned">
+        <span class="roadmap-badge badge-planned">🔄 Priority</span>
+        <div class="roadmap-title">Lagged Marketing Spend + Correct Variable</div>
+        <div class="roadmap-desc">The current MK** spend variable (~97B/month) is statistically insignificant at monthly aggregate level (R²=2%, p=0.23). Next steps: (1) Test 1–3 month lagged MK** spend to capture delayed ad response. (2) Investigate whether product-specific A&P (e.g. per-SKU promotional calendar) correlates with group-level volume. (3) Consider Nielsen/Kantar panel data as external marketing effectiveness benchmark.</div>
       </div>
 
       <div class="roadmap-item future">
