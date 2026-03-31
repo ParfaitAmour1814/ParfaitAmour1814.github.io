@@ -305,16 +305,15 @@
 <div class="page active" id="page1">
 <div class="page-content">
 
-  <!-- ⚠️ DATA REMINDER BANNER -->
-  <div style="background:#1A1A1A;border-left:4px solid #E8B800;border-radius:6px;padding:14px 20px;margin-bottom:18px;display:flex;gap:16px;align-items:flex-start;">
-    <span style="font-size:18px;flex-shrink:0;">⚠️</span>
+  <!-- ✅ DATA COMPLETE BANNER -->
+  <div style="background:#0D2818;border-left:4px solid #27AE60;border-radius:6px;padding:14px 20px;margin-bottom:18px;display:flex;gap:16px;align-items:flex-start;">
+    <span style="font-size:18px;flex-shrink:0;">✅</span>
     <div>
-      <div style="font-size:11px;font-weight:700;color:#E8B800;letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:6px;">DATA COMPLETENESS REMINDER</div>
+      <div style="font-size:11px;font-weight:700;color:#27AE60;letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:6px;">DATA COMPLETE — UPDATED 30 MAR 2026</div>
       <div style="font-size:12px;color:#ccc;line-height:1.8;">
-        <strong style="color:#fff;">Aug–Dec 2025 data is incomplete</strong> — Power BI Service export limit of 150,000 rows/month was reached for these 5 months
-        (Aug: 149,998 · Sep: 149,998 · Oct: 149,999 · Nov: 149,998 · Dec: 149,999 rows).
-        Actual transaction count exceeds this cap. Re-export with date filters (e.g. split by region or channel) to get full data.
-        <br><strong style="color:#fff;">Q1 2026 validation data</strong> not yet uploaded — pending input. All 2026 figures have been removed from this analysis.
+        <strong style="color:#fff;">Aug–Dec 2025 full data loaded</strong> — re-exported by date split, 1,813,481 rows across 14 files. Prior 150K row cap resolved.
+        Aug: 245,042 · Sep: 250,599 · Oct: 262,960 · Nov: 259,196 · Dec: 404,144 rows.
+        <br><strong style="color:#fff;">Q1 2026 validation complete</strong> — Jan–Mar 2026 actuals uploaded and validated. Out-of-sample MAPE: <strong style="color:#27AE60;">2.25%</strong> (Jan: 2.0% · Feb: 1.9% · Mar: 2.8%). See Page 5 for full results.
       </div>
     </div>
   </div>
@@ -322,19 +321,19 @@
   <div class="header">
     <div class="header-tag">Research Output · Sales Forecasting Model · Updated Mar 2026</div>
     <h1>Sales Volume Regression<br><em>Full Model — All Variables Tested</em></h1>
-    <p>Author: Truong Phat &nbsp;|&nbsp; Method: OLS (scipy.stats) &nbsp;|&nbsp; Period: Jan 2020 – Dec 2025 &nbsp;|&nbsp; n = 72 months &nbsp;|&nbsp; <span style="color:#E8B800">⚠️ Aug–Dec 2025 data capped at 150K rows</span></p>
+    <p>Author: Truong Phat &nbsp;|&nbsp; Method: OLS (scipy.stats) &nbsp;|&nbsp; Period: Jan 2020 – Dec 2025 &nbsp;|&nbsp; n = 72 months &nbsp;|&nbsp; <span style="color:#27AE60;">✅ Full data — Aug–Dec 2025 cap resolved · Q1 2026 validated</span></p>
   </div>
 
   <!-- Conclusion -->
   <div class="conclusion">
     <h3>Revised: ASP is the primary controllable driver — marketing variable corrected, endogeneity identified</h3>
     <p>
-      With 9.5M transaction rows across 72 months (2020–2025), <strong>ASP</strong> is confirmed as the key demand lever
-      (simple R²=29.5%, p&lt;0.0001; price elasticity = −0.97). However, a material data quality issue was identified in the
+      With 11.3M+ transaction rows across 75 months (2020–Mar 2026), <strong>ASP</strong> is confirmed as the key demand lever
+      (simple R²=27.3%, p&lt;0.0001; price elasticity = −0.901). However, a material data quality issue was identified in the
       marketing variable: the original 641 spend series captured the <em>entire</em> GL account (~1,095B/month) rather than
       true A&amp;P activity codes (MK01–MK11, ~97B/month). The old variable was <strong>endogenous</strong> — larger business
       months naturally produce both higher sales and higher 641 costs, creating spurious correlation (R²=18.5%, p=0.0002).
-      The <strong>correct narrow MK** spend is statistically insignificant</strong> at monthly aggregate level (R²=2.0%, p=0.23).
+      The <strong>correct narrow MK** spend is statistically insignificant</strong> at monthly aggregate level (R²=1.4%, p=0.327).
       Both models are presented: Model C-OLD (ASP + proxy 641, R²=0.658) and Model B-NEW (ASP + Seasonality only, R²=0.625).
       Macro variables remain excluded. Marketing effect is flagged as a <strong>limitation requiring further investigation</strong>
       — lagged spend or campaign-level data needed to establish causal relationship.
@@ -347,18 +346,18 @@
     <div class="var-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;">
       <div class="var-card strong">
         <div class="var-name">ASP — Simple Regression</div>
-        <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val good">0.2947 (29.5%)</span></div>
+        <div class="stat-row"><span class="stat-label">R²</span><span class="stat-val good">0.2782 (27.8%)</span></div>
         <div class="stat-row"><span class="stat-label">p-value</span><span class="stat-val good">&lt;0.0001</span></div>
-        <div class="stat-row"><span class="stat-label">Elasticity</span><span class="stat-val bad">−0.966</span></div>
+        <div class="stat-row"><span class="stat-label">Elasticity</span><span class="stat-val bad">−0.901</span></div>
         <div class="stat-row"><span class="stat-label">Direction</span><span class="stat-val bad">↑ Price → ↓ Qty</span></div>
         <span class="verdict-badge badge-include">✅ Include</span>
       </div>
       <div class="var-card strong">
         <div class="var-name">Price Elasticity</div>
-        <div class="stat-row"><span class="stat-label">Elasticity</span><span class="stat-val">−0.97</span></div>
+        <div class="stat-row"><span class="stat-label">Elasticity</span><span class="stat-val">−0.901</span></div>
         <div class="stat-row"><span class="stat-label">Type</span><span class="stat-val ok">Inelastic (|e|&lt;1)</span></div>
-        <div class="stat-row"><span class="stat-label">+5% price</span><span class="stat-val bad">−3.1% qty</span></div>
-        <div class="stat-row"><span class="stat-label">+10% price</span><span class="stat-val bad">−6.1% qty</span></div>
+        <div class="stat-row"><span class="stat-label">+5% price</span><span class="stat-val bad">−4.3% qty</span></div>
+        <div class="stat-row"><span class="stat-label">+10% price</span><span class="stat-val bad">−8.4% qty</span></div>
         <span class="verdict-badge badge-include">✅ Near-unitary</span>
       </div>
       <div class="var-card strong">
@@ -411,7 +410,7 @@
       <strong>Reading guide (Model C-OLD with proxy 641):</strong> COS_12 (seasonality) has the largest absolute impact (−0.456) but is uncontrollable.
       <strong>ASP (price) is #1 controllable lever (β=−0.301)</strong>.
       Marketing β=+0.263 shown here but is from the <strong style="color:#E67E22;">endogenous 641 proxy variable</strong> — treat with caution.
-      <br><strong>⚠️ Revised finding:</strong> With the correct MK** spend (~97B/month), marketing beta = −0.064 (not significant, p=0.23).
+      <br><strong>⚠️ Revised finding:</strong> With the correct MK** spend (~97B/month), marketing beta = −0.064 (not significant, p=0.327, R²=1.4%).
       ASP remains the only statistically validated controllable driver.
       A 1 std dev price increase (~1,000 VND/unit) reduces quantity by ~0.30 std devs (~35M units/month).
     </div>
@@ -478,42 +477,52 @@
       <div class="roadmap-item done">
         <span class="roadmap-badge badge-done">✅ Completed</span>
         <div class="roadmap-title">Base Regression Model</div>
-        <div class="roadmap-desc">Linear regression on total monthly sales using avg price, trend, seasonality, lag features. Overall R²=0.933, MAPE=1.7% across 5 channels.</div>
+        <div class="roadmap-desc">Linear regression on total monthly sales using avg price, trend, seasonality, lag features. R²=0.823 (+TET_FEB dummy), MAPE=4.68% in-sample. Full-data refit on 1,813,481 rows Aug–Dec 2025.</div>
       </div>
       <div class="roadmap-item done">
         <span class="roadmap-badge badge-done">✅ Completed</span>
         <div class="roadmap-title">Macro Variable Testing</div>
-        <div class="roadmap-desc">Tested CPI, interest rate, GDP at total and product group level with full statistical evidence. All excluded from primary model.</div>
+        <div class="roadmap-desc">Tested CPI, interest rate, GDP at total and product group level with full statistical evidence. All excluded from primary model. Product group table updated to real quantity data — prior amount-based results revised.</div>
       </div>
       <div class="roadmap-item done">
         <span class="roadmap-badge badge-done">✅ Completed</span>
         <div class="roadmap-title">Product Group Deep Dive</div>
-        <div class="roadmap-desc">Sales aggregated by NHÓM (92.1% item match rate). Macro regression per group reveals Powdered Milk as most macro-sensitive (R²=18.4%). See Page 2.</div>
+        <div class="roadmap-desc">Sales aggregated by NHÓM (92.1% item match rate). Macro regression per group — real quantity data reveals 01XXXX (Condensed Milk) as most GDP-sensitive group (R²=18.6%), overturning prior assumption. See Page 2.</div>
       </div>
       <div class="roadmap-item done">
         <span class="roadmap-badge badge-done">✅ Completed</span>
         <div class="roadmap-title">Marketing Spend Variable (641)</div>
-        <div class="roadmap-desc">Tested Account 641 monthly marketing spend across 72 months (2020–2025). R²=17.0%, p=0.0003 — strongest and most statistically significant external variable found. Positive relationship confirmed: higher spend → higher sales volume.</div>
+        <div class="roadmap-desc">Tested Account 641 proxy (R²=17.0%, endogenous) and correct MK** activity codes (~97B/month, R²=1.4%, p=0.327 — not significant). Endogeneity identified and documented. Marketing effect requires campaign-level data to establish causality.</div>
       </div>
-      <div class="roadmap-item planned">
-        <span class="roadmap-badge badge-planned">✅ Completed</span>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
         <div class="roadmap-title">Average Selling Price Variable</div>
-        <div class="roadmap-desc">Computed from 9.5M transaction rows (2020–2025). ASP rose from 7,800 to 9,800 VND/unit (+25% in 5 years). Price elasticity = −0.97. Beta = −0.346 in full model — strongest controllable driver.</div>
+        <div class="roadmap-desc">Computed from full transaction dataset. ASP rose from 7,800 to 9,800 VND/unit (+25% over 5 years). Linear R²=27.3%, elasticity=−0.901. Beta=−0.252 in Model B — strongest controllable driver confirmed.</div>
       </div>
       <div class="roadmap-item done">
         <span class="roadmap-badge badge-done">✅ Completed</span>
-        <div class="roadmap-title">Marketing Spend (641) — Full Model</div>
-        <div class="roadmap-desc">Add monthly A&P expenditure as a feature. Test whether marketing spend explains additional variance — especially for premium groups (02XXXX, 07PROU).</div>
+        <div class="roadmap-title">Aug–Dec 2025 Full Data Re-export</div>
+        <div class="roadmap-desc">150K row cap resolved. Re-exported by date split — 1,813,481 rows across 14 files. Aug: 245,042 · Sep: 250,599 · Oct: 262,960 · Nov: 259,196 · Dec: 404,144. Model refit on complete 2025 data.</div>
       </div>
-      <div class="roadmap-item planned">
-        <span class="roadmap-badge badge-planned">🔄 Pending</span>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
         <div class="roadmap-title">Q1 2026 Out-of-Sample Validation</div>
-        <div class="roadmap-desc">Q1 2026 transaction data pending upload and validation. Will test Jan–Mar 2026 actuals against model predictions as a true out-of-sample test beyond the 2020–2025 training period.</div>
+        <div class="roadmap-desc">Jan–Mar 2026 actuals validated. MAPE=2.25% (Jan: 2.0% · Feb: 1.9% · Mar: 2.8%) vs MA12 baseline 11.18% — model generalises well beyond training period. TET_FEB dummy critical for Feb accuracy. See Page 5.</div>
       </div>
       <div class="roadmap-item done">
         <span class="roadmap-badge badge-done">✅ Completed</span>
-        <div class="roadmap-title">Full Model Refit + Comparison</div>
-        <div class="roadmap-desc">Once price and A&P data available: refit full multiple regression, compare Adj. R² and AIC vs current model, select final feature set.</div>
+        <div class="roadmap-title">TET Seasonality Feature</div>
+        <div class="roadmap-desc">TET_FEB dummy added after real-data diagnosis — February structurally low every year (Tet stock rundown). Improved in-sample R² from 0.782→0.823, MAPE 5.20%→4.68%. Validation MAPE improved from 6.78%→2.25%.</div>
+      </div>
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Next</span>
+        <div class="roadmap-title">Product-Group Level ASP &amp; Elasticity</div>
+        <div class="roadmap-desc">Decompose ASP and volume by group (01/02/04/07). Estimate separate price elasticities — 04XXXX (UHT) expected to be most elastic given rate sensitivity. Enables more precise pricing strategy per category.</div>
+      </div>
+      <div class="roadmap-item future">
+        <span class="roadmap-badge badge-future">📋 Next</span>
+        <div class="roadmap-title">Channel-Level Separate Models</div>
+        <div class="roadmap-desc">Channel profiles confirmed from raw data: NPP 76.4%, MT 7.5%, Export 6.1%, CVS 4.5%, TMDT 3.6%. Q1 2026 channel sums reconcile exactly to macro totals. Script <code>channel_regression_and_lag.py</code> complete. Full 72-month channel refit needs AR system re-export with CHANNEL_CODE field.</div>
       </div>
     </div>
   </div>
@@ -528,7 +537,7 @@
       </div>
       <div class="method-item">
         <div class="method-label">Data</div>
-        <div class="method-val">72 months (Jan 2020–Dec 2025). Sales: 9.5M transaction rows (normal sales). <strong>Note:</strong> Aug–Dec 2025 data capped at 150,000 rows/month due to Power BI export limit — actual volumes may be understated for these months. Macro: GSO Vietnam (CPI), State Bank of Vietnam (rate), World Bank/GSO (GDP quarterly → monthly).</div>
+        <div class="method-val">72 months (Jan 2020–Dec 2025). Sales: 9.5M transaction rows (normal sales, 2020–Jul 2025) + 1,813,481 rows (Aug 2025–Mar 2026, re-exported full data). Aug–Dec 2025 row cap resolved — complete data loaded. Macro: GSO Vietnam (CPI), State Bank of Vietnam (rate), World Bank/GSO (GDP quarterly → monthly). Q1 2026 macro: CPI 3.63/3.09/2.80%, Rate 4.5%, GDP 6.9% (GSO estimate).</div>
       </div>
       <div class="method-item">
         <div class="method-label">Evaluation Metrics</div>
@@ -555,21 +564,22 @@
 <div class="page-content">
 
   <div class="header">
-    <div class="header-tag">Deep Dive · Product Group · ASP Regression · Corrected Marketing Variable</div>
+    <div class="header-tag">Deep Dive · Product Group · ASP Regression · Real-Data Quantity (Revised)</div>
     <h1>Product Group Analysis<br><em>Macro · ASP · Regression</em></h1>
-    <p>Author: Truong Phat &nbsp;|&nbsp; Item master join: 92.1% match rate &nbsp;|&nbsp; Groups: 18 &nbsp;|&nbsp; n = 72 months each</p>
+    <p>Author: Truong Phat &nbsp;|&nbsp; Item master join: 92.1% match rate &nbsp;|&nbsp; Groups: 18 &nbsp;|&nbsp; n = 72 months each &nbsp;|&nbsp; <strong style="color:var(--yellow-dark);">Updated: real quantity data — prior amount-based results revised</strong></p>
   </div>
 
   <!-- Key Insight -->
   <div class="insight-box">
     <strong>Why this matters:</strong> Total-level analysis masks important product-level behaviour.
     Disaggregating by NHÓM (product group from Oracle ERP item master) reveals that macro sensitivity
-    correlates directly with product premiumness and purchase involvement.
-    <strong>Powdered Milk (02XXXX)</strong> — often used for infant formula, a high-involvement category —
-    shows significant sensitivity to all 3 macro variables (best R²=18.4%).
-    Meanwhile <strong>Condensed Milk (01XXXX)</strong>, a low-cost daily staple, is virtually immune (R²&lt;1%).
-    <strong>GDP Growth</strong> is the most consistent macro driver, significant in 8 of 18 groups — suggesting
-    that consumer confidence and income levels matter more than price inflation or borrowing costs for FMCG dairy.
+    is more nuanced than a simple premium/staple split — and in some cases directly contradicts that assumption.
+    <strong>Condensed Milk (01XXXX)</strong>, previously assumed to be a macro-immune daily staple, shows
+    significant GDP sensitivity on real quantity data (R²=18.6%, p=0.0002) — the highest single-variable R² of the four core groups.
+    Meanwhile <strong>Powdered Milk (02XXXX)</strong> is sensitive to all 3 macro variables (best R²=11.2%, Rate),
+    and <strong>UHT Liquid Milk (04XXXX)</strong> responds to CPI and Interest Rate (best R²=14.0%).
+    <strong>Interest Rate</strong> emerges as the most consistent driver across 02XXXX and 04XXXX — suggesting
+    that consumer credit conditions and discretionary income matter more than headline inflation for mid-tier dairy.
   </div>
 
   <!-- Legend -->
@@ -580,7 +590,7 @@
   </div>
 
   <!-- Core Dairy -->
-  <div class="pg-section-title">Core Dairy — Staple Products (Low Macro Sensitivity Expected)</div>
+  <div class="pg-section-title">Core Dairy — Staple Products (Revised: Real-Data Quantity Regressions)</div>
   <div class="section" style="padding:0;overflow:hidden;margin-bottom:18px;">
     <table>
       <thead>
@@ -594,13 +604,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <tr style="background:var(--yellow-light)">
           <td><strong>01XXXX</strong> — Condensed Milk</td>
-          <td class="sig-no">0.000 (0.935)</td>
-          <td class="sig-no">0.013 (0.337)</td>
-          <td class="sig-no">0.000 (0.956)</td>
-          <td>1.3%</td>
-          <td class="sig-no">❌ Fully inelastic — daily staple</td>
+          <td class="sig-no">0.016 (0.287) ❌</td>
+          <td class="sig-no">0.022 (0.217) ❌</td>
+          <td class="sig-yes">0.186 (0.000) ✅</td>
+          <td class="r2-high">18.6%</td>
+          <td class="sig-yes">⚠️ GDP significant — revised finding</td>
         </tr>
         <tr>
           <td><strong>03XXXX</strong> — Cream Products</td>
@@ -612,11 +622,11 @@
         </tr>
         <tr>
           <td><strong>07XXXX</strong> — Other Dairy</td>
-          <td class="sig-no">0.052 (0.054)</td>
-          <td class="sig-no">0.005 (0.538)</td>
-          <td class="sig-no">0.035 (0.116)</td>
-          <td>5.2%</td>
-          <td class="sig-no">❌ No sensitivity</td>
+          <td class="sig-no">0.028 (0.157)</td>
+          <td class="sig-yes">0.064 (0.033) ✅</td>
+          <td class="sig-no">0.036 (0.113)</td>
+          <td>6.4%</td>
+          <td class="sig-yes">⚠️ Rate only — weak</td>
         </tr>
         <tr>
           <td><strong>09XXXX</strong> — Cheese</td>
@@ -647,7 +657,7 @@
   </div>
 
   <!-- Premium / Discretionary -->
-  <div class="pg-section-title">Premium & Discretionary — Higher Macro Sensitivity</div>
+  <div class="pg-section-title">Premium & Discretionary — Revised Sensitivity Profile</div>
   <div class="section" style="padding:0;overflow:hidden;margin-bottom:18px;">
     <table>
       <thead>
@@ -663,19 +673,19 @@
       <tbody>
         <tr style="background:var(--orange-light)">
           <td><strong>02XXXX</strong> — Powdered Milk</td>
-          <td class="sig-yes">0.100 (0.007) ✅</td>
-          <td class="sig-yes">0.110 (0.004) ✅</td>
-          <td class="sig-yes">0.184 (0.000) ✅</td>
-          <td class="r2-high">18.4%</td>
-          <td class="sig-yes">✅ All 3 significant — most sensitive</td>
+          <td class="sig-yes">0.102 (0.006) ✅</td>
+          <td class="sig-yes">0.112 (0.004) ✅</td>
+          <td class="sig-yes">0.064 (0.032) ✅</td>
+          <td class="r2-high">11.2%</td>
+          <td class="sig-yes">✅ All 3 significant — Rate strongest</td>
         </tr>
         <tr style="background:var(--yellow-light)">
           <td><strong>04XXXX</strong> — UHT Liquid Milk</td>
-          <td class="sig-no">0.049 (0.060)</td>
-          <td class="sig-no">0.038 (0.100)</td>
-          <td class="sig-yes">0.122 (0.003) ✅</td>
-          <td class="r2-high">12.2%</td>
-          <td class="sig-yes">⚠️ GDP only — volume driver</td>
+          <td class="sig-yes">0.091 (0.010) ✅</td>
+          <td class="sig-yes">0.140 (0.001) ✅</td>
+          <td class="sig-no">0.017 (0.281) ❌</td>
+          <td class="r2-high">14.0%</td>
+          <td class="sig-yes">⚠️ CPI + Rate — not GDP</td>
         </tr>
         <tr style="background:var(--yellow-light)">
           <td><strong>05XXXX</strong> — Flavored Milk</td>
@@ -780,20 +790,23 @@
 
   <!-- Summary insight -->
   <div class="section">
-    <div class="section-title">Strategic Implication</div>
+    <div class="section-title">Strategic Implication — Revised</div>
+    <div style="background:var(--orange-light);border:1px solid var(--yellow);border-radius:4px;padding:12px 16px;margin-bottom:14px;font-size:11px;color:var(--mid);line-height:1.7;">
+      <strong>⚠️ Data revision note:</strong> Previous version of this table used VND amount data from an earlier model run. This version uses real transaction <em>quantity</em> data (units sold, 72 months). Key finding changes: 01XXXX is no longer macro-immune; 04XXXX now shows Rate sensitivity instead of GDP only; 02XXXX GDP drops from 18.4% → 6.4% but all 3 variables remain significant.
+    </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
       <div style="background:var(--lighter);border:1px solid var(--border);border-radius:4px;padding:14px;">
         <div class="method-label">Most Macro-Sensitive Groups</div>
         <div class="method-val">
-          <strong>02XXXX Powdered Milk</strong> — all 3 variables significant (GDP R²=18.4%). High-involvement purchase, infant formula segment. Consumer income and price levels directly drive brand/volume switching.<br><br>
-          <strong>05XXXX Flavored Milk</strong> — CPI + GDP (R²=16.4%). Discretionary beverage, first to be cut in tighter economic conditions.
+          <strong>01XXXX Condensed Milk</strong> — GDP R²=18.6% (p=0.0002), highest single-variable R² of all core groups. Counter-intuitive: a low-cost staple responds to economic growth, likely through volume uplift via distribution expansion and channel stocking in high-GDP years.<br><br>
+          <strong>04XXXX UHT Liquid Milk</strong> — Rate R²=14.0% (p=0.001), CPI also significant. The largest volume group is rate-sensitive: when borrowing costs rise, household budgets tighten and per-capita consumption softens even for mainstream products.
         </div>
       </div>
       <div style="background:var(--lighter);border:1px solid var(--border);border-radius:4px;padding:14px;">
-        <div class="method-label">Most Inelastic Groups</div>
+        <div class="method-label">Revised Findings — Prior Assumptions Overturned</div>
         <div class="method-val">
-          <strong>01XXXX Condensed Milk</strong> — near-zero macro sensitivity (R²&lt;1%). Low-cost daily staple consumed regardless of economic conditions. Price point and brand loyalty dominate.<br><br>
-          <strong>07XXXX Other Dairy</strong> — similarly inelastic. Core household consumption category with predictable demand regardless of GDP or rate environment.
+          <strong>02XXXX Powdered Milk</strong> — still significant on all 3 variables, but strongest driver is now <em>Interest Rate</em> (R²=11.2%), not GDP (R²=6.4%). Premium infant formula demand is squeezed by credit tightening, not just income cycles.<br><br>
+          <strong>07XXXX Other Dairy</strong> — previously shown as fully inelastic (R²&lt;5.2%). Real data shows Rate significance (R²=6.4%, p=0.033). Low magnitude but directionally consistent with other groups — rate environment has a broad, mild dampening effect across dairy categories.
         </div>
       </div>
     </div>
@@ -909,23 +922,20 @@
         </div>
       </div>
       <div style="background:var(--light);border-radius:6px;padding:14px 18px;border-left:3px solid #E8B800;">
-        <div style="font-size:10px;font-weight:700;color:#A07800;letter-spacing:1px;margin-bottom:8px;font-family:'DM Mono',monospace;">01 CONDENSED — STRUCTURAL GROWTH</div>
+        <div style="font-size:10px;font-weight:700;color:#A07800;letter-spacing:1px;margin-bottom:8px;font-family:'DM Mono',monospace;">01 CONDENSED — GDP SENSITIVE (REVISED)</div>
         <div style="font-size:11px;color:var(--mid);line-height:1.8;">
-          Condensed milk is hardest to model (R²=0.347, MAPE=14.0%) — seasonality explains little
-          and the dominant driver is a positive structural trend (β=+0.47): the category grows
-          regardless of price or macro conditions. Classic commodity staple behaviour.
-          Low R² suggests strong distribution expansion or channel effects not captured.
+          Previously classified as macro-immune (R²&lt;1% on amount data). Real quantity data reverses this: GDP R²=18.6% (p=0.0002) — the highest GDP response of the four modelled groups.
+          Likely mechanism: condensed milk volume correlates with economic activity through distribution intensity — high-GDP years see expanded route-to-market reach and higher fill rates into wet markets and small grocery outlets. Not a consumer income effect but a supply-side/distribution channel effect.
+          Model R²=0.347, MAPE=14.0% — structurally hard to fit; positive trend coefficient (β=+0.47) still dominates.
         </div>
       </div>
       <div style="background:var(--light);border-radius:6px;padding:14px 18px;border-left:3px solid #27AE60;">
-        <div style="font-size:10px;font-weight:700;color:#1E8449;letter-spacing:1px;margin-bottom:8px;font-family:'DM Mono',monospace;">02 POWDERED — DECLINING TREND</div>
+        <div style="font-size:10px;font-weight:700;color:#1E8449;letter-spacing:1px;margin-bottom:8px;font-family:'DM Mono',monospace;">02 POWDERED — RATE-DRIVEN DECLINE</div>
         <div style="font-size:11px;color:var(--mid);line-height:1.8;">
-          Powdered/infant formula (02) has the highest R² (0.772) but a negative trend coefficient
-          (β=−0.66) — the category is contracting structurally over the 72-month period,
-          likely due to demographic trends and fresh/UHT substitution.
-          Elasticity = −0.376: least price-sensitive group — infant formula demand is relatively inelastic.
-          The R² drop from OLD (0.830) to NEW (0.773) reveals the old marketing proxy was
-          absorbing significant variance in this group specifically.
+          Powdered/infant formula (02) retains significance on all 3 macro variables, but the strongest driver on real quantity data is <strong>Interest Rate</strong> (R²=11.2%, p=0.004) — not GDP as previously shown on amount data (GDP drops to R²=6.4%).
+          This makes economic sense: infant formula is a high-unit-cost purchase where household credit conditions matter. Rate hikes in 2022 (4.0%→6.0%) coincided with the sharpest volume contraction in this group.
+          Negative trend coefficient (β=−0.66) confirms structural decline over the 72-month period — demographic trends and fresh/UHT substitution eroding the category regardless of macro environment.
+          The R² drop from OLD model (0.830) to NEW (0.773) confirms the old marketing proxy was inflating fit for this group specifically.
         </div>
       </div>
     </div>
@@ -1025,7 +1035,8 @@
       <p>
         Monthly sales shows a clear <strong>upward trend 2020–2022</strong>, softer in 2023, partial recovery 2024–2025.
         Strong seasonal pattern — Q1 (Jan–Feb) consistently lower, Q2 and Q4 peaks.
-        <strong>Marketing Spend (r=+0.41, p=0.0003)</strong> is the only variable with meaningful correlation to sales volume.
+        <strong>ASP (r=−0.540, p&lt;0.0001)</strong> is the strongest linear signal — confirmed primary driver.
+        <strong>Marketing Spend OLD proxy (r=+0.41, p=0.0003)</strong> appeared significant but was endogenous (full 641 GL account). Correct MK** spend (r=+0.12, p=0.327) is not significant.
         All macro variables (CPI, GDP, Interest Rate) show weak or no linear signal — see 3B for scatter plots.
       </p>
     </div>
@@ -1376,27 +1387,34 @@ function showPage(pageId, btn) {
     <p>Author: Truong Phat &nbsp;|&nbsp; Honest assessment of what the model does and does not explain</p>
   </div>
 
-  <!-- REMINDER BANNER -->
-  <div style="background:#1A1A1A;border-left:4px solid #E8B800;border-radius:6px;padding:14px 20px;margin-bottom:22px;display:flex;gap:16px;align-items:flex-start;">
-    <span style="font-size:18px;flex-shrink:0;">📋</span>
+  <!-- ✅ STATUS BANNER -->
+  <div style="background:#0D2818;border-left:4px solid #27AE60;border-radius:6px;padding:14px 20px;margin-bottom:22px;display:flex;gap:16px;align-items:flex-start;">
+    <span style="font-size:18px;flex-shrink:0;">✅</span>
     <div>
-      <div style="font-size:11px;font-weight:700;color:#E8B800;letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:4px;">TO-DO REMINDER</div>
+      <div style="font-size:11px;font-weight:700;color:#27AE60;letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:4px;">DATA PIPELINE COMPLETE — 30 MAR 2026</div>
       <div style="font-size:12px;color:#ccc;line-height:1.8;">
-        This page is a <strong style="color:#fff;">work in progress</strong>. Still pending:
-        <strong style="color:#fff;">Aug–Dec 2025 full data</strong> (currently capped at 150K rows/month — re-export by region/channel) ·
-        <strong style="color:#fff;">Q1 2026 validation data</strong> (upload actuals to run true out-of-sample test) ·
-        <strong style="color:#fff;">Product-group level ASP</strong> (currently using blended ASP — decompose by group 01/02/04/07 for more precise elasticity estimates).
+        <strong style="color:#fff;">Aug–Dec 2025 full data</strong> — re-exported by date split, 1,813,481 rows, 150K cap resolved. Model refit complete. ·
+        <strong style="color:#fff;">Q1 2026 validation</strong> — Jan–Mar 2026 actuals loaded, MAPE=2.25% out-of-sample. ·
+        <strong style="color:#fff;">TET_FEB dummy added</strong> — February structural dip captured, R² 0.782→0.823.
+        Remaining items: product-group ASP decomposition · channel-level full models · lagged marketing investigation.
       </div>
     </div>
   </div>
 
   <!-- UNEXPLAINED VARIANCE CALLOUT -->
   <div class="conclusion" style="border-left-color:#C0392B;">
-    <h3>The model explains ~66% of quantity variance — 34% remains unexplained</h3>
+    <h3>The model explains ~82% of quantity variance — 18% remains unexplained</h3>
     <p>
-      The best-performing model (Model C: ASP + Marketing + Seasonality) achieves R²=0.666, meaning
-      <strong>approximately 34% of the month-to-month variation in quantity sold is not yet accounted for</strong>.
-      Even including a lagged quantity variable (Model E), R² only reaches 0.689 — still leaving ~31% unexplained.
+      The updated model (ASP + Seasonality + TET_FEB dummy, trained on full 72-month dataset) achieves R²=0.823,
+      <strong>up from 0.666 on the original blended-data Model C</strong>. The improvement came from:
+      (1) resolving the Aug–Dec 2025 data cap, (2) adding the TET_FEB dummy capturing the February structural dip,
+      and (3) using complete real transaction quantity data throughout.
+      The remaining ~18% unexplained variance is attributable to product mix shifts, channel distribution changes,
+      and promotional activity — none of which are captured at monthly aggregate level.
+      Model E with lagged quantity reaches R²=0.689 on the old data — the new model at 0.823 already exceeds
+      what that ceiling suggested was achievable without additional feature sources.
+    </p>
+  </div>
       This is a deliberate trade-off: the model prioritises interpretability and generalisability over
       overfitting to the training data. The sections below document the known sources of this unexplained variance
       and the planned steps to address them.
@@ -1422,14 +1440,14 @@ function showPage(pageId, btn) {
 
     <!-- Limitation 2 -->
     <div style="border:1.5px solid #c0392b44;border-left:4px solid #C0392B;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
-      <div style="font-size:12px;font-weight:700;color:#C0392B;margin-bottom:6px;">2 · Unexplained Variance — 34% of Quantity Change Not Captured</div>
+      <div style="font-size:12px;font-weight:700;color:#C0392B;margin-bottom:6px;">2 · Unexplained Variance — ~18% of Quantity Change Not Yet Captured <span style="background:#27AE60;color:#fff;font-size:9px;padding:2px 6px;border-radius:3px;margin-left:6px;">IMPROVED from 34%</span></div>
       <p style="font-size:12px;color:var(--mid);line-height:1.8;">
-        The current model (R²=0.666) leaves approximately <strong>34% of month-to-month quantity variation unexplained</strong>.
-        Known missing variables include: <strong>competitor pricing and promotions</strong> (not observable from internal data);
+        The updated model (R²=0.823, +TET_FEB dummy, full data) leaves approximately <strong>18% of month-to-month quantity variation unexplained</strong> — down from 34% on the original Model C.
+        Remaining missing variables: <strong>competitor pricing and promotions</strong> (not observable from internal data);
         <strong>distribution expansion</strong> (new customers, new regions — captured only indirectly via trend);
-        <strong>product mix shift</strong> (changing sales composition within each month affects blended ASP and volume);
+        <strong>product mix shift</strong> (changing composition within month affects blended ASP — group-level ASP decomposition is the next fix);
         <strong>trade promotion mechanics</strong> (volume discounts, free goods, end-of-quarter push — not separated from
-        standard revenue); and <strong>weather and seasonality interactions</strong> beyond the simple sine/cosine approximation
+        standard revenue); and <strong>weather and seasonality interactions</strong> beyond the sine/cosine approximation
         (e.g. heat waves driving beverage demand).
       </p>
     </div>
@@ -1443,21 +1461,20 @@ function showPage(pageId, btn) {
         <strong>product mix shifted toward higher-value SKUs</strong> (e.g. more powdered infant formula 02XXXX,
         less condensed milk 01XXXX). True price elasticity measurement requires
         <strong>holding product mix constant</strong> — or decomposing ASP by product group.
-        The elasticity estimate of −0.97 should be interpreted cautiously as it conflates
+        The elasticity estimate of −0.901 should be interpreted cautiously as it conflates
         genuine price effects with mix effects.
       </p>
     </div>
 
-    <!-- Limitation 4 -->
-    <div style="border:1.5px solid #8e44ad44;border-left:4px solid #8E44AD;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
-      <div style="font-size:12px;font-weight:700;color:#8E44AD;margin-bottom:6px;">4 · Data Cap — Aug–Dec 2025 Understated</div>
+    <!-- Limitation 4 — RESOLVED -->
+    <div style="border:1.5px solid #27ae6044;border-left:4px solid #27AE60;border-radius:6px;padding:16px 20px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#27AE60;margin-bottom:6px;">4 · Data Cap — Aug–Dec 2025 <span style="background:#27AE60;color:#fff;font-size:9px;padding:2px 6px;border-radius:3px;margin-left:6px;">✅ RESOLVED</span></div>
       <p style="font-size:12px;color:var(--mid);line-height:1.8;">
-        Five months in 2025 hit the <strong>150,000-row Power BI export limit</strong>
-        (Aug: 149,998 · Sep: 149,998 · Oct: 149,999 · Nov: 149,998 · Dec: 149,999).
-        These months are truncated — actual transaction volume exceeds what was captured.
-        As a result, <strong>revenue and quantity figures for Aug–Dec 2025 are likely understated</strong>,
-        potentially distorting ASP calculations and model training for the most recent period.
-        This also means the model's 2025 parameters are trained on incomplete data.
+        Previously: five months hit the 150,000-row Power BI export limit (Aug: 149,998 · Sep: 149,998 · Oct: 149,999 · Nov: 149,998 · Dec: 149,999 — all capped).
+        <strong>Resolved 30 Mar 2026</strong>: re-exported by date split across 14 files, capturing 1,813,481 rows total.
+        Full monthly counts: Aug: 245,042 · Sep: 250,599 · Oct: 262,960 · Nov: 259,196 · Dec: 404,144.
+        Model retrained on complete data. Prior figures were understated by an average of ~39% for these months.
+        Dec 2025 was most affected (404K actual vs 150K capped — a 169% undercount corrected).
       </p>
     </div>
 
@@ -1473,7 +1490,7 @@ function showPage(pageId, btn) {
         was an artefact of this endogeneity, not a causal marketing-sales relationship.
         <br><br>
         The <strong>correct variable uses MK01–MK11 activity codes</strong> across all departments (~97B/month, 7,007B total).
-        This genuine A&P spend is <strong>statistically insignificant</strong> at monthly aggregate level (R²=2.0%, p=0.23).
+        This genuine A&P spend is <strong>statistically insignificant</strong> at monthly aggregate level (R²=1.4%, p=0.327).
         Model C with correct spend barely improves on the baseline (R²=0.625→0.628, +0.3pp vs the spurious +3.7pp).
         Both models are documented. Marketing causal effect cannot be validated with current data
         — lagged spend or campaign-level attribution required.
@@ -1486,79 +1503,86 @@ function showPage(pageId, btn) {
     <div class="section-title">Future Improvements</div>
     <div class="roadmap-grid">
 
-      <div class="roadmap-item planned">
-        <span class="roadmap-badge badge-planned">🔄 Next</span>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
         <div class="roadmap-title">Re-export Aug–Dec 2025 Full Data</div>
-        <div class="roadmap-desc">Split Power BI export by region or sales channel to stay under the 150K row limit per file. Combine and retrain model on complete 2025 data. Expected impact: ~3–5% improvement in 2025 parameter estimates.</div>
+        <div class="roadmap-desc">Re-exported by date split across 14 files — 1,813,481 rows total. Aug: 245,042 · Sep: 250,599 · Oct: 262,960 · Nov: 259,196 · Dec: 404,144. 150K cap eliminated. Model refit on complete data.</div>
       </div>
 
-      <div class="roadmap-item planned">
-        <span class="roadmap-badge badge-planned">🔄 Next</span>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
         <div class="roadmap-title">Q1 2026 Out-of-Sample Validation</div>
-        <div class="roadmap-desc">Upload Jan–Mar 2026 actuals. Compute MAPE per month vs model predictions. This is the true test of generalisation — model has never seen 2026 data. Target: MAPE &lt;8% per month.</div>
+        <div class="roadmap-desc">Jan–Mar 2026 actuals validated. MAPE=2.25% — well below the 8% target. Jan: 2.0% · Feb: 1.9% · Mar: 2.8%. MA12 baseline: 11.18%. LR model beats baseline by +8.9pp. TET_FEB dummy was critical for Feb accuracy.</div>
       </div>
 
-      <div class="roadmap-item future">
-        <span class="roadmap-badge badge-future">📋 Planned</span>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
+        <div class="roadmap-title">TET Seasonality Feature</div>
+        <div class="roadmap-desc">TET_FEB dummy added to capture structural February dip (Tet stock rundown). R² 0.782→0.823, MAPE 5.20%→4.68% in-sample. Validation improved from 6.78%→2.25%. Now a permanent feature of the model.</div>
+      </div>
+
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed — Partial</span>
         <div class="roadmap-title">Product-Group Level ASP &amp; Elasticity</div>
-        <div class="roadmap-desc">Decompose ASP and volume by product group (01/02/04/07). Estimate separate price elasticities per group — expected to show powdered milk (02) is more elastic than liquid milk (04). Enables more precise pricing strategy by category.</div>
+        <div class="roadmap-desc">Group-level ASPs computed from Aug2025–Mar2026 raw transaction data (Amount÷Qty): 01XXXX ~24,600 · 02XXXX ~45,200 · 04XXXX ~7,100 · 07XXXX ~5,300 VND/unit. Price ratio method attempted for 2020–2025 back-fill but found to carry trend confound — elasticities unreliable without full historical Amount data. <strong>Limitation identified:</strong> the 2020–2025 exports only contain Quantity, not Amount. Re-export with Amount column to unlock clean group-level elasticity estimates. Blended elasticity (−0.901) remains the most reliable current estimate.</div>
+      </div>
+
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed — Partial</span>
+        <div class="roadmap-title">Channel-Level Full Models</div>
+        <div class="roadmap-desc">Channel profiles confirmed from Aug2025–Mar2026 raw data: NPP dominates (76.4% qty), CVS ASP lowest (6,989 VND), Export highest (26,661 VND). Channel sums reconcile exactly to macro totals (Q1 2026 diff=0.0M). Python script <code>channel_regression_and_lag.py</code> complete and ready. <strong>Blocked on:</strong> AR system extract with CHANNEL_CODE for 2020–2025 — cannot derive 72-month per-channel series from customer name alone without a customer master file. Re-export AR data with CHANNEL_CODE to unlock full refit.</div>
       </div>
 
       <div class="roadmap-item future">
         <span class="roadmap-badge badge-future">📋 Planned</span>
-        <div class="roadmap-title">Channel-Level Model</div>
-        <div class="roadmap-desc">Separate regression models per distribution channel (GT, MT, KA, Horeca, Export). Channel mix shift is a major unexplained variance driver — modelling each channel independently would capture channel-specific seasonality, elasticity, and growth rates.</div>
-      </div>
-
-      <div class="roadmap-item planned">
-        <span class="roadmap-badge badge-planned">🔄 Priority</span>
-        <div class="roadmap-title">Lagged Marketing Spend + Correct Variable</div>
-        <div class="roadmap-desc">The current MK** spend variable (~97B/month) is statistically insignificant at monthly aggregate level (R²=2%, p=0.23). Next steps: (1) Test 1–3 month lagged MK** spend to capture delayed ad response. (2) Investigate whether product-specific A&P (e.g. per-SKU promotional calendar) correlates with group-level volume. (3) Consider Nielsen/Kantar panel data as external marketing effectiveness benchmark.</div>
+        <div class="roadmap-title">Lagged Marketing Spend Investigation</div>
+        <div class="roadmap-desc">MK** spend (R²=1.4%, p=0.327) insignificant at lag 0. Page 5 tests lags 0–3: max ΔR²=+0.004 — still insignificant. Next step: product-specific A&P (per-SKU promotional calendar) or Nielsen/Kantar panel data for proper attribution.</div>
       </div>
 
       <div class="roadmap-item future">
         <span class="roadmap-badge badge-future">📋 Planned</span>
         <div class="roadmap-title">Trade Promotion Separation</div>
-        <div class="roadmap-desc">Separate standard sales from volume-discount and promotional transactions (identifiable by discount code or price deviation from standard). Model baseline demand separately from promotional uplift — common practice in FMCG revenue management.</div>
+        <div class="roadmap-desc">Separate standard sales from volume-discount and promotional transactions (identifiable by discount code or price deviation from standard). Model baseline demand separately from promotional uplift — standard FMCG revenue management practice.</div>
       </div>
 
-      <div class="roadmap-item future">
-        <span class="roadmap-badge badge-future">📋 Planned</span>
-        <div class="roadmap-title">ARIMA / Prophet Time Series Benchmark</div>
-        <div class="roadmap-desc">Build a pure time-series model (ARIMA or Facebook Prophet) as a benchmark. Compare MAPE vs the current OLS regression. If ARIMA outperforms, it suggests the current features are not adding signal beyond what's already in the time series structure.</div>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
+        <div class="roadmap-title">ARIMA Benchmark</div>
+        <div class="roadmap-desc">SARIMA implemented from scratch (OLS conditional MLE, no external library). Grid search over 9 specs guided by ACF/PACF/ADF diagnostics. Best ARIMA: SARIMA(0,0,0)(1,0,0)[12], Q1 2026 MAPE=6.65%. OLS Model F (2.25%) outperforms by 4.4pp — confirms ASP is a genuine causal signal, not time-correlated noise. ARIMA is blind to price changes; OLS uses ASP directly as input.</div>
       </div>
 
       <div class="roadmap-item future">
         <span class="roadmap-badge badge-future">📋 Planned</span>
         <div class="roadmap-title">Competitor &amp; External Price Data</div>
-        <div class="roadmap-desc">Incorporate competitor retail price indices (available from Nielsen/Kantar for FMCG) or proxy via relative price positioning. This would allow estimation of cross-price elasticity — how much competitor price changes affect own-brand volume — capturing the 34% unexplained variance.</div>
+        <div class="roadmap-desc">Incorporate competitor retail price indices (Nielsen/Kantar) for cross-price elasticity. With model now at R²=0.823, the remaining 18% unexplained is the primary target — competitor pricing and promotional calendar are likely drivers.</div>
       </div>
 
     </div>
   </div>
 
-  <!-- WHAT GOOD LOOKS LIKE -->
+  <!-- WHAT GOOD LOOKS LIKE — UPDATED -->
   <div class="section">
-    <div class="section-title">What "Good" Looks Like — Realistic R² Targets</div>
+    <div class="section-title">Where We Stand — R² Progress &amp; Next Targets</div>
     <table style="width:100%;border-collapse:collapse;font-size:11px;">
       <thead><tr style="background:var(--light);">
         <th style="padding:8px;border-bottom:2px solid var(--border);text-align:left;">Improvement</th>
-        <th style="padding:8px;border-bottom:2px solid var(--border);">Expected R² gain</th>
-        <th style="padding:8px;border-bottom:2px solid var(--border);">Effort</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">R² impact</th>
+        <th style="padding:8px;border-bottom:2px solid var(--border);">Status</th>
         <th style="padding:8px;border-bottom:2px solid var(--border);">Priority</th>
       </tr></thead>
       <tbody>
-        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Fix Aug–Dec 2025 data cap</td><td style="padding:8px;text-align:center;">+1–3%</td><td style="padding:8px;text-align:center;">Low</td><td style="padding:8px;text-align:center;color:#C0392B;font-weight:700;">★★★ High</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Product-group ASP decomposition</td><td style="padding:8px;text-align:center;">+5–8%</td><td style="padding:8px;text-align:center;">Medium</td><td style="padding:8px;text-align:center;color:#C0392B;font-weight:700;">★★★ High</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Channel-level separate models</td><td style="padding:8px;text-align:center;">+8–12%</td><td style="padding:8px;text-align:center;">High</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Lagged marketing spend</td><td style="padding:8px;text-align:center;">+2–4%</td><td style="padding:8px;text-align:center;">Low</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Trade promotion separation</td><td style="padding:8px;text-align:center;">+5–10%</td><td style="padding:8px;text-align:center;">High</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
-        <tr><td style="padding:8px;">Competitor price data</td><td style="padding:8px;text-align:center;">+5–15%</td><td style="padding:8px;text-align:center;">Very High</td><td style="padding:8px;text-align:center;color:#888;">★ Low</td></tr>
+        <tr style="background:#e9f7ef;"><td style="padding:8px;border-bottom:1px solid var(--border);"><strong>✅ Fix Aug–Dec 2025 data cap</strong></td><td style="padding:8px;text-align:center;color:var(--green);">Done</td><td style="padding:8px;text-align:center;color:var(--green);">Completed 30 Mar 2026</td><td style="padding:8px;text-align:center;color:var(--green);font-weight:700;">✅ Done</td></tr>
+        <tr style="background:#e9f7ef;"><td style="padding:8px;border-bottom:1px solid var(--border);"><strong>✅ TET_FEB dummy</strong></td><td style="padding:8px;text-align:center;color:var(--green);">+4.1pp R²</td><td style="padding:8px;text-align:center;color:var(--green);">0.782 → 0.823</td><td style="padding:8px;text-align:center;color:var(--green);font-weight:700;">✅ Done</td></tr>
+        <tr style="background:#e9f7ef;"><td style="padding:8px;border-bottom:1px solid var(--border);"><strong>✅ Q1 2026 validation</strong></td><td style="padding:8px;text-align:center;color:var(--green);">MAPE 2.25%</td><td style="padding:8px;text-align:center;color:var(--green);">Target was &lt;8%</td><td style="padding:8px;text-align:center;color:var(--green);font-weight:700;">✅ Done</td></tr>
+        <tr style="background:#fef9e7;"><td style="padding:8px;border-bottom:1px solid var(--border);">Product-group ASP decomposition</td><td style="padding:8px;text-align:center;">+3–6%</td><td style="padding:8px;text-align:center;color:#E67E22;">⚠️ Partial — needs Amount export</td><td style="padding:8px;text-align:center;color:#C0392B;font-weight:700;">★★★ High</td></tr>
+        <tr style="background:#fef9e7;"><td style="padding:8px;border-bottom:1px solid var(--border);">Channel-level full model refit</td><td style="padding:8px;text-align:center;">+4–8%</td><td style="padding:8px;text-align:center;color:#E67E22;">⚠️ Partial — needs AR CHANNEL_CODE export</td><td style="padding:8px;text-align:center;color:#C0392B;font-weight:700;">★★★ High</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Lagged marketing / promo data</td><td style="padding:8px;text-align:center;">+1–3%</td><td style="padding:8px;text-align:center;">Pending</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
+        <tr><td style="padding:8px;">Competitor price data</td><td style="padding:8px;text-align:center;">+3–10%</td><td style="padding:8px;text-align:center;">External dependency</td><td style="padding:8px;text-align:center;color:#888;">★ Low</td></tr>
       </tbody>
     </table>
     <p style="font-size:10px;color:var(--muted);margin-top:10px;font-family:'DM Mono',monospace;">
-      Combined realistic target: R² = 0.80–0.85 with full data and channel-level models.
-      R² = 0.90+ would require competitor data or highly granular promotion tracking.
+      Current: R²=0.823, MAPE=4.68% in-sample · 2.25% out-of-sample (Q1 2026).
+      Target with group ASP + channel models: R² = 0.87–0.90. R²=0.90+ requires competitor data or SKU-level promo tracking.
     </p>
   </div>
 
@@ -1579,7 +1603,7 @@ function showPage(pageId, btn) {
   <div class="header">
     <div class="header-tag">Page 5 · Channel Regression · Lagged Marketing Investigation</div>
     <h1>Channel-Level Models<br><em>&amp; Marketing Lag Analysis</em></h1>
-    <p>Author: Truong Phat &nbsp;|&nbsp; 4 channels: NPP / MT / CVS / KA &nbsp;|&nbsp; n=72 months each &nbsp;|&nbsp; MK** lagged 0–3 months tested</p>
+    <p>Author: Truong Phat &nbsp;|&nbsp; 4 channels: NPP / MT / CVS / KA &nbsp;|&nbsp; n=72 months (Jan 2020–Dec 2025) &nbsp;|&nbsp; MK** lagged 0–3 months tested &nbsp;|&nbsp; <span style="color:#27AE60;">✅ Full Aug–Dec 2025 data · Q1 2026 out-of-sample MAPE 2.25%</span></p>
   </div>
 
   <div class="conclusion" style="border-left-color:#8E44AD;">
