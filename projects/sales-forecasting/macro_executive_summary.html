@@ -514,15 +514,15 @@
         <div class="roadmap-title">TET Seasonality Feature</div>
         <div class="roadmap-desc">TET_FEB dummy added after real-data diagnosis — February structurally low every year (Tet stock rundown). Improved in-sample R² from 0.782→0.823, MAPE 5.20%→4.68%. Validation MAPE improved from 6.78%→2.25%.</div>
       </div>
-      <div class="roadmap-item future">
-        <span class="roadmap-badge badge-future">📋 Next</span>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
         <div class="roadmap-title">Product-Group Level ASP &amp; Elasticity</div>
-        <div class="roadmap-desc">Decompose ASP and volume by group (01/02/04/07). Estimate separate price elasticities — 04XXXX (UHT) expected to be most elastic given rate sensitivity. Enables more precise pricing strategy per category.</div>
+        <div class="roadmap-desc">Real group ASPs computed from Oracle EBS transaction data (Amount÷Qty per NHOM). Separate OLS regressions run for 01/02/04/07. 04XXXX (UHT) confirmed most price-elastic (elasticity=−1.228, +5%→−5.8%) as predicted. 01XXXX (Condensed) elasticity=−0.782. 07XXXX and 02XXXX near price-inelastic — volume driven by seasonality and structural trend respectively. Full results: nhom_model_results.csv.</div>
       </div>
-      <div class="roadmap-item future">
-        <span class="roadmap-badge badge-future">📋 Next</span>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
         <div class="roadmap-title">Channel-Level Separate Models</div>
-        <div class="roadmap-desc">Channel profiles confirmed from raw data: NPP 76.4%, MT 7.5%, Export 6.1%, CVS 4.5%, TMDT 3.6%. Q1 2026 channel sums reconcile exactly to macro totals. Script <code>channel_regression_and_lag.py</code> complete. Full 72-month channel refit needs AR system re-export with CHANNEL_CODE field.</div>
+        <div class="roadmap-desc">Separate OLS regressions (Model F) run for all 6 channels using Oracle AR system SALES_CHANNEL_CODE (10,565 customers, 99.3% match rate). CVS most price-elastic (−1.065), NPP near-inelastic (−0.136). MT and KA show Interest Rate sensitivity. Lagged MK** spend tested at lags 0–3 across all channels — 0/24 tests significant. Full results: channel_model_results.csv, lag_test_results.csv.</div>
       </div>
     </div>
   </div>
@@ -1522,21 +1522,21 @@ function showPage(pageId, btn) {
       </div>
 
       <div class="roadmap-item done">
-        <span class="roadmap-badge badge-done">✅ Completed — Partial</span>
+        <span class="roadmap-badge badge-done">✅ Completed</span>
         <div class="roadmap-title">Product-Group Level ASP &amp; Elasticity</div>
-        <div class="roadmap-desc">Group-level ASPs computed from Aug2025–Mar2026 raw transaction data (Amount÷Qty): 01XXXX ~24,600 · 02XXXX ~45,200 · 04XXXX ~7,100 · 07XXXX ~5,300 VND/unit. Price ratio method attempted for 2020–2025 back-fill but found to carry trend confound — elasticities unreliable without full historical Amount data. <strong>Limitation identified:</strong> the 2020–2025 exports only contain Quantity, not Amount. Re-export with Amount column to unlock clean group-level elasticity estimates. Blended elasticity (−0.901) remains the most reliable current estimate.</div>
+        <div class="roadmap-desc">Full historical Amount data obtained from Oracle EBS exports. Real group ASPs computed for 80 months (01/02/04/07). Separate Model F regressions: 04XXXX (UHT) most elastic (−1.228, +5%→−5.8%), 01XXXX (Condensed) −0.782, 07XXXX and 02XXXX near price-inelastic (~0). Q1 2026 val MAPEs: 04XXXX 6.6%, 07XXXX 4.7%. All results in nhom_model_results.csv.</div>
       </div>
 
       <div class="roadmap-item done">
-        <span class="roadmap-badge badge-done">✅ Completed — Partial</span>
+        <span class="roadmap-badge badge-done">✅ Completed</span>
         <div class="roadmap-title">Channel-Level Full Models</div>
-        <div class="roadmap-desc">Channel profiles confirmed from Aug2025–Mar2026 raw data: NPP dominates (76.4% qty), CVS ASP lowest (6,989 VND), Export highest (26,661 VND). Channel sums reconcile exactly to macro totals (Q1 2026 diff=0.0M). Python script <code>channel_regression_and_lag.py</code> complete and ready. <strong>Blocked on:</strong> AR system extract with CHANNEL_CODE for 2020–2025 — cannot derive 72-month per-channel series from customer name alone without a customer master file. Re-export AR data with CHANNEL_CODE to unlock full refit.</div>
+        <div class="roadmap-desc">Oracle AR system data provided (Ar_data.csv + Ar_data_2.csv) — 10,565 unique customers, SALES_CHANNEL_CODE field, 99.3% match rate on transaction CUSTOMER_NAME. Full 75-month channel series built and Model F run for all 6 channels. CVS most elastic (−1.065), TMDT (−1.125), MT (−0.743), NPP near-inelastic (−0.136). Lagged MK** spend: 0/24 tests significant. Outputs: channel_model_results.csv, lag_test_results.csv.</div>
       </div>
 
-      <div class="roadmap-item future">
-        <span class="roadmap-badge badge-future">📋 Planned</span>
+      <div class="roadmap-item done">
+        <span class="roadmap-badge badge-done">✅ Completed</span>
         <div class="roadmap-title">Lagged Marketing Spend Investigation</div>
-        <div class="roadmap-desc">MK** spend (R²=1.4%, p=0.327) insignificant at lag 0. Page 5 tests lags 0–3: max ΔR²=+0.004 — still insignificant. Next step: product-specific A&P (per-SKU promotional calendar) or Nielsen/Kantar panel data for proper attribution.</div>
+        <div class="roadmap-desc">MK** spend tested at lags 0–3 months against total log-quantity and all 6 channels (NPP/MT/CVS/KA/Export/TMDT) — 24 tests total. Result: 0/24 significant. Max simple R²=9.0% (MT lag 2, p=0.012) but ΔR² added to Model F only +0.023 — not practically significant. Marketing spend at monthly aggregate level has no detectable effect on volume at any lag. Full results: lag_test_results.csv.</div>
       </div>
 
       <div class="roadmap-item future">
@@ -1574,9 +1574,9 @@ function showPage(pageId, btn) {
         <tr style="background:#e9f7ef;"><td style="padding:8px;border-bottom:1px solid var(--border);"><strong>✅ Fix Aug–Dec 2025 data cap</strong></td><td style="padding:8px;text-align:center;color:var(--green);">Done</td><td style="padding:8px;text-align:center;color:var(--green);">Completed 30 Mar 2026</td><td style="padding:8px;text-align:center;color:var(--green);font-weight:700;">✅ Done</td></tr>
         <tr style="background:#e9f7ef;"><td style="padding:8px;border-bottom:1px solid var(--border);"><strong>✅ TET_FEB dummy</strong></td><td style="padding:8px;text-align:center;color:var(--green);">+4.1pp R²</td><td style="padding:8px;text-align:center;color:var(--green);">0.782 → 0.823</td><td style="padding:8px;text-align:center;color:var(--green);font-weight:700;">✅ Done</td></tr>
         <tr style="background:#e9f7ef;"><td style="padding:8px;border-bottom:1px solid var(--border);"><strong>✅ Q1 2026 validation</strong></td><td style="padding:8px;text-align:center;color:var(--green);">MAPE 2.25%</td><td style="padding:8px;text-align:center;color:var(--green);">Target was &lt;8%</td><td style="padding:8px;text-align:center;color:var(--green);font-weight:700;">✅ Done</td></tr>
-        <tr style="background:#fef9e7;"><td style="padding:8px;border-bottom:1px solid var(--border);">Product-group ASP decomposition</td><td style="padding:8px;text-align:center;">+3–6%</td><td style="padding:8px;text-align:center;color:#E67E22;">⚠️ Partial — needs Amount export</td><td style="padding:8px;text-align:center;color:#C0392B;font-weight:700;">★★★ High</td></tr>
-        <tr style="background:#fef9e7;"><td style="padding:8px;border-bottom:1px solid var(--border);">Channel-level full model refit</td><td style="padding:8px;text-align:center;">+4–8%</td><td style="padding:8px;text-align:center;color:#E67E22;">⚠️ Partial — needs AR CHANNEL_CODE export</td><td style="padding:8px;text-align:center;color:#C0392B;font-weight:700;">★★★ High</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid var(--border);">Lagged marketing / promo data</td><td style="padding:8px;text-align:center;">+1–3%</td><td style="padding:8px;text-align:center;">Pending</td><td style="padding:8px;text-align:center;color:#E67E22;font-weight:700;">★★ Medium</td></tr>
+        <tr style="background:#e9f7ef;"><td style="padding:8px;border-bottom:1px solid var(--border);"><strong>✅ Product-group ASP decomposition</strong></td><td style="padding:8px;text-align:center;">+3–6%</td><td style="padding:8px;text-align:center;color:var(--green);">Completed — real group ASPs</td><td style="padding:8px;text-align:center;color:var(--green);font-weight:700;">✅ Done</td></tr>
+        <tr style="background:#e9f7ef;"><td style="padding:8px;border-bottom:1px solid var(--border);"><strong>✅ Channel-level full model refit</strong></td><td style="padding:8px;text-align:center;">+4–8%</td><td style="padding:8px;text-align:center;color:var(--green);">Completed — AR system data used</td><td style="padding:8px;text-align:center;color:var(--green);font-weight:700;">✅ Done</td></tr>
+        <tr style="background:#e9f7ef;"><td style="padding:8px;border-bottom:1px solid var(--border);"><strong>✅ Lagged marketing investigation</strong></td><td style="padding:8px;text-align:center;">+0%</td><td style="padding:8px;text-align:center;color:var(--green);">Completed — 0/24 significant</td><td style="padding:8px;text-align:center;color:var(--green);font-weight:700;">✅ Done</td></tr>
         <tr><td style="padding:8px;">Competitor price data</td><td style="padding:8px;text-align:center;">+3–10%</td><td style="padding:8px;text-align:center;">External dependency</td><td style="padding:8px;text-align:center;color:#888;">★ Low</td></tr>
       </tbody>
     </table>
