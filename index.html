@@ -728,15 +728,15 @@
     <!-- Project 2 -->
     <div class="project-card">
       <div class="project-status status-live">Live</div>
-      <div class="project-title">Sales Channel Forecasting Model</div>
-      <div class="project-desc">Linear regression vs time-series forecast comparison for monthly FMCG sales prediction across 5 channels — avg price as key input, R²=0.93, MAPE=1.7%. Macro variables (CPI, GDP, interest rate) tested and excluded after low R². Marketing spend (Account 641) tested across 72 months — R²=17.0%, p=0.0003, strongest external variable found. Product group deep dive reveals Powdered Milk (02XXXX) as most macro-sensitive group (R²=18.4%). Q1 2026 out-of-sample validation: Jan MAPE=6.1%, Feb MAPE=15.0%.</div>
+      <div class="project-title">FMCG Sales Forecasting &amp; Regression Analysis</div>
+      <div class="project-desc">End-to-end OLS regression suite on 11.3M+ transaction rows (75 months, Jan 2020–Mar 2026). ASP confirmed as primary demand driver — price elasticity = −0.901 (R²=27.3%, p&lt;0.0001). Model F (ASP + Seasonality + TET_FEB dummy) achieves R²=0.823, in-sample MAPE=4.68%, out-of-sample MAPE=2.25% on Q1 2026. ARIMA benchmark (SARIMA built from scratch) confirms OLS outperforms pure time-series by 4.4pp — ARIMA cannot observe price changes. Channel elasticities: CVS most price-sensitive (−1.07), NPP near-inelastic (−0.14). UHT most elastic product group (−1.23). Marketing spend (MK** correct codes, ~97B/month) not significant at any lag 0–3 months. All macro variables (CPI, GDP, Rate) formally excluded.</div>
       <div class="project-tags">
         <span class="project-tag">Python</span>
-        <span class="project-tag">Regression</span>
-        <span class="project-tag">Power BI</span>
-        <span class="project-tag">Excel</span>
+        <span class="project-tag">OLS Regression</span>
+        <span class="project-tag">ARIMA</span>
         <span class="project-tag">sklearn</span>
         <span class="project-tag">scipy</span>
+        <span class="project-tag">11.3M rows</span>
       </div>
       <div class="project-links">
         <a href="https://ParfaitAmour1814.github.io/projects/sales-forecasting/macro_executive_summary.html" class="project-link" target="_blank">Live Summary →</a>
@@ -797,7 +797,7 @@
 
     <!-- KAC Classification -->
     <div class="project-card">
-      <div class="project-status status-wip">In Progress</div>
+      <div class="project-status status-live">Live</div>
       <div class="project-title">KA Customer Classification — KAC vs KAM</div>
       <div class="project-desc">
         ETL pipeline extracting 15 structured fields from 676 F1 pricing approval PDFs using pdftotext + regex. Built Logistic Regression classifier (CV AUC=0.910) to predict KAC vs KAM customer tier — chosen over Random Forest and Gradient Boosting for interpretability and generalisation robustness on 402 labelled records. Extended to K-Means clustering (K=3,4,5) on 2,219 KA customers from AR ship-to/billing data — K=5 optimal (silhouette=0.168), revealing 5 natural segments: Hospital KAM, Commercial KAC, School &amp; Hotel KAM, Industrial KAM, and National Chain KAC. Key finding: geographic scale (ship-to count, city spread) is the primary KAC differentiator, not industry type alone.
@@ -910,7 +910,7 @@
       <div class="skill-item-row"><span class="skill-name">Power BI</span><div class="skill-bar-mini"><div class="skill-bar-fill blue" style="width:88%"></div></div></div>
       <div class="skill-item-row"><span class="skill-name">SQL</span><div class="skill-bar-mini"><div class="skill-bar-fill blue" style="width:85%"></div></div></div>
       <div class="skill-item-row"><span class="skill-name">Data Analysis</span><div class="skill-bar-mini"><div class="skill-bar-fill blue" style="width:78%"></div></div></div>
-      <div class="skill-item-row"><span class="skill-name">Python (basics)</span><div class="skill-bar-mini"><div class="skill-bar-fill blue" style="width:55%"></div></div></div>
+      <div class="skill-item-row"><span class="skill-name">Python (ML/stats)</span><div class="skill-bar-mini"><div class="skill-bar-fill blue" style="width:72%"></div></div></div>
     </div>
     <div class="skill-group">
       <div class="skill-group-title">Soft Skills</div>
@@ -998,7 +998,7 @@
     <div class="contact-items">
       <div class="contact-item">
         <div class="contact-dot"></div>
-        <a href="mailto:truongphat11t@gmail.com">truongphat11t@gmail.com</a>
+        <a href="/cdn-cgi/l/email-protection#681c1a1d07060f1800091c59591c280f05090104460b0705"><span class="__cf_email__" data-cfemail="ef9b9d9a8081889f878e9bdede9baf88828e8683c18c8082">[email&#160;protected]</span></a>
       </div>
       <div class="contact-item">
         <div class="contact-dot"></div>
@@ -1010,8 +1010,4 @@
       </div>
       <div class="contact-item">
         <div class="contact-dot"></div>
-        <a href="https://github.com/ParfaitAmour1814" target="_blank">github.com/ParfaitAmour1814</a>
-      </div>
-    </div>
-  </div>
-</section>
+   
